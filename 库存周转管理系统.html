@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>库存周转管理系统</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root{
+  --pri:#2563eb;--pri-d:#1d4ed8;--pri-l:#eff6ff;
+  --ok:#059669;--ok-l:#d1fae5;
+  --warn:#d97706;--warn-l:#fef3c7;
+  --err:#dc2626;--err-l:#fee2e2;
+  --purple:#7c3aed;--purple-l:#ede9fe;
+  --pink:#db2777;--pink-l:#fce7f3;
+  --bg:#f0f4f8;--card:#fff;
+  --text:#1e293b;--ts:#64748b;
+  --bd:#e2e8f0;
+  --sh:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.06);
+  --r:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+
+/* ===== HEADER ===== */
+.hdr{background:linear-gradient(135deg,#0f2347 0%,#1e3a5f 40%,#2563eb 100%);color:#fff;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 4px 20px rgba(37,99,235,.35)}
+.hdr h1{font-size:20px;font-weight:800;letter-spacing:.5px;display:flex;align-items:center;gap:10px}
+.hdr .sub{font-size:12px;opacity:.7;margin-top:2px;letter-spacing:.5px}
+.hdr-btns{display:flex;gap:8px}
+.hdr-btns button{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.22);padding:7px 15px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;transition:all .2s}
+.hdr-btns button:hover{background:rgba(255,255,255,.25)}
+
+/* ===== TABS ===== */
+.tabs{display:flex;background:#fff;border-bottom:2px solid var(--bd);padding:0 32px;position:sticky;top:62px;z-index:150;box-shadow:var(--sh);overflow-x:auto}
+.tab{padding:13px 22px;cursor:pointer;font-size:13px;font-weight:600;color:var(--ts);border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s;user-select:none}
+.tab:hover{color:var(--pri)}
+.tab.active{color:var(--pri);border-bottom-color:var(--pri)}
+
+/* ===== CONTAINER ===== */
+.wrap{max-width:1480px;margin:0 auto;padding:24px 32px}
+.tc{display:none;animation:fi .3s ease}
+.tc.active{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ===== CARDS ===== */
+.card{background:var(--card);border-radius:var(--r);padding:22px;margin-bottom:18px;box-shadow:var(--sh);border:1px solid var(--bd)}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.ct{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.ct .ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.ico.bl{background:#dbeafe}.ico.gr{background:#d1fae5}.ico.or{background:#fef3c7}.ico.pu{background:#ede9fe}.ico.pk{background:#fce7f3}
+.ca{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* ===== FORMS ===== */
+.fg{margin-bottom:12px}
+.fg label{display:block;font-size:12px;font-weight:600;color:var(--ts);margin-bottom:5px}
+input,select,textarea{width:100%;padding:9px 12px;border:1.5px solid var(--bd);border-radius:8px;font-size:13px;background:#fafbfc;color:var(--text);transition:border .2s,box-shadow .2s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--pri);box-shadow:0 0 0 3px rgba(37,99,235,.08);background:#fff}
+textarea{resize:vertical;min-height:90px;font-family:'Courier New',monospace;font-size:12px}
+
+/* ===== BUTTONS ===== */
+.btn{padding:9px 20px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:all .2s}
+.b-pri{background:var(--pri);color:#fff}.b-pri:hover{background:var(--pri-d);box-shadow:0 4px 12px rgba(37,99,235,.25)}
+.b-ok{background:var(--ok);color:#fff}.b-ok:hover{box-shadow:0 4px 12px rgba(5,150,105,.25)}
+.b-out{background:#fff;color:var(--pri);border:1.5px solid var(--pri)}.b-out:hover{background:var(--pri-l)}
+.b-del{background:#fff;color:var(--err);border:1.5px solid var(--err)}.b-del:hover{background:var(--err-l)}
+.b-sm{padding:5px 12px;font-size:12px}
+.bg{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+
+/* ===== STATS ===== */
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:18px}
+.sc{background:#fff;border-radius:var(--r);padding:18px 20px;box-shadow:var(--sh);border:1px solid var(--bd);border-left:4px solid var(--pri)}
+.sc.g{border-left-color:var(--ok)}.sc.o{border-left-color:var(--warn)}.sc.r{border-left-color:var(--err)}.sc.p{border-left-color:var(--purple)}
+.sl{font-size:11px;color:var(--ts);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.sv{font-size:26px;font-weight:800;margin-top:3px}
+.ss{font-size:11px;color:var(--ts);margin-top:3px}
+
+/* ===== TABLE ===== */
+.tw{overflow-x:auto;border-radius:8px;border:1px solid var(--bd)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#f8fafc;padding:11px 13px;text-align:left;font-weight:700;color:var(--ts);font-size:11px;text-transform:uppercase;letter-spacing:.4px;border-bottom:2px solid var(--bd);white-space:nowrap}
+td{padding:9px 13px;border-bottom:1px solid var(--bd);vertical-align:middle}
+tr:hover td{background:#f8fafc}
+tr:last-child td{border-bottom:none}
+
+/* ===== BADGES ===== */
+.bdg{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.bdg-s{background:var(--ok-l);color:#065f46}
+.bdg-w{background:var(--warn-l);color:#92400e}
+.bdg-d{background:var(--err-l);color:#991b1b}
+.bdg-i{background:#dbeafe;color:#1e40af}
+
+/* ===== PROGRESS ===== */
+.pbc{background:#e2e8f0;border-radius:10px;height:18px;overflow:hidden}
+.pbf{height:100%;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;min-width:36px;transition:width .5s}
+
+/* ===== INLINE EDIT ===== */
+.ie{border:1px solid transparent;background:transparent;padding:4px 8px;border-radius:4px;width:90px;text-align:right;font-size:13px}
+.ie:hover{border-color:var(--bd);background:#fafbfc}
+.ie:focus{border-color:var(--pri);background:#fff;box-shadow:0 0 0 2px rgba(37,99,235,.08);outline:none}
+
+/* ===== HIGHLIGHTS ===== */
+.hl{font-weight:700}
+.hl-b{color:var(--pri)}.hl-g{color:var(--ok)}.hl-o{color:var(--warn)}.hl-r{color:var(--err)}
+
+/* ===== INSTRUCTIONS ===== */
+.inst{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px;margin-bottom:14px;font-size:13px;color:#1e40af}
+.inst strong{display:block;margin-bottom:5px}
+.inst code{background:#dbeafe;padding:1px 5px;border-radius:4px;font-size:12px}
+
+/* ===== EMPTY STATE ===== */
+.es{text-align:center;padding:50px 20px;color:var(--ts)}
+.es .ei{font-size:42px;margin-bottom:10px}
+
+/* ===== UPLOAD ZONE ===== */
+.uz{border:2px dashed #cbd5e1;border-radius:12px;padding:26px 20px;text-align:center;cursor:pointer;transition:all .25s;background:#fafbfc;position:relative;margin-bottom:12px}
+.uz:hover,.uz.over{border-color:var(--pri);background:var(--pri-l)}
+.uz .ui{font-size:32px;margin-bottom:6px}
+.uz .ut{font-size:14px;font-weight:700}
+.uz .us{font-size:12px;color:var(--ts);margin-top:3px}
+.uz .ub{display:inline-block;margin-top:9px;background:var(--pri);color:#fff;padding:7px 18px;border-radius:8px;font-size:12px;font-weight:600}
+.uz input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+
+/* ===== STATUS ===== */
+.ur{padding:10px 14px;border-radius:8px;font-size:13px;display:none;align-items:center;gap:7px;margin-bottom:12px}
+.ur.show{display:flex}
+.ur.ok{background:var(--ok-l);color:#065f46;border:1px solid #6ee7b7}
+.ur.err{background:var(--err-l);color:#991b1b;border:1px solid #fca5a5}
+
+/* ===== COL MAPPER ===== */
+.cm{background:#f8fafc;border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:12px;display:none}
+.cm.show{display:block}
+.cm h4{font-size:13px;margin-bottom:11px;display:flex;align-items:center;gap:6px}
+.mg{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:9px}
+.mg .fg{margin-bottom:0}
+.mg select{font-size:12px;padding:7px 9px}
+
+/* ===== SHEET TABS ===== */
+.st-sel{margin-bottom:10px}
+.st{display:inline-block;padding:5px 14px;border:1.5px solid var(--bd);border-radius:8px 8px 0 0;cursor:pointer;font-size:12px;font-weight:600;color:var(--ts);background:#f8fafc;margin-right:3px}
+.st.active{background:#fff;color:var(--pri);border-bottom-color:#fff}
+
+/* ===== PREVIEW ===== */
+.pv{max-height:190px;overflow:auto;margin-top:10px}
+.pv table{font-size:12px}
+.pv th{padding:5px 9px;font-size:11px}
+.pv td{padding:4px 9px}
+
+/* ===== MODE TOGGLE ===== */
+.mt{display:flex;border:1.5px solid var(--bd);border-radius:8px;overflow:hidden;margin-bottom:14px;width:fit-content}
+.mtb{padding:7px 18px;font-size:12px;font-weight:600;cursor:pointer;background:#f8fafc;color:var(--ts);border:none;transition:all .2s;display:flex;align-items:center;gap:5px}
+.mtb:not(:last-child){border-right:1.5px solid var(--bd)}
+.mtb.active{background:var(--pri);color:#fff}
+.mtb:hover:not(.active){background:var(--pri-l);color:var(--pri)}
+.ip{display:none}
+.ip.show{display:block}
+
+/* ===== MATCHED TAG ===== */
+.mtag{display:inline-block;background:var(--ok-l);color:#065f46;font-size:10px;padding:1px 6px;border-radius:4px;margin-left:5px;font-weight:600}
+
+/* ===== IMPORTED BADGE ===== */
+.ib{display:inline-flex;align-items:center;gap:4px;background:var(--ok-l);color:#065f46;font-size:12px;padding:4px 11px;border-radius:20px;font-weight:600}
+.ib.empty{background:#f1f5f9;color:var(--ts)}
+
+/* ===== DATE RANGE BAR ===== */
+.drb{background:#fdf2f8;border:1px solid #fbcfe8;border-radius:10px;padding:13px 15px;margin-bottom:12px;display:none}
+.drb.show{display:block}
+.drb h5{font-size:13px;font-weight:700;color:#9d174d;margin-bottom:9px}
+.rps{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.rc{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid #f9a8d4;background:#fff;color:#9d174d;transition:all .2s}
+.rc:hover{background:#fce7f3}
+.rc.active{background:#ec4899;color:#fff;border-color:#ec4899}
+.cr{display:none;align-items:center;gap:7px;flex-wrap:wrap;margin-top:7px}
+.cr.show{display:flex}
+.cr input[type="date"]{width:auto;min-width:130px;font-size:12px;padding:5px 9px}
+.dri{font-size:12px;color:#6b7280;margin-top:6px;padding:5px 9px;background:#fff;border-radius:6px;border:1px solid #fce7f3;display:none}
+.dri.show{display:block}
+
+/* ===== FILTER ===== */
+.fs{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:14px;margin-bottom:12px;display:none}
+.fs.show{display:block}
+.fs h4{font-size:13px;margin-bottom:4px;color:#9a3412;display:flex;align-items:center;gap:5px}
+.fd{font-size:12px;color:#b45309;margin-bottom:11px}
+.fr{background:#fff;border:1px solid #fde68a;border-radius:8px;padding:13px;margin-bottom:9px}
+.frh{display:flex;align-items:center;gap:9px;margin-bottom:9px;flex-wrap:wrap}
+.frh select{width:auto;min-width:170px;font-size:12px;padding:6px 9px}
+.frm{background:none;border:none;color:var(--err);font-size:17px;cursor:pointer;padding:3px 7px;border-radius:4px;line-height:1}
+.frm:hover{background:var(--err-l)}
+.fvb{max-height:170px;overflow-y:auto;border:1px solid var(--bd);border-radius:8px;padding:7px;display:none;background:#fafbfc}
+.fvb.show{display:block}
+.fqa{display:flex;gap:7px;margin-bottom:7px;padding-bottom:7px;border-bottom:1px solid var(--bd);align-items:center;flex-wrap:wrap}
+.fqa button{background:none;border:1px solid var(--bd);padding:3px 9px;border-radius:4px;font-size:11px;cursor:pointer;color:var(--ts);font-weight:600}
+.fqa button:hover{background:var(--pri-l);border-color:var(--pri);color:var(--pri)}
+.fqs{border:1px solid var(--bd);border-radius:4px;padding:3px 7px;font-size:12px;width:130px;background:#fff}
+.fvl{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:2px}
+.fcbi{display:flex;align-items:center;gap:5px;padding:4px 7px;border-radius:4px;cursor:pointer;font-size:12px}
+.fcbi:hover{background:#fef3c7}
+.fcbi input[type="checkbox"]{width:auto;margin:0;cursor:pointer;accent-color:var(--pri)}
+.fcbi label{cursor:pointer;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.fsc{font-size:11px;color:var(--pri);font-weight:600}
+.fsum{background:#fef3c7;padding:9px 13px;border-radius:8px;font-size:13px;color:#92400e;margin-top:9px;display:none}
+.fsum.show{display:block}
+
+/* ===== SECTION DIVIDER ===== */
+.div{border:none;border-top:2px dashed var(--bd);margin:20px 0}
+
+/* ===== MODAL ===== */
+.mo{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:1000}
+.mo.show{display:flex}
+.mb{background:#fff;border-radius:16px;padding:28px;max-width:680px;width:95%;box-shadow:0 25px 50px rgba(0,0,0,.15);max-height:90vh;overflow-y:auto}
+.mb h3{margin-bottom:14px;font-size:17px}
+
+/* ===== CHANNEL ===== */
+.ch-mo-tag{display:inline-flex;align-items:center;gap:4px;background:#dbeafe;color:#1e40af;font-size:12px;padding:4px 10px;border-radius:20px;font-weight:600;margin:3px}
+.ch-mo-rm{cursor:pointer;font-size:13px;opacity:.7}
+.ch-mo-rm:hover{opacity:1}
+.cht td.num{text-align:right;font-variant-numeric:tabular-nums}
+.cht td.rl{font-weight:600}
+.cht tr.tr td{font-weight:800;background:#f0f9ff;color:#0369a1}
+.cht tr.pr td{font-size:12px;color:var(--ts);background:#f8fafc}
+.ch-tab{display:flex;border-bottom:2px solid var(--bd);margin-bottom:16px}
+.ch-tab-btn{padding:8px 18px;cursor:pointer;font-size:13px;font-weight:600;color:var(--ts);border-bottom:3px solid transparent;transition:all .2s}
+.ch-tab-btn.active{color:var(--pri);border-bottom-color:var(--pri)}
+
+/* ===== GRIDS ===== */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  .g2,.g3,.mg,.fvl{grid-template-columns:1fr}
+  .sg{grid-template-columns:1fr 1fr}
+  .wrap{padding:16px}
+  .tabs,.hdr{padding-left:16px;padding-right:16px}
+  .tab{padding:11px 14px;font-size:12px}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div>
+    <h1>📦 库存周转管理系统</h1>
+    <div class="sub">Inventory Turnover · Forecast · Target Monitoring</div>
+  </div>
+  <div class="hdr-btns">
+    <button onclick="expAll()">📥 导出CSV</button>
+    <button onclick="clrAll()">🗑️ 清空全部</button>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="swTab('t-data',this)">📋 数据录入</div>
+  <div class="tab" onclick="swTab('t-turn',this)">🔄 库存周转</div>
+  <div class="tab" onclick="swTab('t-fc',this)">📈 目标预测</div>
+  <div class="tab" onclick="swTab('t-mon',this)">🎯 目标监控</div>
+  <div class="tab" onclick="swTab('t-ch',this)">📊 渠道分析</div>
+</div>
+
+<div class="wrap">
+
+<!-- ============================================================ -->
+<!-- TAB 1: 数据录入 -->
+<!-- ============================================================ -->
+<div id="t-data" class="tc active">
+
+  <!-- 库存 -->
+  <div class="card">
+    <div class="ch">
+      <div class="ct"><span class="ico bl">📦</span>库存源数据</div>
+      <div class="ca">
+        <span class="ib empty" id="inv-badge">未导入</span>
+        <button class="btn b-del b-sm" id="inv-clr-btn" style="display:none" onclick="clrSec('inv')">🗑️ 清除重传</button>
+      </div>
+    </div>
+    <div class="mt">
+      <button class="mtb active" onclick="toMode('inv','up',this)">📁 上传Excel</button>
+      <button class="mtb" onclick="toMode('inv','ps',this)">📋 粘贴文本</button>
+    </div>
+    <div id="inv-up" class="ip show">
+      <div class="uz" id="inv-dz">
+        <div class="ui">📁</div>
+        <div class="ut">点击上传或拖拽Excel文件</div>
+        <div class="us">支持 .xlsx / .xls / .csv</div>
+        <div class="ub">选择文件</div>
+        <input type="file" accept=".xlsx,.xls,.csv" onchange="hdFile(this,'inv')">
+      </div>
+      <div class="ur" id="inv-ur"></div>
+      <div class="st-sel" id="inv-sts"></div>
+      <div class="cm" id="inv-cm">
+        <h4>🔗 字段映射 — 请选择对应的列</h4>
+        <div class="mg">
+          <div class="fg"><label>SKU 列</label><select id="inv-c-sku" onchange="pvMap('inv')"></select></div>
+          <div class="fg"><label>可用量 列</label><select id="inv-c-qty" onchange="pvMap('inv')"></select></div>
+        </div>
+        <div class="pv" id="inv-pv"></div>
+        <div class="bg"><button class="btn b-pri b-sm" onclick="cfMap('inv')">✅ 确认导入</button></div>
+      </div>
+    </div>
+    <div id="inv-ps" class="ip">
+      <div class="inst"><strong>📌 格式</strong>每行：<code>SKU</code> Tab/逗号 <code>可用量</code>，支持从Excel直接复制</div>
+      <textarea id="invRaw" placeholder="SKU001&#9;500&#10;SKU002&#9;300"></textarea>
+      <div class="bg">
+        <button class="btn b-pri" onclick="psInv()">✅ 解析</button>
+        <button class="btn b-out" onclick="ldDemo('inv')">🧪 示例</button>
+      </div>
+    </div>
+    <div class="ur" id="inv-st"></div>
+  </div>
+
+  <!-- 头程 -->
+  <div class="card">
+    <div class="ch">
+      <div class="ct"><span class="ico gr">🚢</span>头程明细（在途库存）</div>
+      <div class="ca">
+        <span class="ib empty" id="tr-badge">未导入</span>
+        <button class="btn b-del b-sm" id="tr-clr-btn" style="display:none" onclick="clrSec('tr')">🗑️ 清除重传</button>
+      </div>
+    </div>
+    <div class="mt">
+      <button class="mtb active" onclick="toMode('tr','up',this)">📁 上传Excel</button>
+      <button class="mtb" onclick="toMode('tr','ps',this)">📋 粘贴文本</button>
+    </div>
+    <div id="tr-up" class="ip show">
+      <div class="uz" id="tr-dz">
+        <div class="ui">📁</div>
+        <div class="ut">点击上传或拖拽Excel文件</div>
+        <div class="us">支持 .xlsx / .xls / .csv</div>
+        <div class="ub">选择文件</div>
+        <input type="file" accept=".xlsx,.xls,.csv" onchange="hdFile(this,'tr')">
+      </div>
+      <div class="ur" id="tr-ur"></div>
+      <div class="st-sel" id="tr-sts"></div>
+      <div class="fs" id="tr-flt">
+        <h4>🔍 数据筛选（可选）</h4>
+        <div class="fd">按列值筛选需要的数据行，再进行字段映射</div>
+        <div id="tr-frows"></div>
+        <div class="bg" style="margin-top:7px">
+          <button class="btn b-sm b-out" onclick="addFlt('tr')">+ 添加筛选</button>
+          <button class="btn b-sm b-pri" onclick="apFlt('tr')">应用筛选</button>
+          <button class="btn b-sm" style="background:#f1f5f9;color:var(--ts)" onclick="clrFlt('tr')">清除</button>
+        </div>
+        <div class="fsum" id="tr-fsum"></div>
+      </div>
+      <div class="cm" id="tr-cm">
+        <h4>🔗 字段映射</h4>
+        <div class="mg">
+          <div class="fg"><label>SKU 列</label><select id="tr-c-sku" onchange="pvMap('tr')"></select></div>
+          <div class="fg"><label>数量 列</label><select id="tr-c-qty" onchange="pvMap('tr')"></select></div>
+          <div class="fg"><label>妥投日期 列</label><select id="tr-c-date" onchange="pvMap('tr')"></select></div>
+        </div>
+        <div class="pv" id="tr-pv"></div>
+        <div class="bg"><button class="btn b-pri b-sm" onclick="cfMap('tr')">✅ 确认导入</button></div>
+      </div>
+    </div>
+    <div id="tr-ps" class="ip">
+      <div class="inst"><strong>📌 格式</strong>每行：<code>SKU</code>  <code>数量</code>  <code>妥投日期(YYYY-MM-DD)</code></div>
+      <textarea id="trRaw" placeholder="SKU001&#9;200&#9;2025-03-15"></textarea>
+      <div class="bg">
+        <button class="btn b-pri" onclick="psTr()">✅ 解析</button>
+        <button class="btn b-out" onclick="ldDemo('tr')">🧪 示例</button>
+      </div>
+    </div>
+    <div class="ur" id="tr-st"></div>
+  </div>
+
+  <!-- 补充数据 -->
+  <div class="card">
+    <div class="ch">
+      <div class="ct"><span class="ico or">✏️</span>补充数据（待发货 / 待分货）</div>
+      <div class="ca">
+        <span class="ib empty" id="sp-badge">未导入</span>
+        <button class="btn b-del b-sm" id="sp-clr-btn" style="display:none" onclick="clrSec('sp')">🗑️ 清除重传</button>
+      </div>
+    </div>
+    <div class="mt">
+      <button class="mtb active" onclick="toMode('sp','up',this)">📁 上传Excel</button>
+      <button class="mtb" onclick="toMode('sp','ps',this)">📋 粘贴文本</button>
+    </div>
+    <div id="sp-up" class="ip show">
+      <div class="uz" id="sp-dz">
+        <div class="ui">📁</div>
+        <div class="ut">点击上传或拖拽Excel文件</div>
+        <div class="us">支持 .xlsx / .xls / .csv</div>
+        <div class="ub">选择文件</div>
+        <input type="file" accept=".xlsx,.xls,.csv" onchange="hdFile(this,'sp')">
+      </div>
+      <div class="ur" id="sp-ur"></div>
+      <div class="st-sel" id="sp-sts"></div>
+      <div class="cm" id="sp-cm">
+        <h4>🔗 字段映射</h4>
+        <div class="mg">
+          <div class="fg"><label>SKU 列</label><select id="sp-c-sku" onchange="pvMap('sp')"></select></div>
+          <div class="fg"><label>待发货 列</label><select id="sp-c-ship" onchange="pvMap('sp')"></select></div>
+          <div class="fg"><label>待分货 列</label><select id="sp-c-alloc" onchange="pvMap('sp')"></select></div>
+        </div>
+        <div class="pv" id="sp-pv"></div>
+        <div class="bg"><button class="btn b-pri b-sm" onclick="cfMap('sp')">✅ 确认导入</button></div>
+      </div>
+    </div>
+    <div id="sp-ps" class="ip">
+      <div class="inst"><strong>📌 格式</strong>每行：<code>SKU</code>  <code>待发货</code>  <code>待分货</code></div>
+      <textarea id="spRaw" placeholder="SKU001&#9;100&#9;50"></textarea>
+      <div class="bg">
+        <button class="btn b-pri" onclick="psSp()">✅ 解析</button>
+        <button class="btn b-out" onclick="ldDemo('sp')">🧪 示例</button>
+      </div>
+    </div>
+    <div class="ur" id="sp-st"></div>
+  </div>
+
+  <!-- 日销 -->
+  <div class="card">
+    <div class="ch">
+      <div class="ct"><span class="ico pk">📊</span>平均日销量</div>
+      <div class="ca">
+        <span class="ib empty" id="sl-badge">未导入</span>
+        <button class="btn b-del b-sm" id="sl-clr-btn" style="display:none" onclick="clrSec('sl')">🗑️ 清除重传</button>
+      </div>
+    </div>
+    <div class="inst"><strong>📌 说明</strong>上传按日维度的销售数据（SKU + 日期 + 销量），系统按所选时间范围计算平均日销。</div>
+    <div class="mt">
+      <button class="mtb active" onclick="toMode('sl','up',this)">📁 上传Excel</button>
+      <button class="mtb" onclick="toMode('sl','ps',this)">📋 粘贴文本</button>
+    </div>
+    <div id="sl-up" class="ip show">
+      <div class="uz" id="sl-dz">
+        <div class="ui">📁</div>
+        <div class="ut">上传日销售数据</div>
+        <div class="us">支持 .xlsx / .xls / .csv</div>
+        <div class="ub">选择文件</div>
+        <input type="file" accept=".xlsx,.xls,.csv" onchange="hdFile(this,'sl')">
+      </div>
+      <div class="ur" id="sl-ur"></div>
+      <div class="st-sel" id="sl-sts"></div>
+      <div class="cm" id="sl-cm">
+        <h4>🔗 字段映射</h4>
+        <div class="mg">
+          <div class="fg"><label>SKU 列</label><select id="sl-c-sku" onchange="pvMap('sl')"></select></div>
+          <div class="fg"><label>日期 列</label><select id="sl-c-date" onchange="pvMap('sl')"></select></div>
+          <div class="fg"><label>销量 列</label><select id="sl-c-qty" onchange="pvMap('sl')"></select></div>
+        </div>
+        <div class="pv" id="sl-pv"></div>
+        <div class="drb show" id="sl-drb">
+          <h5>📅 计算时间范围</h5>
+          <div class="rps" id="sl-rps">
+            <span class="rc active" onclick="setRng('all',this,'up')">全部数据</span>
+            <span class="rc" onclick="setRng(7,this,'up')">最近7天</span>
+            <span class="rc" onclick="setRng(14,this,'up')">最近14天</span>
+            <span class="rc" onclick="setRng(30,this,'up')">最近30天</span>
+            <span class="rc" onclick="setRng(60,this,'up')">最近60天</span>
+            <span class="rc" onclick="setRng(90,this,'up')">最近90天</span>
+            <span class="rc" onclick="setRng('custom',this,'up')">自定义</span>
+          </div>
+          <div class="cr" id="sl-cr-up">
+            <span style="font-size:12px;font-weight:600;color:#9d174d">从</span>
+            <input type="date" id="sl-rs-up">
+            <span style="font-size:12px;font-weight:600;color:#9d174d">至</span>
+            <input type="date" id="sl-re-up">
+          </div>
+          <div class="dri" id="sl-ri-up"></div>
+        </div>
+        <div class="bg"><button class="btn b-pri b-sm" onclick="cfMap('sl')">✅ 计算平均日销</button></div>
+      </div>
+    </div>
+    <div id="sl-ps" class="ip">
+      <div class="inst"><strong>📌 格式</strong>每行：<code>SKU</code>  <code>日期(YYYY-MM-DD)</code>  <code>销量</code></div>
+      <textarea id="slRaw" placeholder="SKU001&#9;2025-01-01&#9;35"></textarea>
+      <div class="drb show" id="sl-drb-ps">
+        <h5>📅 计算时间范围</h5>
+        <div class="rps" id="sl-rps-ps">
+          <span class="rc active" onclick="setRng('all',this,'ps')">全部数据</span>
+          <span class="rc" onclick="setRng(7,this,'ps')">最近7天</span>
+          <span class="rc" onclick="setRng(14,this,'ps')">最近14天</span>
+          <span class="rc" onclick="setRng(30,this,'ps')">最近30天</span>
+          <span class="rc" onclick="setRng(60,this,'ps')">最近60天</span>
+          <span class="rc" onclick="setRng(90,this,'ps')">最近90天</span>
+          <span class="rc" onclick="setRng('custom',this,'ps')">自定义</span>
+        </div>
+        <div class="cr" id="sl-cr-ps">
+          <span style="font-size:12px;font-weight:600;color:#9d174d">从</span>
+          <input type="date" id="sl-rs-ps">
+          <span style="font-size:12px;font-weight:600;color:#9d174d">至</span>
+          <input type="date" id="sl-re-ps">
+        </div>
+        <div class="dri" id="sl-ri-ps"></div>
+      </div>
+      <div class="bg">
+        <button class="btn b-pri" onclick="psSl()">✅ 计算平均日销</button>
+        <button class="btn b-out" onclick="ldDemo('sl')">🧪 示例</button>
+      </div>
+    </div>
+    <div class="ur" id="sl-st"></div>
+  </div>
+
+  <hr class="div">
+
+  <!-- 计算 -->
+  <div class="card" style="border:2px solid var(--pri);background:#fafbff">
+    <div class="ct" style="margin-bottom:12px"><span class="ico pu">⚡</span>一键综合计算</div>
+    <p style="font-size:13px;color:var(--ts);margin-bottom:14px">确认以上数据已导入后，点击执行汇总计算，自动跳转至周转分析页。</p>
+    <button class="btn b-ok" onclick="calc()" style="font-size:15px;padding:13px 32px">🚀 执行综合计算</button>
+  </div>
+
+  <div class="card" id="dpCard" style="display:none">
+    <div class="ct" style="margin-bottom:14px"><span class="ico bl">👁️</span>数据导入总览</div>
+    <div id="dpContent"></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB 2: 库存周转 -->
+<!-- ============================================================ -->
+<div id="t-turn" class="tc">
+  <div class="sg">
+    <div class="sc"><div class="sl">SKU 总数</div><div class="sv" id="z1">—</div></div>
+    <div class="sc g"><div class="sl">在库总量</div><div class="sv" id="z2">—</div></div>
+    <div class="sc o"><div class="sl">在途总量</div><div class="sv" id="z3">—</div></div>
+    <div class="sc p"><div class="sl">预计总供应</div><div class="sv" id="z4">—</div></div>
+    <div class="sc"><div class="sl">平均日销</div><div class="sv" id="z5">—</div></div>
+    <div class="sc r"><div class="sl">平均可售天数</div><div class="sv" id="z6">—</div></div>
+  </div>
+  <div class="card">
+    <div class="ct" style="margin-bottom:14px"><span class="ico bl">📊</span>SKU 库存周转明细</div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>SKU</th><th>在库量</th><th>在途量</th><th>待发货</th><th>待分货</th><th>总供应量</th><th>平均日销</th><th>可售天数</th><th>状态</th></tr></thead>
+        <tbody id="toB"><tr><td colspan="9"><div class="es"><div class="ei">📭</div><p>请先在"数据录入"导入数据并执行计算</p></div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card" id="tlC" style="display:none">
+    <div class="ct" style="margin-bottom:14px"><span class="ico gr">🚢</span>头程到货时间线</div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>SKU</th><th>数量</th><th>预计妥投日期</th><th>距今天数</th><th>状态</th></tr></thead>
+        <tbody id="tlB"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB 3: 目标预测 -->
+<!-- ============================================================ -->
+<div id="t-fc" class="tc">
+  <div class="sg">
+    <div class="sc"><div class="sl">SKU 总数</div><div class="sv" id="y1">—</div></div>
+    <div class="sc r"><div class="sl">≤30天售罄</div><div class="sv" id="y2">—</div></div>
+    <div class="sc g"><div class="sl">库存健康</div><div class="sv" id="y3">—</div></div>
+    <div class="sc o"><div class="sl">需补货SKU</div><div class="sv" id="y4">—</div></div>
+  </div>
+  <div class="card">
+    <div class="ct" style="margin-bottom:14px"><span class="ico or">📈</span>库存预测 & 补货建议</div>
+    <div class="inst">基于可周转库存（总供应量）和平均日销，计算预计售罄时间，并给出补货建议。</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+      <label style="font-size:13px;font-weight:600">补货目标：</label>
+      <input type="number" id="rMn" value="30" min="1" style="width:65px"> 天 ~
+      <input type="number" id="rMx" value="45" min="1" style="width:65px"> 天
+      <button class="btn b-sm b-pri" onclick="doFC()">🔄 刷新</button>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>SKU</th><th>总供应量</th><th>平均日销</th><th>可售天数</th><th>预计售罄</th><th>紧急程度</th><th>补货量(低)</th><th>补货量(高)</th></tr></thead>
+        <tbody id="fcB"><tr><td colspan="8"><div class="es"><div class="ei">📭</div><p>请先执行综合计算</p></div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB 4: 目标监控 -->
+<!-- ============================================================ -->
+<div id="t-mon" class="tc">
+  <div class="card">
+    <div class="ct" style="margin-bottom:14px"><span class="ico pu">🎯</span>月度目标监控</div>
+    <div class="inst"><strong>📌 说明</strong>选择月份 → 为各SKU设定目标 → 录入实际销量 → 自动计算达成率</div>
+    <div class="g3" style="margin-bottom:16px">
+      <div class="fg"><label>监控月份</label><input type="month" id="monMo" onchange="ldMon()"></div>
+      <div class="fg"><label>操作</label>
+        <div style="display:flex;gap:7px">
+          <button class="btn b-sm b-pri" onclick="saveMon()">💾 保存</button>
+          <button class="btn b-sm b-out" onclick="batchTgt()">📋 批量设目标</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sg">
+    <div class="sc"><div class="sl">本月总目标</div><div class="sv" id="x1">—</div></div>
+    <div class="sc g"><div class="sl">实际销量</div><div class="sv" id="x2">—</div></div>
+    <div class="sc o"><div class="sl">总体达成率</div><div class="sv" id="x3">—</div></div>
+    <div class="sc"><div class="sl">达标SKU</div><div class="sv" id="x4">—</div></div>
+  </div>
+  <div class="card">
+    <div class="ct" style="margin-bottom:14px"><span class="ico pu">📊</span>SKU 达成明细</div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>SKU</th><th>月度目标</th><th>实际销量</th><th>达成率</th><th>进度</th><th>差额</th><th>状态</th></tr></thead>
+        <tbody id="monB"><tr><td colspan="7"><div class="es"><div class="ei">📭</div><p>请选择月份并设定目标</p></div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB 5: 渠道分析 -->
+<!-- ============================================================ -->
+<div id="t-ch" class="tc">
+  <div class="card">
+    <div class="ch">
+      <div class="ct"><span class="ico bl">📊</span>渠道销售数据导入</div>
+      <div class="ca">
+        <div id="chTags" style="display:flex;flex-wrap:wrap;gap:4px;align-items:center"><span style="font-size:12px;color:var(--ts)">暂无数据</span></div>
+        <button class="btn b-del b-sm" onclick="clrCh()">🗑️ 清空渠道数据</button>
+      </div>
+    </div>
+    <div class="g2" style="margin-bottom:14px">
+      <div class="fg"><label>本次上传对应月份</label><input type="month" id="chMo"></div>
+    </div>
+    <div class="uz" id="ch-dz">
+      <div class="ui">📁</div>
+      <div class="ut">上传渠道销售文件</div>
+      <div class="us">支持 .xlsx / .xls / .csv</div>
+      <div class="ub">选择文件</div>
+      <input type="file" accept=".xlsx,.xls,.csv" onchange="onChFile(this)">
+    </div>
+    <div class="ur" id="ch-ur"></div>
+    <div class="cm" id="ch-cm">
+      <h4>🔗 字段映射</h4>
+      <div class="mg">
+        <div class="fg"><label>渠道名称 列</label><select id="ch-c-ch" onchange="pvCh()"></select></div>
+        <div class="fg"><label>产品/SKU 列（可选）</label><select id="ch-c-prod" onchange="pvCh()"></select></div>
+        <div class="fg"><label>销售数量 列</label><select id="ch-c-qty" onchange="pvCh()"></select></div>
+        <div class="fg"><label>销售金额 列（可选）</label><select id="ch-c-amt" onchange="pvCh()"></select></div>
+      </div>
+      <div class="pv" id="ch-pv"></div>
+      <div class="bg"><button class="btn b-pri b-sm" onclick="cfCh()">✅ 确认导入</button></div>
+    </div>
+    <div class="ur" id="ch-st"></div>
+  </div>
+
+  <div id="chResult" style="display:none">
+    <div class="ch-tab">
+      <div class="ch-tab-btn active" onclick="swChTab('qty',this)">📦 数量对比</div>
+      <div class="ch-tab-btn" onclick="swChTab('amt',this)">💰 金额对比</div>
+    </div>
+    <div class="card" id="ch-qty-card">
+      <div class="ct" style="margin-bottom:14px"><span class="ico bl">📦</span>各渠道销量对比（按月）</div>
+      <div class="tw"><div id="chQtyTbl"></div></div>
+    </div>
+    <div class="card" id="ch-amt-card" style="display:none">
+      <div class="ct" style="margin-bottom:14px"><span class="ico gr">💰</span>各渠道销售额对比（按月）</div>
+      <div class="tw"><div id="chAmtTbl"></div></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end wrap -->
+
+<!-- 批量目标弹窗 -->
+<div class="mo" id="bModal">
+  <div class="mb">
+    <h3>📋 批量设置月度目标</h3>
+    <div class="inst" style="margin-bottom:12px">格式：<code>SKU</code>  <code>目标量</code>  <code>实际销量(可选)</code>，每行一条</div>
+    <div class="uz" style="padding:14px;margin-bottom:10px">
+      <div class="ut" style="font-size:13px">📁 上传Excel文件</div>
+      <input type="file" accept=".xlsx,.xls,.csv" onchange="bFile(this)">
+    </div>
+    <div class="fg"><label>或直接粘贴</label>
+      <textarea id="bRaw" placeholder="SKU001&#9;600&#9;0" style="min-height:160px"></textarea>
+    </div>
+    <div class="bg">
+      <button class="btn b-pri" onclick="apBatch()">✅ 确认导入</button>
+      <button class="btn b-out" onclick="closeBM()">取消</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ================================================================
+// GLOBAL STATE
+// ================================================================
+var D={
+  inv:{},       // {sku: qty}
+  trList:[],    // [{sku,qty,date}]
+  trS:{},       // {sku: totalQty}
+  pShip:{},     // {sku: qty}
+  pAlloc:{},    // {sku: qty}
+  avgD:{},      // {sku: avgDailySales}
+  slRaw:[],     // [{sku,date,qty}]
+  comp:{},      // computed: {sku:{oh,it,ps,pa,ts,avg}}
+  mon:{},       // monitor: {month:{sku:{t,a}}}
+};
+var FD={};      // file data per section
+var slRng={mode:'all',start:null,end:null};
+var chFD={wb:null,h:[],d:[]};
+var chStore={}; // {moKey: {qty:[{ch,prod,qty}], amt:[{ch,prod,amt}]}}
+
+// ================================================================
+// UTILITIES
+// ================================================================
+function eH(s){if(!s&&s!==0)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function pN(v){if(v==null)return 0;var n=parseFloat(String(v).replace(/[,，\s]/g,''));return isNaN(n)?0:n;}
+function pD(v){
+  if(!v)return null;
+  if(v instanceof Date)return isNaN(v.getTime())?null:v;
+  if(typeof v==='number'){var d=new Date((v-25569)*86400000);return isNaN(d.getTime())?null:d;}
+  var s=String(v).replace(/\//g,'-').trim();var d=new Date(s);return isNaN(d.getTime())?null:d;
+}
+function fD(d){if(!d)return'—';return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function fN(n){if(n===undefined||n===null||n===''||isNaN(n))return'—';return Number(n).toLocaleString('zh-CN');}
+function spl(line){return line.trim()?line.trim().split(/[\t,]+|\s{2,}/).map(s=>s.trim()).filter(Boolean):[];}
+function isHdr(p){var kw=['sku','可用','数量','quantity','qty','库存','stock','日期','date','待发','待分','日销','amount','渠道','channel','销售'];return p.some(c=>kw.some(k=>String(c).toLowerCase().includes(k)));}
+function sS(id,msg,type){var el=document.getElementById(id);if(!el)return;el.className='ur show '+(type==='ok'?'ok':'err');el.innerHTML=(type==='ok'?'✅ ':'❌ ')+msg;}
+function hS(id){var el=document.getElementById(id);if(el)el.classList.remove('show');}
+function nowStr(){var d=new Date();return d.getMonth()+1+'/'+d.getDate()+' '+d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');}
+
+// ================================================================
+// TAB SWITCHING
+// ================================================================
+function swTab(id,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+function toMode(sec,mode,btn){
+  btn.parentElement.querySelectorAll('.mtb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(sec+'-up').classList.toggle('show',mode==='up');
+  document.getElementById(sec+'-ps').classList.toggle('show',mode==='ps');
+}
+function swChTab(tab,btn){
+  document.querySelectorAll('.ch-tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ch-qty-card').style.display=tab==='qty'?'':'none';
+  document.getElementById('ch-amt-card').style.display=tab==='amt'?'':'none';
+}
+
+// ================================================================
+// FILE UPLOAD ENGINE
+// ================================================================
+var SEC_HDRS={
+  inv:{sku:['sku','SKU','编码','产品','商品','ASIN','asin','FNSKU','fnsku','货号','MSKU','msku','品名'],qty:['可用','库存','在库','available','qty','quantity','stock','数量','可售','现有']},
+  tr:{sku:['sku','SKU','编码','产品','商品','ASIN','FNSKU','货号','MSKU','品名'],qty:['数量','qty','quantity','件数','amount','发货'],date:['日期','妥投','到货','预计','date','delivery','eta','ETA','到达','签收']},
+  sp:{sku:['sku','SKU','编码','产品','商品','ASIN','FNSKU','货号','MSKU','品名'],ship:['待发','发货','pending','ship','待出'],alloc:['待分','分货','分配','alloc']},
+  sl:{sku:['sku','SKU','编码','产品','商品','ASIN','FNSKU','货号','MSKU','品名'],date:['日期','date','时间','创建','发生','销售日'],qty:['销量','销售','数量','qty','quantity','件数','amount','count']}
+};
+
+function hdFile(input,sec){
+  var file=input.files[0];if(!file)return;
+  if(!FD[sec])FD[sec]={wb:null,allRows:[],rows:[],hd:[],cur:0,flt:{}};
+  sS(sec+'-ur','正在读取…','ok');
+  var r=new FileReader();
+  r.onload=function(e){
+    try{
+      var wb=XLSX.read(new Uint8Array(e.target.result),{type:'array',cellDates:true});
+      FD[sec].wb=wb;
+      renderStTabs(sec,wb);
+      ldSheet(sec,0);
+      sS(sec+'-ur','"'+file.name+'" 读取成功，共'+wb.SheetNames.length+'个工作表','ok');
+    }catch(err){sS(sec+'-ur','解析失败：'+err.message,'err');}
+  };
+  r.readAsArrayBuffer(file);
+}
+
+function renderStTabs(sec,wb){
+  var el=document.getElementById(sec+'-sts');
+  if(wb.SheetNames.length<=1){el.innerHTML='';return;}
+  var h='<div style="margin-bottom:7px;font-size:12px;color:var(--ts);font-weight:600">选择工作表：</div>';
+  wb.SheetNames.forEach(function(n,i){h+='<span class="st'+(i===0?' active':'')+'" onclick="selSt(\''+sec+'\','+i+',this)">'+eH(n)+'</span>';});
+  el.innerHTML=h;
+}
+function selSt(sec,idx,el){
+  el.parentElement.querySelectorAll('.st').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  ldSheet(sec,idx);
+}
+function ldSheet(sec,idx){
+  var wb=FD[sec].wb,ws=wb.Sheets[wb.SheetNames[idx]];
+  var json=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+  if(!json.length){sS(sec+'-ur','工作表为空','err');return;}
+  FD[sec].cur=idx;
+  var hi=0;
+  for(var i=0;i<Math.min(json.length,6);i++){var c=0;for(var j=0;j<json[i].length;j++)if(json[i][j]!=='')c++;if(c>=2){hi=i;break;}}
+  var hd=[];
+  for(var i=0;i<json[hi].length;i++){var nm=String(json[hi][i]||'').trim();if(nm)hd.push({idx:i,name:nm});}
+  var rows=json.slice(hi+1).filter(r=>r.some(c=>c!==''));
+  FD[sec].hd=hd;
+  FD[sec].allRows=rows;
+  FD[sec].rows=rows;
+  popSels(sec,hd);
+  autoMatch(sec,hd);
+  if(sec==='tr'){
+    var fEl=document.getElementById('tr-flt');
+    if(fEl)fEl.classList.add('show');
+    buildFltSels(sec,hd);
+  }
+  document.getElementById(sec+'-cm').classList.add('show');
+  pvMap(sec);
+}
+
+function popSels(sec,hd){
+  var sels=document.querySelectorAll('[id^="'+sec+'-c-"]');
+  sels.forEach(function(sel){
+    var cur=sel.value;
+    sel.innerHTML='<option value="">— 请选择 —</option>';
+    hd.forEach(function(h){sel.innerHTML+='<option value="'+h.idx+'">'+eH(h.name)+'</option>';});
+    if(cur)sel.value=cur;
+  });
+}
+function autoMatch(sec,hd){
+  var rules=SEC_HDRS[sec];if(!rules)return;
+  for(var field in rules){
+    var sel=document.getElementById(sec+'-c-'+field);if(!sel)continue;
+    var kws=rules[field],matched=false;
+    for(var i=0;i<hd.length&&!matched;i++){
+      var nm=hd[i].name.toLowerCase();
+      if(kws.some(k=>nm.includes(k.toLowerCase()))){sel.value=hd[i].idx;matched=true;}
+    }
+    var lbl=sel.parentElement.querySelector('label');
+    if(lbl){var ot=lbl.querySelector('.mtag');if(ot)ot.remove();if(matched){var t=document.createElement('span');t.className='mtag';t.textContent='✓ 自动匹配';lbl.appendChild(t);}}
+  }
+}
+
+function cDS(row,colIdx){
+  if(colIdx===null||colIdx===undefined||colIdx==='')return'';
+  var v=row[colIdx];
+  if(v===''||v===null||v===undefined)return'';
+  if(v instanceof Date&&!isNaN(v.getTime()))return fD(v);
+  if(typeof v==='number'){var d=pD(v);return d?fD(d):String(v);}
+  return String(v).trim();
+}
+
+function pvMap(sec){
+  var fd=FD[sec];if(!fd||!fd.rows||!fd.rows.length)return;
+  var hd=fd.hd,rows=fd.rows;
+  var sels=document.querySelectorAll('[id^="'+sec+'-c-"]');
+  var cols={},cNames={};
+  sels.forEach(function(sel){
+    var f=sel.id.replace(sec+'-c-','');
+    var v=sel.value!==''?parseInt(sel.value):null;
+    cols[f]=v;
+    if(v!==null&&v!==undefined){var o=sel.options[sel.selectedIndex];cNames[f]=o?o.text:'';}
+  });
+  var fMap={sku:'SKU',qty:'数量/可用量',date:'日期',ship:'待发货',alloc:'待分货',ch:'渠道',prod:'产品',amt:'金额'};
+  var h='<table><thead><tr>';
+  for(var f in cols){if(cols[f]===null)continue;h+='<th>'+eH(fMap[f]||f)+'<br><span style="font-weight:400;color:var(--ts);font-size:10px">←'+eH(cNames[f]||'')+'</span></th>';}
+  h+='</tr></thead><tbody>';
+  var pvRows=rows.slice(0,5);
+  for(var i=0;i<pvRows.length;i++){
+    h+='<tr>';
+    for(var f in cols){
+      if(cols[f]===null)continue;
+      var val=pvRows[i][cols[f]]!==undefined?pvRows[i][cols[f]]:'';
+      if(f==='date'||f==='date')val=cDS(pvRows[i],cols[f])||val;
+      h+='<td>'+eH(String(val).slice(0,40))+'</td>';
+    }
+    h+='</tr>';
+  }
+  h+='</tbody></table>';
+  if(rows.length>5)h+='<div style="text-align:center;font-size:11px;color:var(--ts);margin-top:3px">共'+rows.length+'行，预览前5行</div>';
+  document.getElementById(sec+'-pv').innerHTML=h;
+}
+
+function gC(id){var el=document.getElementById(id);return el&&el.value!==''?parseInt(el.value):null;}
+
+function cfMap(sec){
+  var fd=FD[sec];if(!fd||!fd.rows||!fd.rows.length)return alert('没有数据');
+  var rows=fd.rows;
+  if(sec==='inv'){
+    var sc=gC('inv-c-sku'),qc=gC('inv-c-qty');
+    if(sc===null||qc===null)return alert('请选择SKU和可用量列');
+    D.inv={};
+    var cnt=0;
+    rows.forEach(function(r){var sku=String(r[sc]||'').trim();if(!sku)return;D.inv[sku]=(D.inv[sku]||0)+pN(r[qc]);cnt++;});
+    var total=Object.values(D.inv).reduce((a,b)=>a+b,0);
+    sS('inv-st','导入'+Object.keys(D.inv).length+'个SKU，共'+fN(total)+'件（'+cnt+'行）','ok');
+    updBadge('inv',Object.keys(D.inv).length+'个SKU');
+    showDP('库存源数据',Object.keys(D.inv).length+'个SKU，'+fN(total)+'件','gr');
+  } else if(sec==='tr'){
+    var sc=gC('tr-c-sku'),qc=gC('tr-c-qty'),dc=gC('tr-c-date');
+    if(sc===null||qc===null)return alert('请至少选择SKU和数量列');
+    D.trList=[];D.trS={};
+    rows.forEach(function(r){
+      var sku=String(r[sc]||'').trim();if(!sku)return;
+      var qty=pN(r[qc]),date=dc!==null?pD(r[dc]):null;
+      D.trList.push({sku,qty,date});
+      D.trS[sku]=(D.trS[sku]||0)+qty;
+    });
+    sS('tr-st','导入'+D.trList.length+'条记录，'+Object.keys(D.trS).length+'个SKU','ok');
+    updBadge('tr',D.trList.length+'条记录');
+    showDP('头程明细',D.trList.length+'条，'+Object.keys(D.trS).length+'个SKU','bl');
+  } else if(sec==='sp'){
+    var sc=gC('sp-c-sku'),shc=gC('sp-c-ship'),alc=gC('sp-c-alloc');
+    if(sc===null)return alert('请至少选择SKU列');
+    D.pShip={};D.pAlloc={};
+    rows.forEach(function(r){
+      var sku=String(r[sc]||'').trim();if(!sku)return;
+      if(shc!==null)D.pShip[sku]=(D.pShip[sku]||0)+pN(r[shc]);
+      if(alc!==null)D.pAlloc[sku]=(D.pAlloc[sku]||0)+pN(r[alc]);
+    });
+    sS('sp-st','导入'+Object.keys(D.pShip).length+'个SKU','ok');
+    updBadge('sp',Object.keys(D.pShip).length+'个SKU');
+    showDP('补充数据',Object.keys(D.pShip).length+'个SKU','or');
+  } else if(sec==='sl'){
+    var sc=gC('sl-c-sku'),dc=gC('sl-c-date'),qc=gC('sl-c-qty');
+    if(sc===null||dc===null||qc===null)return alert('请选择SKU、日期、销量三列');
+    D.slRaw=[];
+    rows.forEach(function(r){
+      var sku=String(r[sc]||'').trim();if(!sku)return;
+      var date=pD(r[dc]),qty=pN(r[qc]);
+      if(date)D.slRaw.push({sku,date,qty});
+    });
+    calcAvgD();
+  }
+}
+
+function updBadge(sec,msg){
+  var el=document.getElementById(sec+'-badge');
+  if(el){el.className='ib';el.textContent='✅ '+msg;}
+  var btn=document.getElementById(sec+'-clr-btn');
+  if(btn)btn.style.display='';
+}
+
+function showDP(title,msg,cls){
+  var card=document.getElementById('dpCard');card.style.display='block';
+  var el=document.getElementById('dpContent');
+  var colorMap={gr:'var(--ok-l)',bl:'#dbeafe',or:'var(--warn-l)',pu:'var(--purple-l)'};
+  var item='<div style="background:'+colorMap[cls]+';padding:10px 14px;border-radius:8px;margin-bottom:7px;font-size:13px"><strong>'+eH(title)+'：</strong>'+msg+' ✅</div>';
+  var replaced=false;
+  el.querySelectorAll('div').forEach(function(d){if(d.innerHTML.includes(title+'：')){d.outerHTML=item;replaced=true;}});
+  if(!replaced)el.innerHTML=item+el.innerHTML;
+}
+
+function clrSec(sec){
+  var secMap={inv:{keys:['inv'],store:['inv'],data:{}},tr:{keys:['tr'],store:['trList','trS'],list:true},sp:{keys:['sp'],store:['pShip','pAlloc']},sl:{keys:['sl'],store:['slRaw','avgD']}};
+  if(sec==='inv')D.inv={};
+  else if(sec==='tr'){D.trList=[];D.trS={};}
+  else if(sec==='sp'){D.pShip={};D.pAlloc={};}
+  else if(sec==='sl'){D.slRaw=[];D.avgD={};}
+  delete FD[sec];
+  hS(sec+'-ur');hS(sec+'-st');
+  var cm=document.getElementById(sec+'-cm');if(cm)cm.classList.remove('show');
+  var sts=document.getElementById(sec+'-sts');if(sts)sts.innerHTML='';
+  var badge=document.getElementById(sec+'-badge');
+  if(badge){badge.className='ib empty';badge.textContent='未导入';}
+  var btn=document.getElementById(sec+'-clr-btn');if(btn)btn.style.display='none';
+}
+
+// ================================================================
+// PASTE PARSERS
+// ================================================================
+function psInv(){
+  var raw=document.getElementById('invRaw').value.trim();if(!raw)return alert('请粘贴库存数据');
+  D.inv={};var cnt=0;
+  raw.split('\n').forEach(function(line){
+    var p=spl(line);if(p.length<2)return;
+    if(!cnt&&isHdr(p))return;
+    D.inv[p[0]]=(D.inv[p[0]]||0)+pN(p[1]);cnt++;
+  });
+  var t=Object.values(D.inv).reduce((a,b)=>a+b,0);
+  sS('inv-st','解析成功：'+Object.keys(D.inv).length+'个SKU，'+fN(t)+'件','ok');
+  updBadge('inv',Object.keys(D.inv).length+'个SKU');
+  showDP('库存源数据',Object.keys(D.inv).length+'个SKU','gr');
+}
+function psTr(){
+  var raw=document.getElementById('trRaw').value.trim();if(!raw)return alert('请粘贴头程数据');
+  D.trList=[];D.trS={};
+  raw.split('\n').forEach(function(line){
+    var p=spl(line);if(p.length<2)return;
+    if(!D.trList.length&&isHdr(p))return;
+    var date=p.length>=3?pD(p[2]):null;
+    D.trList.push({sku:p[0],qty:pN(p[1]),date});
+    D.trS[p[0]]=(D.trS[p[0]]||0)+pN(p[1]);
+  });
+  sS('tr-st','解析成功：'+D.trList.length+'条记录','ok');
+  updBadge('tr',D.trList.length+'条记录');
+  showDP('头程明细',D.trList.length+'条','bl');
+}
+function psSp(){
+  var raw=document.getElementById('spRaw').value.trim();if(!raw)return alert('请粘贴数据');
+  D.pShip={};D.pAlloc={};
+  raw.split('\n').forEach(function(line){
+    var p=spl(line);if(p.length<3)return;
+    if(!Object.keys(D.pShip).length&&isHdr(p))return;
+    D.pShip[p[0]]=(D.pShip[p[0]]||0)+pN(p[1]);
+    D.pAlloc[p[0]]=(D.pAlloc[p[0]]||0)+pN(p[2]);
+  });
+  sS('sp-st','解析成功：'+Object.keys(D.pShip).length+'个SKU','ok');
+  updBadge('sp',Object.keys(D.pShip).length+'个SKU');
+  showDP('补充数据',Object.keys(D.pShip).length+'个SKU','or');
+}
+function psSl(){
+  var raw=document.getElementById('slRaw').value.trim();if(!raw)return alert('请粘贴数据');
+  D.slRaw=[];var cnt=0;
+  raw.split('\n').forEach(function(line){
+    var p=spl(line);if(p.length<3)return;
+    if(!cnt&&isHdr(p))return;
+    var date=pD(p[1]);if(!date)return;
+    D.slRaw.push({sku:p[0],date,qty:pN(p[2])});cnt++;
+  });
+  calcAvgD('ps');
+}
+
+// ================================================================
+// DATE RANGE
+// ================================================================
+function setRng(val,btn,mode){
+  var cont=btn.closest('.drb');
+  cont.querySelectorAll('.rc').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  var cr=document.getElementById('sl-cr-'+mode);
+  if(cr)cr.classList.toggle('show',val==='custom');
+  slRng.mode=val;
+}
+
+function getRange(mode){
+  var m=slRng.mode;
+  if(m==='all')return{start:null,end:null};
+  if(m==='custom'){
+    var s=document.getElementById('sl-rs-'+mode).value;
+    var e=document.getElementById('sl-re-'+mode).value;
+    return{start:s?new Date(s):null,end:e?new Date(e):null};
+  }
+  var days=parseInt(m);var end=new Date();var start=new Date();start.setDate(start.getDate()-days);
+  return{start,end};
+}
+
+function calcAvgD(mode){
+  mode=mode||'up';
+  var rng=getRange(mode);
+  var filtered=D.slRaw;
+  if(rng.start||rng.end){
+    filtered=D.slRaw.filter(function(r){
+      if(rng.start&&r.date<rng.start)return false;
+      if(rng.end&&r.date>rng.end)return false;
+      return true;
+    });
+  }
+  if(!filtered.length){sS('sl-st','未找到符合时间范围的数据','err');return;}
+  // Group by SKU then compute avg
+  var byDate={};// {sku:{date:qty}}
+  filtered.forEach(function(r){
+    var dk=fD(r.date);
+    if(!byDate[r.sku])byDate[r.sku]={};
+    byDate[r.sku][dk]=(byDate[r.sku][dk]||0)+r.qty;
+  });
+  D.avgD={};
+  for(var sku in byDate){
+    var dates=Object.keys(byDate[sku]);
+    var total=Object.values(byDate[sku]).reduce((a,b)=>a+b,0);
+    D.avgD[sku]=total/dates.length;
+  }
+  var skuCnt=Object.keys(D.avgD).length;
+  var info='已选'+filtered.length+'条记录，'+(rng.start?fD(rng.start):'最早')+'至'+(rng.end?fD(rng.end):'最新');
+  sS('sl-st','计算完成：'+skuCnt+'个SKU，'+info,'ok');
+  updBadge('sl',skuCnt+'个SKU');
+  showDP('平均日销量',skuCnt+'个SKU','pk'||'pu');
+  var ri=document.getElementById('sl-ri-'+(mode==='up'?'up':'ps'));
+  if(ri){ri.className='dri show';ri.textContent=info;}
+}
+
+// ================================================================
+// FILTER (for transit)
+// ================================================================
+var fltState={tr:{cols:{},vals:{},applied:{}}};
+
+function buildFltSels(sec,hd){
+  fltState[sec]={cols:{},vals:{},applied:{}};
+}
+function addFlt(sec){
+  var fd=FD[sec];if(!fd||!fd.hd)return;
+  var hd=fd.hd;
+  var cont=document.getElementById(sec+'-frows');
+  var id='flt-'+sec+'-'+Date.now();
+  var opts='<option value="">— 选择列 —</option>';
+  hd.forEach(function(h){opts+='<option value="'+h.idx+'">'+eH(h.name)+'</option>';});
+  var row='<div class="fr" id="'+id+'"><div class="frh"><select onchange="ldFV(\''+sec+'\',\''+id+'\',this)">'+opts+'</select><button class="frm" onclick="rmFlt(\''+id+'\')">✕</button></div><div class="fvb" id="fvb-'+id+'"><div class="fqa"><button onclick="selAll(\''+id+'\',true)">全选</button><button onclick="selAll(\''+id+'\',false)">取消</button><input class="fqs" type="text" placeholder="搜索…" oninput="srchCB(\''+id+'\',this.value)"></div><div class="fvl" id="fvl-'+id+'"></div></div></div>';
+  cont.insertAdjacentHTML('beforeend',row);
+}
+function rmFlt(id){var el=document.getElementById(id);if(el)el.remove();}
+function ldFV(sec,id,sel){
+  var fd=FD[sec];if(!fd||!fd.allRows)return;
+  var colIdx=sel.value!==''?parseInt(sel.value):null;if(colIdx===null)return;
+  var isDate=fd.hd.find(h=>h.idx===colIdx);
+  var vals={};
+  fd.allRows.forEach(function(r){
+    var v=r[colIdx];
+    var disp;
+    if(v===''||v===null||v===undefined){disp='__EMPTY__';}
+    else if(v instanceof Date){disp=fD(v);}
+    else if(typeof v==='number'&&isDate&&/日|date/i.test((isDate.name||''))){var d=pD(v);disp=d?fD(d):String(v);}
+    else{disp=String(v).trim();}
+    vals[disp]=(vals[disp]||0)+1;
+  });
+  var keys=Object.keys(vals).sort();
+  var h='';
+  // Empty first
+  if(vals['__EMPTY__']){h+='<div class="fcbi"><input type="checkbox" value="__EMPTY__" checked id="cb-'+id+'-__EMPTY__"><label for="cb-'+id+'-__EMPTY__" style="color:var(--ts);font-style:italic">（空白）('+vals['__EMPTY__']+')</label></div>';}
+  keys.filter(k=>k!=='__EMPTY__').forEach(function(v){h+='<div class="fcbi"><input type="checkbox" value="'+eH(v)+'" checked id="cb-'+id+'-'+eH(v).replace(/[^a-zA-Z0-9]/g,'_')+'"><label>'+eH(v)+' ('+vals[v]+')</label></div>';});
+  document.getElementById('fvl-'+id).innerHTML=h;
+  document.getElementById('fvb-'+id).classList.add('show');
+}
+function selAll(id,on){document.getElementById('fvb-'+id).querySelectorAll('input[type="checkbox"]').forEach(c=>{c.checked=on;});}
+function srchCB(id,q){
+  document.getElementById('fvb-'+id).querySelectorAll('.fcbi').forEach(function(item){
+    var lbl=item.querySelector('label');var t=(lbl?lbl.textContent:'').toLowerCase();
+    item.style.display=(q&&!t.includes(q.toLowerCase()))?'none':'';
+  });
+}
+function apFlt(sec){
+  var fd=FD[sec];if(!fd)return;
+  var rows=document.querySelectorAll('#'+sec+'-frows .fr');
+  var filters=[];
+  rows.forEach(function(row){
+    var sel=row.querySelector('select');var colIdx=sel&&sel.value!==''?parseInt(sel.value):null;if(colIdx===null)return;
+    var checked=[],includeEmpty=false;
+    row.querySelectorAll('input[type="checkbox"]:checked').forEach(function(cb){
+      if(cb.value==='__EMPTY__')includeEmpty=true;else checked.push(cb.value);
+    });
+    filters.push({colIdx,vals:new Set(checked),includeEmpty});
+  });
+  if(!filters.length){fd.rows=fd.allRows;document.getElementById(sec+'-fsum').classList.remove('show');pvMap(sec);return;}
+  var res=fd.allRows.filter(function(row){
+    return filters.every(function(f){
+      var v=row[f.colIdx];
+      if(v===''||v===null||v===undefined)return f.includeEmpty;
+      var disp;
+      if(v instanceof Date){disp=fD(v);}
+      else if(typeof v==='number'&&f.vals.size>0){var d=pD(v);disp=d?fD(d):String(v);}
+      else{disp=String(v).trim();}
+      return f.vals.has(disp)||f.includeEmpty&&disp==='';
+    });
+  });
+  fd.rows=res;
+  var sum='筛选后 '+res.length+' 行（原 '+fd.allRows.length+' 行）';
+  document.getElementById(sec+'-fsum').className='fsum show';
+  document.getElementById(sec+'-fsum').textContent=sum;
+  pvMap(sec);
+}
+function clrFlt(sec){
+  var fd=FD[sec];if(fd){fd.rows=fd.allRows;}
+  document.getElementById(sec+'-frows').innerHTML='';
+  var s=document.getElementById(sec+'-fsum');if(s)s.classList.remove('show');
+  pvMap(sec);
+}
+
+// ================================================================
+// DEMO DATA
+// ================================================================
+function ldDemo(sec){
+  if(sec==='inv')document.getElementById('invRaw').value='SKU-A001\t1500\nSKU-A002\t800\nSKU-B001\t2200\nSKU-B002\t450\nSKU-C001\t3100';
+  if(sec==='tr')document.getElementById('trRaw').value='SKU-A001\t500\t2025-03-10\nSKU-A001\t300\t2025-03-25\nSKU-A002\t400\t2025-03-15\nSKU-B001\t600\t2025-03-20\nSKU-B002\t200\t2025-04-01\nSKU-C001\t800\t2025-03-18';
+  if(sec==='sp')document.getElementById('spRaw').value='SKU-A001\t100\t200\nSKU-A002\t50\t80\nSKU-B001\t200\t150\nSKU-B002\t30\t50\nSKU-C001\t150\t300';
+  if(sec==='sl')document.getElementById('slRaw').value='SKU-A001\t2025-02-01\t35\nSKU-A001\t2025-02-02\t32\nSKU-A001\t2025-02-03\t38\nSKU-A002\t2025-02-01\t20\nSKU-A002\t2025-02-02\t24\nSKU-B001\t2025-02-01\t45\nSKU-B001\t2025-02-02\t42\nSKU-B002\t2025-02-01\t12\nSKU-B002\t2025-02-02\t14\nSKU-C001\t2025-02-01\t55\nSKU-C001\t2025-02-02\t52';
+}
+
+// ================================================================
+// CALCULATE ALL
+// ================================================================
+function calc(){
+  var allS={};
+  [D.inv,D.trS,D.pShip,D.pAlloc,D.avgD].forEach(function(obj){for(var k in obj)allS[k]=1;});
+  var skus=Object.keys(allS);
+  if(!skus.length)return alert('请先导入数据');
+  D.comp={};
+  skus.forEach(function(s){
+    var oh=D.inv[s]||0,it=D.trS[s]||0,ps=D.pShip[s]||0,pa=D.pAlloc[s]||0;
+    var ts=Math.max(oh+it+pa-ps,0);
+    D.comp[s]={oh,it,ps,pa,ts,avg:D.avgD[s]||0};
+  });
+  renderTO();
+  doFC();
+  swTab('t-turn',document.querySelectorAll('.tab')[1]);
+}
+
+// ================================================================
+// TURNOVER TABLE
+// ================================================================
+function renderTO(){
+  var skus=Object.keys(D.comp).sort();
+  var tOH=0,tIT=0,tTS=0,tD=0,h='';
+  skus.forEach(function(s){
+    var d=D.comp[s];tOH+=d.oh;tIT+=d.it;tTS+=d.ts;tD+=d.avg;
+    var dl=d.avg>0?Math.floor(d.ts/d.avg):Infinity;
+    var st=d.avg<=0?'无日销':dl<=7?'🔴 紧急':dl<=30?'🟠 偏低':dl<=60?'🟢 正常':'🔵 充足';
+    var sc=d.avg<=0?'i':dl<=7?'d':dl<=30?'w':dl<=60?'s':'i';
+    var dlStr=dl===Infinity?'∞':dl+'天';
+    var dlCls=dl<=30?'hl-r':dl<=60?'hl-o':'hl-g';
+    h+='<tr><td><strong>'+eH(s)+'</strong></td><td>'+fN(d.oh)+'</td><td>'+fN(d.it)+'</td><td>'+fN(d.ps)+'</td><td>'+fN(d.pa)+'</td><td class="hl hl-b">'+fN(d.ts)+'</td><td>'+(d.avg>0?d.avg.toFixed(1):'—')+'</td><td class="hl '+(dl===Infinity?'':''+dlCls)+'">'+dlStr+'</td><td><span class="bdg bdg-'+sc+'">'+st+'</span></td></tr>';
+  });
+  document.getElementById('toB').innerHTML=h||'<tr><td colspan="9"><div class="es"><p>暂无数据</p></div></td></tr>';
+  document.getElementById('z1').textContent=skus.length;
+  document.getElementById('z2').textContent=fN(tOH);
+  document.getElementById('z3').textContent=fN(tIT);
+  document.getElementById('z4').textContent=fN(tTS);
+  document.getElementById('z5').textContent=tD>0?tD.toFixed(1):'—';
+  document.getElementById('z6').textContent=tD>0?Math.round(tTS/tD)+'天':'—';
+  // Timeline
+  if(!D.trList.length){document.getElementById('tlC').style.display='none';return;}
+  document.getElementById('tlC').style.display='block';
+  var today=new Date();today.setHours(0,0,0,0);
+  var sorted=D.trList.slice().sort(function(a,b){return(!a.date?1:!b.date?-1:a.date-b.date);});
+  var th='';
+  sorted.forEach(function(it){
+    var du=it.date?Math.ceil((it.date-today)/864e5):null;
+    var st2=du==null?'日期未知':du<0?'已到达':du<=7?'即将到达':'运输中';
+    var sc2=du==null?'i':du<0?'s':du<=7?'w':'i';
+    th+='<tr><td><strong>'+eH(it.sku)+'</strong></td><td>'+fN(it.qty)+'</td><td>'+fD(it.date)+'</td><td>'+(du!=null?(du<0?'已过'+Math.abs(du)+'天':du+'天'):'—')+'</td><td><span class="bdg bdg-'+sc2+'">'+st2+'</span></td></tr>';
+  });
+  document.getElementById('tlB').innerHTML=th;
+}
+
+// ================================================================
+// FORECAST
+// ================================================================
+function doFC(){
+  var skus=Object.keys(D.comp).sort();
+  var mn=parseInt(document.getElementById('rMn').value)||30;
+  var mx=parseInt(document.getElementById('rMx').value)||45;
+  var today=new Date();
+  var u=0,hl=0,nr=0,h='';
+  skus.forEach(function(s){
+    var d=D.comp[s];
+    var dl=d.avg>0?Math.floor(d.ts/d.avg):Infinity;
+    var so=dl!==Infinity?new Date(today.getTime()+dl*864e5):null;
+    var lb=d.avg<=0?'无销量':dl<=7?'🔴 极紧急':dl<=30?'🟠 紧急':dl<=60?'🟢 正常':'🔵 充足';
+    var sc=d.avg<=0?'i':dl<=7?'d':dl<=30?'w':dl<=60?'s':'i';
+    if(d.avg>0){if(dl<=30)u++;else hl++;}
+    var rL=d.avg>0?Math.max(0,Math.ceil(d.avg*mn-d.ts)):0;
+    var rH=d.avg>0?Math.max(0,Math.ceil(d.avg*mx-d.ts)):0;
+    if(rL>0||rH>0)nr++;
+    var dlCls=dl===Infinity?'':dl<=30?'hl-r':dl<=60?'hl-o':'hl-g';
+    h+='<tr><td><strong>'+eH(s)+'</strong></td><td>'+fN(d.ts)+'</td><td>'+(d.avg>0?d.avg.toFixed(1):'—')+'</td><td class="hl '+dlCls+'">'+(dl===Infinity?'∞':dl+'天')+'</td><td>'+(so?fD(so):'—')+'</td><td><span class="bdg bdg-'+sc+'">'+lb+'</span></td><td class="hl '+(rL>0?'hl-o':'')+'">'+(rL>0?fN(rL):'—')+'</td><td class="hl '+(rH>0?'hl-r':'')+'">'+(rH>0?fN(rH):'—')+'</td></tr>';
+  });
+  document.getElementById('fcB').innerHTML=h||'<tr><td colspan="8"><div class="es"><p>暂无数据</p></div></td></tr>';
+  document.getElementById('y1').textContent=skus.length;
+  document.getElementById('y2').textContent=u;
+  document.getElementById('y3').textContent=hl;
+  document.getElementById('y4').textContent=nr;
+}
+
+// ================================================================
+// MONITOR
+// ================================================================
+function ldMon(){
+  var m=document.getElementById('monMo').value;if(!m)return;
+  var skus=Object.keys(D.comp);
+  if(!D.mon[m]){D.mon[m]={};skus.forEach(s=>D.mon[m][s]={t:0,a:0});}
+  else{skus.forEach(s=>{if(!D.mon[m][s])D.mon[m][s]={t:0,a:0};});}
+  renderMon(m);
+}
+function renderMon(mo){
+  if(!mo)mo=document.getElementById('monMo').value;
+  if(!mo||!D.mon[mo])return;
+  var data=D.mon[mo],skus=Object.keys(data).sort();
+  var tT=0,tA=0,ach=0,h='';
+  skus.forEach(function(s){
+    var d=data[s];tT+=d.t;tA+=d.a;
+    var rate=d.t>0?d.a/d.t*100:0;
+    var diff=d.a-d.t;var ok=d.t>0&&d.a>=d.t;if(ok)ach++;
+    var bc=rate>=100?'var(--ok)':rate>=70?'var(--warn)':'var(--err)';
+    h+='<tr><td><strong>'+eH(s)+'</strong></td><td><input type="number" class="ie" value="'+d.t+'" min="0" onchange="uMon(\''+mo+'\',\''+s+'\',\'t\',this.value)"></td><td><input type="number" class="ie" value="'+d.a+'" min="0" onchange="uMon(\''+mo+'\',\''+s+'\',\'a\',this.value)"></td><td class="hl '+(rate>=100?'hl-g':rate>=70?'hl-o':'hl-r')+'">'+(d.t>0?rate.toFixed(1)+'%':'—')+'</td><td><div class="pbc"><div class="pbf" style="width:'+Math.min(rate,100)+'%;background:'+bc+'">'+(d.t>0?Math.round(rate)+'%':'')+'</div></div></td><td class="hl '+(diff>=0?'hl-g':'hl-r')+'">'+(d.t>0?(diff>=0?'+':'')+fN(diff):'—')+'</td><td>'+(d.t>0?(ok?'<span class="bdg bdg-s">✅ 达标</span>':'<span class="bdg bdg-d">❌ 未达标</span>'):'<span class="bdg bdg-i">未设定</span>')+'</td></tr>';
+  });
+  document.getElementById('monB').innerHTML=h||'<tr><td colspan="7"><div class="es"><p>暂无数据</p></div></td></tr>';
+  var or=tT>0?tA/tT*100:0;
+  document.getElementById('x1').textContent=fN(tT);
+  document.getElementById('x2').textContent=fN(tA);
+  document.getElementById('x3').textContent=tT>0?or.toFixed(1)+'%':'—';
+  document.getElementById('x4').textContent=ach+'/'+skus.length;
+}
+function uMon(m,s,f,v){D.mon[m][s][f]=pN(v);renderMon(m);}
+function saveMon(){
+  try{localStorage.setItem('invMon',JSON.stringify(D.mon));alert('已保存');}
+  catch(e){alert('保存失败：'+e.message);}
+}
+function batchTgt(){
+  var m=document.getElementById('monMo').value;if(!m){alert('请先选择月份');return;}
+  var p='';Object.keys(D.comp).sort().forEach(function(s){var e=D.mon[m]?D.mon[m][s]:null;p+=s+'\t'+(e?e.t:0)+'\t'+(e?e.a:0)+'\n';});
+  document.getElementById('bRaw').value=p;
+  document.getElementById('bModal').classList.add('show');
+}
+function closeBM(){document.getElementById('bModal').classList.remove('show');}
+function bFile(input){
+  var file=input.files[0];if(!file)return;
+  var r=new FileReader();
+  r.onload=function(e){
+    try{var wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});var rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:''});var t='';rows.forEach(function(r){if(r.length>=2)t+=r.join('\t')+'\n';});document.getElementById('bRaw').value=t;}
+    catch(err){alert(err.message);}
+  };r.readAsArrayBuffer(file);
+}
+function apBatch(){
+  var m=document.getElementById('monMo').value;if(!m)return;
+  var raw=document.getElementById('bRaw').value.trim();if(!raw)return;
+  if(!D.mon[m])D.mon[m]={};
+  raw.split('\n').forEach(function(line){
+    var p=spl(line);if(p.length<2||isHdr(p))return;
+    D.mon[m][p[0]]={t:pN(p[1]),a:p.length>=3?pN(p[2]):(D.mon[m][p[0]]?D.mon[m][p[0]].a:0)};
+  });
+  closeBM();renderMon(m);
+}
+
+// ================================================================
+// CHANNEL MODULE
+// ================================================================
+function onChFile(input){
+  var file=input.files[0];if(!file)return;
+  var mo=document.getElementById('chMo').value;
+  if(!mo){alert('请先选择月份');input.value='';return;}
+  sS('ch-ur','读取"'+file.name+'"…','ok');
+  var r=new FileReader();
+  r.onload=function(e){
+    try{
+      var wb=XLSX.read(new Uint8Array(e.target.result),{type:'array',cellDates:true});
+      chFD.wb=wb;var ws=wb.Sheets[wb.SheetNames[0]];
+      var json=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+      if(!json.length){sS('ch-ur','空文件','err');return;}
+      var hi=0;for(var i=0;i<Math.min(json.length,5);i++){var c=0;json[i].forEach(function(v){if(v!=='')c++;});if(c>=2){hi=i;break;}}
+      var hd=[];json[hi].forEach(function(v,i){var nm=String(v||'').trim();if(nm)hd.push({idx:i,name:nm});});
+      chFD.h=hd;
+      chFD.d=json.slice(hi+1).filter(r=>r.some(v=>v!==''));
+      ['ch-c-ch','ch-c-prod','ch-c-qty','ch-c-amt'].forEach(function(id){
+        var sel=document.getElementById(id);sel.innerHTML='<option value="">— 请选择 —</option>';
+        hd.forEach(h=>sel.innerHTML+='<option value="'+h.idx+'">'+eH(h.name)+'</option>');
+      });
+      // Auto detect
+      var rules={ch:['渠道','代理','channel','agent','来源','source','店铺','platform'],prod:['产品','商品','品名','product','name','sku','编码','型号'],qty:['数量','销量','qty','台数','quantity','销售量'],amt:['金额','销售额','revenue','amount','收入','总额']};
+      for(var f in rules){var sel=document.getElementById('ch-c-'+f);var kws=rules[f];for(var i=0;i<hd.length;i++){var nm=hd[i].name.toLowerCase();if(kws.some(k=>nm.includes(k))){sel.value=hd[i].idx;break;}}}
+      document.getElementById('ch-cm').classList.add('show');
+      pvCh();
+      sS('ch-ur','"'+file.name+'" 成功，月份:'+mo,'ok');
+    }catch(err){sS('ch-ur','失败:'+err.message,'err');}
+  };r.readAsArrayBuffer(file);
+}
+function pvCh(){
+  var rows=chFD.d;if(!rows||!rows.length)return;
+  var cc=gC('ch-c-ch'),qc=gC('ch-c-qty'),pc=gC('ch-c-prod'),ac=gC('ch-c-amt');
+  var h='<table><thead><tr>';
+  if(cc!==null)h+='<th>渠道</th>';if(pc!==null)h+='<th>产品</th>';if(qc!==null)h+='<th>数量</th>';if(ac!==null)h+='<th>金额</th>';
+  h+='</tr></thead><tbody>';
+  rows.slice(0,5).forEach(function(r){
+    h+='<tr>';
+    if(cc!==null)h+='<td>'+eH(String(r[cc]||''))+'</td>';
+    if(pc!==null)h+='<td>'+eH(String(r[pc]||''))+'</td>';
+    if(qc!==null)h+='<td>'+eH(String(r[qc]||''))+'</td>';
+    if(ac!==null)h+='<td>'+eH(String(r[ac]||''))+'</td>';
+    h+='</tr>';
+  });
+  h+='</tbody></table>';
+  document.getElementById('ch-pv').innerHTML=h;
+}
+function cfCh(){
+  var mo=document.getElementById('chMo').value;if(!mo){alert('请选择月份');return;}
+  var rows=chFD.d;if(!rows||!rows.length){alert('没有数据');return;}
+  var cc=gC('ch-c-ch'),qc=gC('ch-c-qty'),pc=gC('ch-c-prod'),ac=gC('ch-c-amt');
+  if(cc===null||qc===null){alert('请至少选择渠道和数量列');return;}
+  var parts=mo.split('-');var moKey=parseInt(parts[1])+'月';
+  var qtyrecs=[],amtrecs=[];
+  rows.forEach(function(r){
+    var ch=String(r[cc]||'').trim();
+    var prod=pc!==null?String(r[pc]||'').trim():'';
+    var qty=pN(r[qc]);
+    var amt=ac!==null?pN(r[ac]):0;
+    if(ch||prod){
+      qtyrecs.push({ch,prod,qty});
+      if(ac!==null)amtrecs.push({ch,prod,amt});
+    }
+  });
+  chStore[moKey]={qty:qtyrecs,amt:amtrecs};
+  document.getElementById('ch-cm').classList.remove('show');
+  sS('ch-st',moKey+'导入'+qtyrecs.length+'条数据','ok');
+  renderChTags();
+  renderChTables();
+}
+function renderChTags(){
+  var el=document.getElementById('chTags');
+  var months=Object.keys(chStore).sort(function(a,b){return parseInt(a)-parseInt(b);});
+  if(!months.length){el.innerHTML='<span style="font-size:12px;color:var(--ts)">暂无数据</span>';return;}
+  var h='';
+  months.forEach(function(mo){var cnt=chStore[mo].qty.length;h+='<span class="ch-mo-tag">'+mo+' ('+cnt+'条)<span class="ch-mo-rm" onclick="rmChMo(\''+mo+'\')">✕</span></span>';});
+  el.innerHTML=h;
+}
+function rmChMo(mo){delete chStore[mo];renderChTags();renderChTables();}
+function clrCh(){if(!confirm('清空全部渠道数据？'))return;chStore={};renderChTags();document.getElementById('chResult').style.display='none';hS('ch-ur');hS('ch-st');document.getElementById('ch-cm').classList.remove('show');}
+
+function buildChTable(field){
+  var months=Object.keys(chStore).sort(function(a,b){return parseInt(a)-parseInt(b);});
+  if(!months.length)return null;
+  var channels={};
+  months.forEach(function(mo){
+    chStore[mo][field].forEach(function(r){
+      var ch=r.ch||'(未分类)';var val=field==='qty'?r.qty:r.amt;
+      if(!channels[ch])channels[ch]={};
+      channels[ch][mo]=(channels[ch][mo]||0)+val;
+    });
+  });
+  var chList=Object.keys(channels).sort();
+  var chTotals={},moTotals={},grand=0;
+  chList.forEach(function(ch){
+    chTotals[ch]=0;
+    months.forEach(function(mo){var v=channels[ch][mo]||0;chTotals[ch]+=v;moTotals[mo]=(moTotals[mo]||0)+v;grand+=v;});
+  });
+  var h='<table class="cht"><thead><tr><th style="text-align:left;min-width:130px">渠道</th><th>Total</th><th>%</th>';
+  months.forEach(mo=>h+='<th>'+mo+'</th>');
+  h+='</tr></thead><tbody>';
+  chList.forEach(function(ch){
+    var pct=grand>0?((chTotals[ch]/grand)*100).toFixed(1)+'%':'0%';
+    h+='<tr><td class="rl">'+eH(ch)+'</td><td class="num">'+fN(chTotals[ch])+'</td><td>'+pct+'</td>';
+    months.forEach(mo=>h+='<td class="num">'+(channels[ch][mo]?fN(channels[ch][mo]):'0')+'</td>');
+    h+='</tr>';
+  });
+  var gt=grand>0?'100%':'—';
+  h+='<tr class="tr"><td class="rl">Total</td><td class="num">'+fN(grand)+'</td><td>'+gt+'</td>';
+  months.forEach(mo=>h+='<td class="num">'+fN(moTotals[mo]||0)+'</td>');
+  h+='</tr><tr class="pr"><td class="rl">%</td><td>100%</td><td>—</td>';
+  months.forEach(function(mo){var pct=grand>0?(((moTotals[mo]||0)/grand)*100).toFixed(1)+'%':'0%';h+='<td>'+pct+'</td>';});
+  h+='</tr></tbody></table>';
+  return h;
+}
+function renderChTables(){
+  var months=Object.keys(chStore);
+  if(!months.length){document.getElementById('chResult').style.display='none';return;}
+  document.getElementById('chResult').style.display='block';
+  var qtyH=buildChTable('qty');
+  document.getElementById('chQtyTbl').innerHTML=qtyH||'';
+  // Check if any amt data
+  var hasAmt=months.some(mo=>chStore[mo].amt&&chStore[mo].amt.length>0);
+  if(hasAmt){
+    var amtH=buildChTable('amt');
+    document.getElementById('chAmtTbl').innerHTML=amtH||'';
+  }else{
+    document.getElementById('chAmtTbl').innerHTML='<div style="padding:20px;text-align:center;color:var(--ts);font-size:12px">💡 未映射金额列，暂无销售额数据</div>';
+  }
+}
+
+// ================================================================
+// EXPORT & CLEAR
+// ================================================================
+function expAll(){
+  var skus=Object.keys(D.comp).sort();if(!skus.length)return alert('暂无数据');
+  var csv='\uFEFF'+'SKU,在库量,在途量,待发货,待分货,总供应量,平均日销,可售天数,预计售罄\n';
+  var today=new Date();
+  skus.forEach(function(s){
+    var d=D.comp[s];
+    var dl=d.avg>0?Math.floor(d.ts/d.avg):'';
+    var sd='';if(d.avg>0&&dl>=0){var dt=new Date(today);dt.setDate(dt.getDate()+dl);sd=fD(dt);}
+    csv+=s+','+d.oh+','+d.it+','+d.ps+','+d.pa+','+d.ts+','+d.avg+','+dl+','+sd+'\n';
+  });
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+  a.download='库存周转_'+fD(new Date())+'.csv';
+  a.click();
+}
+function clrAll(){
+  if(!confirm('确认清空所有数据？'))return;
+  ['inv','tr','sp','sl'].forEach(clrSec);
+  D.comp={};
+  document.getElementById('toB').innerHTML='<tr><td colspan="9"><div class="es"><div class="ei">📭</div><p>请导入</p></div></td></tr>';
+  document.getElementById('fcB').innerHTML='<tr><td colspan="8"><div class="es"><div class="ei">📭</div><p>请导入</p></div></td></tr>';
+  ['z1','z2','z3','z4','z5','z6','y1','y2','y3','y4'].forEach(function(id){document.getElementById(id).textContent='—';});
+}
+
+// ================================================================
+// DRAG & DROP
+// ================================================================
+document.querySelectorAll('.uz').forEach(function(z){
+  z.addEventListener('dragover',function(e){e.preventDefault();z.classList.add('over');});
+  z.addEventListener('dragleave',function(){z.classList.remove('over');});
+  z.addEventListener('drop',function(e){
+    e.preventDefault();z.classList.remove('over');
+    var inp=z.querySelector('input[type="file"]');
+    if(e.dataTransfer.files.length&&inp){inp.files=e.dataTransfer.files;inp.dispatchEvent(new Event('change'));}
+  });
+});
+
+// ================================================================
+// INIT
+// ================================================================
+document.addEventListener('DOMContentLoaded',function(){
+  var n=new Date();
+  document.getElementById('monMo').value=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0');
+  try{var s=localStorage.getItem('invMon');if(s)D.mon=JSON.parse(s);}catch(e){}
+});
+</script>
+</body>
+</html>
