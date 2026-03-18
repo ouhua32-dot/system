@@ -1,0 +1,2412 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>基础运营综合管理平台</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ===== CSS VARIABLES & THEME ===== */
+:root {
+  --font-main: 'Noto Sans JP', 'SF Pro Display', system-ui, sans-serif;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --transition: 0.2s ease;
+}
+
+[data-theme="dark"] {
+  --bg-base: #0d1117;
+  --bg-surface: #161b22;
+  --bg-elevated: #21262d;
+  --bg-hover: #2d333b;
+  --border: #30363d;
+  --border-subtle: #21262d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #484f58;
+  --accent-blue: #388bfd;
+  --accent-blue-subtle: #1c2d4a;
+  --accent-green: #3fb950;
+  --accent-green-subtle: #1a3325;
+  --accent-yellow: #d29922;
+  --accent-yellow-subtle: #2d2011;
+  --accent-red: #f85149;
+  --accent-red-subtle: #3d1517;
+  --accent-purple: #bc8cff;
+  --shadow: 0 4px 16px rgba(0,0,0,0.4);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+[data-theme="light"] {
+  --bg-base: #f0f4f8;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f6f8fa;
+  --bg-hover: #edf2f7;
+  --border: #d0d7de;
+  --border-subtle: #eaeef2;
+  --text-primary: #1a202c;
+  --text-secondary: #4a5568;
+  --text-muted: #a0aec0;
+  --accent-blue: #0969da;
+  --accent-blue-subtle: #dbeafe;
+  --accent-green: #1a7f37;
+  --accent-green-subtle: #dcfce7;
+  --accent-yellow: #9a6700;
+  --accent-yellow-subtle: #fef3c7;
+  --accent-red: #d1242f;
+  --accent-red-subtle: #fee2e2;
+  --accent-purple: #8250df;
+  --shadow: 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-main);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ===== LAYOUT ===== */
+.app-header {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  gap: 16px;
+}
+
+.app-logo {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+}
+
+.app-logo span { color: var(--accent-blue); }
+
+.header-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.main-content { padding: 16px 24px 32px; max-width: 1600px; margin: 0 auto; }
+
+/* ===== ALERTS ===== */
+.security-banner {
+  background: var(--accent-green-subtle);
+  border: 1px solid var(--accent-green);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--accent-green);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===== COLLAPSIBLE SECTIONS ===== */
+.section-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  user-select: none;
+  gap: 10px;
+  transition: background var(--transition);
+}
+
+.section-header:hover { background: var(--bg-hover); }
+
+.section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.section-toggle {
+  font-size: 11px;
+  color: var(--text-muted);
+  transition: transform var(--transition);
+}
+
+.section-toggle.open { transform: rotate(180deg); }
+
+.section-body { display: none; padding: 16px; border-top: 1px solid var(--border-subtle); }
+.section-body.open { display: block; }
+
+/* ===== FILE UPLOAD GRID ===== */
+.upload-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+}
+
+.upload-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: border-color var(--transition);
+}
+
+.upload-item:hover { border-color: var(--accent-blue); }
+
+.upload-item.uploaded { border-color: var(--accent-green); }
+
+.upload-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 120px;
+  flex: 1;
+}
+
+.upload-label small {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.upload-status {
+  font-size: 11px;
+  color: var(--text-muted);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upload-status.ok { color: var(--accent-green); }
+.upload-status.err { color: var(--accent-red); }
+
+input[type="file"] { display: none; }
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.btn:hover { background: var(--bg-hover); border-color: var(--accent-blue); }
+
+.btn-primary {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: #fff;
+}
+.btn-primary:hover { opacity: 0.85; background: var(--accent-blue); }
+
+.btn-danger {
+  background: var(--accent-red-subtle);
+  border-color: var(--accent-red);
+  color: var(--accent-red);
+}
+.btn-danger:hover { opacity: 0.85; }
+
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+.btn-xs { padding: 2px 8px; font-size: 11px; }
+
+/* ===== TABS ===== */
+.tabs-nav {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 4px;
+  margin-bottom: 16px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 9px 16px;
+  border-radius: var(--radius);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+}
+
+.tab-btn:hover { color: var(--text-primary); background: var(--bg-hover); }
+
+.tab-btn.active {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ===== STAT CARDS ===== */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+}
+
+.stat-card.red { border-color: var(--accent-red); background: var(--accent-red-subtle); }
+.stat-card.yellow { border-color: var(--accent-yellow); background: var(--accent-yellow-subtle); }
+.stat-card.green { border-color: var(--accent-green); background: var(--accent-green-subtle); }
+.stat-card.blue { border-color: var(--accent-blue); background: var(--accent-blue-subtle); }
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-card.red .stat-value { color: var(--accent-red); }
+.stat-card.yellow .stat-value { color: var(--accent-yellow); }
+.stat-card.green .stat-value { color: var(--accent-green); }
+.stat-card.blue .stat-value { color: var(--accent-blue); }
+
+.stat-sub { font-size: 11px; color: var(--text-muted); }
+
+/* ===== TABLE ===== */
+.table-wrapper {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.search-input {
+  padding: 6px 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  width: 220px;
+}
+
+.search-input:focus { border-color: var(--accent-blue); }
+
+select {
+  padding: 6px 10px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+}
+
+select:focus { border-color: var(--accent-blue); }
+
+.table-scroll { overflow-x: auto; max-height: 500px; overflow-y: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+  padding: 9px 10px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  z-index: 10;
+}
+
+thead th:hover { color: var(--text-primary); }
+thead th.sorted-asc::after { content: ' ↑'; color: var(--accent-blue); }
+thead th.sorted-desc::after { content: ' ↓'; color: var(--accent-blue); }
+
+tbody tr {
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background var(--transition);
+}
+
+tbody tr:hover { background: var(--bg-hover); }
+
+td {
+  padding: 8px 10px;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+td.muted { color: var(--text-muted); font-style: italic; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-red { background: var(--accent-red-subtle); color: var(--accent-red); border: 1px solid var(--accent-red); }
+.badge-yellow { background: var(--accent-yellow-subtle); color: var(--accent-yellow); border: 1px solid var(--accent-yellow); }
+.badge-green { background: var(--accent-green-subtle); color: var(--accent-green); border: 1px solid var(--accent-green); }
+.badge-gray { background: var(--bg-elevated); color: var(--text-muted); border: 1px solid var(--border); }
+.badge-black { background: #000; color: #666; border: 1px solid #333; }
+
+/* ===== CHART GRID ===== */
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.chart-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+
+.chart-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+
+.chart-container { position: relative; height: 240px; }
+.chart-container-lg { position: relative; height: 320px; }
+
+/* ===== PARAMS BAR ===== */
+.params-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 14px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.param-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.param-label { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+
+input[type="range"] {
+  width: 120px;
+  accent-color: var(--accent-blue);
+}
+
+.param-value {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-blue);
+  min-width: 36px;
+}
+
+/* ===== MAPPING TABLE ===== */
+.mapping-table-wrap { overflow-x: auto; }
+
+.mapping-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.mapping-table th {
+  background: var(--bg-elevated);
+  padding: 8px 10px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+}
+.mapping-table td { padding: 6px 10px; border-bottom: 1px solid var(--border-subtle); }
+.mapping-table input {
+  width: 100%;
+  padding: 4px 8px;
+  background: var(--bg-elevated);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 12px;
+}
+.mapping-table input:focus { border-color: var(--accent-blue); outline: none; }
+
+/* ===== PROGRESS ===== */
+.progress-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.progress-overlay.show { display: flex; }
+
+.progress-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px 40px;
+  min-width: 320px;
+  text-align: center;
+}
+
+.progress-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+.progress-msg { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; }
+
+.progress-bar-wrap {
+  background: var(--bg-elevated);
+  border-radius: 4px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--accent-blue);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* ===== MONITOR GRID ===== */
+.monitor-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 12px;
+}
+
+.monitor-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+
+.monitor-card.col-4 { grid-column: span 4; }
+.monitor-card.col-6 { grid-column: span 6; }
+.monitor-card.col-12 { grid-column: span 12; }
+
+@media (max-width: 1024px) {
+  .monitor-card.col-4, .monitor-card.col-6 { grid-column: span 6; }
+}
+@media (max-width: 768px) {
+  .monitor-card { grid-column: span 12 !important; }
+  .chart-grid { grid-template-columns: 1fr; }
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .upload-grid { grid-template-columns: 1fr; }
+}
+
+.monitor-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.risk-list { list-style: none; }
+.risk-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 12px;
+}
+.risk-list li:last-child { border-bottom: none; }
+
+/* ===== THEME SWITCH ===== */
+.theme-switch {
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  transition: all var(--transition);
+}
+.theme-switch:hover { border-color: var(--accent-blue); color: var(--text-primary); }
+
+/* ===== TOOLTIP ===== */
+.tooltip-cell { position: relative; cursor: help; }
+.tooltip-cell::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000;
+  color: #fff;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 100;
+}
+.tooltip-cell:hover::after { opacity: 1; }
+
+/* ===== NO DATA ===== */
+.no-data {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.no-data-icon { font-size: 32px; margin-bottom: 8px; }
+
+/* ===== UPLOAD FILE DELETE BTN ===== */
+.upload-actions { display: flex; align-items: center; gap: 4px; }
+
+/* ===== ALERT TOAST ===== */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px 16px;
+  font-size: 13px;
+  z-index: 9999;
+  max-width: 320px;
+  box-shadow: var(--shadow);
+  animation: slideIn 0.3s ease;
+}
+.toast.success { border-color: var(--accent-green); }
+.toast.error { border-color: var(--accent-red); }
+
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+.flex-gap { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.mt-12 { margin-top: 12px; }
+.mb-12 { margin-bottom: 12px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="app-header">
+  <div class="app-logo">基础运营<span>管理平台</span></div>
+  <div class="header-actions">
+    <button class="btn btn-sm" onclick="exportMapping()">📤 导出映射</button>
+    <button class="btn btn-sm" onclick="importMappingClick()">📥 导入映射</button>
+    <input type="file" id="importMappingFile" accept=".json" onchange="importMapping(event)">
+    <button class="theme-switch" onclick="toggleTheme()" title="切换主题">🌙</button>
+  </div>
+</div>
+
+<div class="main-content">
+  <!-- SECURITY BANNER -->
+  <div class="security-banner">
+    🔒 数据安全：所有文件仅在浏览器中本地处理，绝不上传至任何服务器。数据已持久保存于本地存储，刷新页面数据保留；手动删除或重新上传文件后数据更新。
+  </div>
+
+  <!-- FILE UPLOAD SECTION -->
+  <div class="section-card">
+    <div class="section-header" onclick="toggleSection('upload')">
+      <span>📂</span>
+      <span class="section-title">数据文件上传</span>
+      <span id="uploadStatusSummary" style="font-size:12px;color:var(--text-muted)"></span>
+      <span class="section-toggle" id="uploadToggle">▲</span>
+    </div>
+    <div class="section-body open" id="uploadBody">
+      <div class="upload-grid" id="uploadGrid"></div>
+      <div style="margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="runAnalysis()">
+          ⚡ 开始分析
+        </button>
+        <button class="btn btn-danger btn-sm" onclick="clearAllData()">🗑 清除所有数据</button>
+        <span id="lastAnalyzedTime" style="font-size:11px;color:var(--text-muted)"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SKU MAPPING SECTION -->
+  <div class="section-card">
+    <div class="section-header" onclick="toggleSection('mapping')">
+      <span>🔗</span>
+      <span class="section-title">SKU映射配置</span>
+      <span style="font-size:12px;color:var(--text-muted)" id="mappingCount"></span>
+      <span class="section-toggle" id="mappingToggle">▼</span>
+    </div>
+    <div class="section-body" id="mappingBody">
+      <div class="mapping-table-wrap">
+        <table class="mapping-table" id="mappingTable">
+          <thead>
+            <tr>
+              <th>源SKU（待分货表）</th>
+              <th>目标SKU（其他表，多个逗号分隔）</th>
+              <th>产品简称</th>
+              <th style="width:80px">操作</th>
+            </tr>
+          </thead>
+          <tbody id="mappingBody2"></tbody>
+        </table>
+      </div>
+      <div style="margin-top:10px;">
+        <button class="btn btn-sm" onclick="addMappingRow()">+ 新增行</button>
+        <button class="btn btn-sm" onclick="saveMappings()">💾 保存映射</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs-nav">
+    <button class="tab-btn active" onclick="switchTab('tab1',this)">📦 库存周转与补货预警</button>
+    <button class="tab-btn" onclick="switchTab('tab2',this)">📈 销量分析与预测对比</button>
+    <button class="tab-btn" onclick="switchTab('tab3',this)">🖥 综合监控看板</button>
+  </div>
+
+  <!-- TAB 1: INVENTORY -->
+  <div id="tab1" class="tab-content active">
+    <!-- PARAMS BAR -->
+    <div class="params-bar">
+      <div class="param-group">
+        <span class="param-label">安全库存天数</span>
+        <input type="range" min="1" max="60" value="14" id="safetyDays" oninput="updateParam('safetyDays')">
+        <span class="param-value" id="safetyDaysVal">14天</span>
+      </div>
+      <div class="param-group">
+        <span class="param-label">日均销量计算周期</span>
+        <select id="calcPeriod" onchange="recalcTable()">
+          <option value="7">近7天</option>
+          <option value="14">近14天</option>
+          <option value="30" selected>近30天</option>
+          <option value="60">近60天</option>
+        </select>
+      </div>
+      <div class="param-group">
+        <span class="param-label">销量波动系数</span>
+        <input type="range" min="80" max="150" value="100" id="fluctCoeff" oninput="updateParam('fluctCoeff')">
+        <span class="param-value" id="fluctCoeffVal">1.00</span>
+      </div>
+      <div class="param-group" style="margin-left:auto;">
+        <button class="btn btn-sm" onclick="exportCSV('inventory')">📥 导出CSV</button>
+      </div>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stat-grid" id="statCards"></div>
+
+    <!-- CHART GRID -->
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-title">库存健康度分布</div>
+        <div class="chart-container"><canvas id="healthPieChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Top 15 SKU 可售天数</div>
+        <div class="chart-container"><canvas id="daysBarChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- SIMULATION CHART -->
+    <div class="chart-card mb-12">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div class="chart-title" style="margin:0">库存模拟趋势（未来90天）</div>
+        <select id="simSkuSelect" onchange="renderSimChart()">
+          <option value="">-- 选择SKU --</option>
+        </select>
+      </div>
+      <div class="chart-container-lg"><canvas id="simLineChart"></canvas></div>
+    </div>
+
+    <!-- MAIN TABLE -->
+    <div class="table-wrapper">
+      <div class="table-toolbar">
+        <input type="text" class="search-input" id="invSearch" placeholder="搜索 SKU 或产品名..." oninput="filterTable()">
+        <select id="statusFilter" onchange="filterTable()">
+          <option value="">全部状态</option>
+          <option value="critical">🔴 缺货风险 (&lt;15天)</option>
+          <option value="warning">🟡 偏低 (15-30天)</option>
+          <option value="safe">🟢 充足 (&gt;30天)</option>
+          <option value="oos">⚫ 已缺货</option>
+        </select>
+        <button class="btn btn-sm" onclick="exportCSV('alerts')">⚠️ 导出预警清单</button>
+      </div>
+      <div class="table-scroll">
+        <table id="invTable">
+          <thead>
+            <tr>
+              <th onclick="sortTable('sku')">SKU</th>
+              <th onclick="sortTable('name')">产品名称</th>
+              <th onclick="sortTable('available')">海外仓可用量</th>
+              <th onclick="sortTable('committed')">Shopify占用</th>
+              <th onclick="sortTable('stockNet')">当前净库存</th>
+              <th onclick="sortTable('sales30')">近30天销量</th>
+              <th onclick="sortTable('dailySales')">日均销量</th>
+              <th onclick="sortTable('sellDays')">可售天数</th>
+              <th onclick="sortTable('transit')">在途总量</th>
+              <th onclick="sortTable('nextArrival')">最近到货日</th>
+              <th onclick="sortTable('nextQty')">最近到货量</th>
+              <th onclick="sortTable('plan4w')">未来4周分货</th>
+              <th onclick="sortTable('outDate')">预计断货日</th>
+              <th onclick="sortTable('daysLeft')">距断货(天)</th>
+              <th onclick="sortTable('replenish')">建议补货量</th>
+              <th onclick="sortTable('forecast')">下月预测销量</th>
+              <th onclick="sortTable('status')">状态</th>
+            </tr>
+          </thead>
+          <tbody id="invTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: SALES ANALYSIS -->
+  <div id="tab2" class="tab-content">
+    <div class="params-bar">
+      <div class="param-group">
+        <span class="param-label">时间维度</span>
+        <select id="salesDimension" onchange="renderSalesTab()">
+          <option value="day">日</option>
+          <option value="week">周</option>
+          <option value="month" selected>月</option>
+        </select>
+      </div>
+      <div class="param-group">
+        <span class="param-label">SKU筛选</span>
+        <select id="salesSkuFilter" onchange="renderSalesTab()">
+          <option value="all">全部</option>
+        </select>
+      </div>
+      <button class="btn btn-sm" style="margin-left:auto;" onclick="exportCSV('sales')">📥 导出数据</button>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chart-card" style="grid-column:span 2;">
+        <div class="chart-title">月度实际销量 vs 预测销量</div>
+        <div class="chart-container-lg"><canvas id="salesVsForecastChart"></canvas></div>
+      </div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-title">销量趋势</div>
+        <div class="chart-container"><canvas id="salesTrendChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">销量排名</div>
+        <div class="chart-container"><canvas id="salesRankChart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="table-wrapper mt-12">
+      <div class="table-toolbar">
+        <span style="font-size:13px;font-weight:600;">预测准确率分析</span>
+        <input type="text" class="search-input" id="salesSearch" placeholder="搜索SKU..." oninput="filterSalesTable()">
+      </div>
+      <div class="table-scroll">
+        <table id="salesTable">
+          <thead id="salesTableHead"></thead>
+          <tbody id="salesTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="chart-card mt-12">
+      <div class="chart-title">退货率分析 (Top SKU)</div>
+      <div class="chart-container"><canvas id="returnRateChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- TAB 3: MONITOR -->
+  <div id="tab3" class="tab-content">
+    <div class="monitor-grid" id="monitorGrid">
+      <!-- A: 库存健康度 -->
+      <div class="monitor-card col-4">
+        <div class="monitor-title">📊 库存健康度</div>
+        <div class="chart-container" style="height:180px;"><canvas id="monHealthChart"></canvas></div>
+        <div id="monHealthStats" style="margin-top:10px;font-size:12px;"></div>
+      </div>
+
+      <!-- B: 补货紧急度 -->
+      <div class="monitor-card col-4">
+        <div class="monitor-title">⚠️ 补货紧急度</div>
+        <div class="stat-grid" style="grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;" id="monAlertStats"></div>
+        <div class="monitor-title" style="margin-top:8px;">断货风险 Top 5</div>
+        <ul class="risk-list" id="monRiskList"></ul>
+      </div>
+
+      <!-- C: 在途概览 -->
+      <div class="monitor-card col-4">
+        <div class="monitor-title">🚢 在途概览</div>
+        <div id="monTransitStats" style="display:grid;gap:8px;"></div>
+      </div>
+
+      <!-- D: 销量趋势 -->
+      <div class="monitor-card col-6">
+        <div class="monitor-title">📈 销量趋势</div>
+        <div id="monSalesTrend" style="margin-bottom:10px;"></div>
+        <div class="monitor-title" style="margin-top:8px;">畅销 Top 5</div>
+        <ul class="risk-list" id="monTopSales"></ul>
+      </div>
+
+      <!-- E: 预测 vs 实际 -->
+      <div class="monitor-card col-6">
+        <div class="monitor-title">🎯 预测 vs 实际</div>
+        <div id="monForecastStats" style="margin-bottom:10px;"></div>
+        <div class="monitor-title" style="margin-top:8px;">偏差最大的SKU</div>
+        <ul class="risk-list" id="monWorstForecast"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROGRESS OVERLAY -->
+<div class="progress-overlay" id="progressOverlay">
+  <div class="progress-box">
+    <div class="progress-title">📊 数据处理中...</div>
+    <div class="progress-msg" id="progressMsg">正在加载数据...</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+    </div>
+  </div>
+</div>
+<script>
+// ===== CONSTANTS =====
+const FILE_KEYS = ['pending','warehouse','allocation','transit','sales','forecast'];
+const FILE_LABELS = [
+  {key:'pending',   label:'待发货.xlsx',    desc:'Shopify待发货数'},
+  {key:'warehouse', label:'逻辑仓库存.xlsx', desc:'海外仓库存'},
+  {key:'allocation',label:'待分货.xlsx',    desc:'分货计划'},
+  {key:'transit',   label:'头程明细.xlsx',  desc:'头程物流'},
+  {key:'sales',     label:'销量数据.xlsx',  desc:'销量数据'},
+  {key:'forecast',  label:'销量预测.xlsx',  desc:'月度预测'}
+];
+
+const DEFAULT_MAPPINGS = [
+  {src:'PF002-A-JP',        targets:'PF002-A-JP2',                                          name:'A1単体'},
+  {src:'PF003-S+SA007-JP',  targets:'PF003-S+SA007-JP, PF003-S+SA007-JP1',                  name:'H2S Combo'},
+  {src:'PF003-N+SA007-JP',  targets:'PF003-N+SA007-JP+SL001-JP, PF003-N+SA007-JP+SL002-JP', name:'H2C Laser'},
+  {src:'PF004-U+SA007-JP',  targets:'PF004-U+SA007-JP1',                                    name:'P2S Combo'},
+  {src:'PF003-M+SA007-JP',  targets:'PF003-M+SA007-JP, PF003-M+SA007-JP1',                  name:'H2D Laser'},
+  {src:'PF003-D+SA007-JP',  targets:'PF003-D+SA007-JP, PF003-D+SA007-JP1',                  name:'H2D Combo'},
+  {src:'PF001-U+SA007-JP',  targets:'PF001-U+SA007-JP, PF001-U+SA007-JP1',                  name:'P1S AMS2Pro'},
+];
+
+const CORE_SKUS = [
+  'PF001-U+SA001-JP','PF002-M-JP','PF002-M+SA005-JP','PF002-A-JP2','PF002-A+SA005-JP2',
+  'PF003-D+SA007-JP','PF003-D+SA007-JP1','PF003-D-JP',
+  'PF003-M+SA007-JP','PF003-M+SA007-JP1',
+  'PF003-E+SA007+SA008-LV',
+  'PF003-S+SA007-JP','PF003-S+SA007-JP1','PF003-S-JP','PF003-S-JP1',
+  'PF003-L+SA007-JP','PF003-L+SA007-JP1',
+  'PF003-C+SA007-JP',
+  'PF003-N+SA007-JP+SL001-JP','PF003-N+SA007-JP+SL002-JP',
+  'PF004-U+SA007-JP1','PF004-U-JP',
+  'SA007','SA008-JP'
+];
+
+// ===== STATE =====
+let state = {
+  rawData: {},       // parsed Excel data per key
+  fileNames: {},     // file names per key
+  analysis: null,    // computed results
+  mappings: [],
+  charts: {},
+  sortCol: '', sortDir: 1,
+  filteredRows: [],
+};
+
+// ===== LOCAL STORAGE =====
+function saveToLS(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {}
+}
+
+function loadFromLS(key) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : null; } catch(e) { return null; }
+}
+
+function init() {
+  // Load mappings
+  const savedMappings = loadFromLS('skuMappings');
+  state.mappings = savedMappings || [...DEFAULT_MAPPINGS];
+  renderMappings();
+  updateMappingCount();
+
+  // Load saved data
+  const savedData = loadFromLS('rawData');
+  const savedNames = loadFromLS('fileNames');
+  if (savedData) state.rawData = savedData;
+  if (savedNames) state.fileNames = savedNames;
+
+  buildUploadGrid();
+  updateUploadStatus();
+
+  // Load last analysis
+  const savedAnalysis = loadFromLS('lastAnalysis');
+  if (savedAnalysis) {
+    state.analysis = savedAnalysis;
+    renderAll();
+  }
+
+  const lastTime = loadFromLS('lastAnalyzedTime');
+  if (lastTime) document.getElementById('lastAnalyzedTime').textContent = '上次分析: ' + lastTime;
+
+  // Theme
+  const savedTheme = loadFromLS('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon(savedTheme);
+}
+
+// ===== UPLOAD GRID =====
+function buildUploadGrid() {
+  const grid = document.getElementById('uploadGrid');
+  grid.innerHTML = '';
+  FILE_LABELS.forEach(f => {
+    const div = document.createElement('div');
+    div.className = 'upload-item' + (state.rawData[f.key] ? ' uploaded' : '');
+    div.id = 'uploadItem_' + f.key;
+    div.innerHTML = `
+      <div class="upload-label">${f.label}<small>${f.desc}</small></div>
+      <div class="upload-status ${state.rawData[f.key]?'ok':''}" id="status_${f.key}">
+        ${state.rawData[f.key] ? '✅ ' + (state.fileNames[f.key]||f.label) : '未上传'}
+      </div>
+      <div class="upload-actions">
+        <label class="btn btn-sm" style="cursor:pointer;">
+          📂 <input type="file" accept=".xlsx,.xls,.csv" onchange="handleUpload('${f.key}',this)">
+        </label>
+        ${state.rawData[f.key] ? `<button class="btn btn-xs btn-danger" onclick="deleteFileData('${f.key}')">✕</button>` : ''}
+      </div>`;
+    grid.appendChild(div);
+  });
+  updateUploadSummary();
+}
+
+function updateUploadStatus() {
+  FILE_LABELS.forEach(f => {
+    const item = document.getElementById('uploadItem_' + f.key);
+    const status = document.getElementById('status_' + f.key);
+    if (!item || !status) return;
+    if (state.rawData[f.key]) {
+      item.className = 'upload-item uploaded';
+      status.className = 'upload-status ok';
+      status.textContent = '✅ ' + (state.fileNames[f.key] || f.label);
+    } else {
+      item.className = 'upload-item';
+      status.className = 'upload-status';
+      status.textContent = '未上传';
+    }
+  });
+  updateUploadSummary();
+}
+
+function updateUploadSummary() {
+  const count = FILE_LABELS.filter(f => state.rawData[f.key]).length;
+  document.getElementById('uploadStatusSummary').textContent = `${count}/${FILE_LABELS.length} 已上传`;
+}
+
+async function handleUpload(key, input) {
+  const file = input.files[0];
+  if (!file) return;
+  showProgress(5, `正在解析 ${file.name}...`);
+  try {
+    const data = await parseFile(file);
+    state.rawData[key] = data;
+    state.fileNames[key] = file.name;
+    saveToLS('rawData', state.rawData);
+    saveToLS('fileNames', state.fileNames);
+    buildUploadGrid();
+    showProgress(100, '解析完成');
+    setTimeout(hideProgress, 600);
+    toast('✅ 文件上传成功: ' + file.name, 'success');
+  } catch(e) {
+    hideProgress();
+    toast('❌ 解析失败: ' + e.message, 'error');
+  }
+}
+
+function deleteFileData(key) {
+  if (!confirm(`确认删除 "${FILE_LABELS.find(f=>f.key===key).label}" 的数据?`)) return;
+  delete state.rawData[key];
+  delete state.fileNames[key];
+  saveToLS('rawData', state.rawData);
+  saveToLS('fileNames', state.fileNames);
+  buildUploadGrid();
+  toast('已删除文件数据', 'success');
+}
+
+function clearAllData() {
+  if (!confirm('确认清除所有已上传的数据和分析结果?')) return;
+  state.rawData = {};
+  state.fileNames = {};
+  state.analysis = null;
+  localStorage.removeItem('rawData');
+  localStorage.removeItem('fileNames');
+  localStorage.removeItem('lastAnalysis');
+  localStorage.removeItem('lastAnalyzedTime');
+  buildUploadGrid();
+  document.getElementById('lastAnalyzedTime').textContent = '';
+  clearCharts();
+  document.getElementById('invTableBody').innerHTML = '';
+  document.getElementById('statCards').innerHTML = '';
+  toast('已清除所有数据', 'success');
+}
+
+// ===== FILE PARSING =====
+async function parseFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      try {
+        const wb = XLSX.read(e.target.result, {type:'array', cellDates:true});
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const data = XLSX.utils.sheet_to_json(ws, {raw:false, defval:''});
+        resolve(data);
+      } catch(err) { reject(err); }
+    };
+    reader.onerror = () => reject(new Error('文件读取失败'));
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+// ===== PROGRESS =====
+function showProgress(pct, msg) {
+  document.getElementById('progressOverlay').className = 'progress-overlay show';
+  document.getElementById('progressMsg').textContent = msg;
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+function hideProgress() {
+  document.getElementById('progressOverlay').className = 'progress-overlay';
+}
+function setProgress(pct, msg) {
+  document.getElementById('progressMsg').textContent = msg;
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+// ===== TOAST =====
+function toast(msg, type='') {
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ===== THEME =====
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  saveToLS('theme', next);
+  updateThemeIcon(next);
+  // Rebuild charts
+  if (state.analysis) { clearCharts(); renderAll(); }
+}
+function updateThemeIcon(theme) {
+  document.querySelector('.theme-switch').textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+
+// ===== TAB SWITCH =====
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ===== COLLAPSIBLE =====
+function toggleSection(id) {
+  const body = document.getElementById(id + 'Body');
+  const toggle = document.getElementById(id + 'Toggle');
+  if (!body) return;
+  const isOpen = body.classList.toggle('open');
+  if (toggle) { toggle.textContent = isOpen ? '▲' : '▼'; toggle.classList.toggle('open', isOpen); }
+}
+
+// ===== MAPPINGS =====
+function renderMappings() {
+  const tbody = document.getElementById('mappingBody2');
+  tbody.innerHTML = '';
+  state.mappings.forEach((m, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input value="${m.src}" onchange="state.mappings[${i}].src=this.value"></td>
+      <td><input value="${m.targets}" onchange="state.mappings[${i}].targets=this.value"></td>
+      <td><input value="${m.name}" onchange="state.mappings[${i}].name=this.value"></td>
+      <td><button class="btn btn-xs btn-danger" onclick="removeMappingRow(${i})">删除</button></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function addMappingRow() {
+  state.mappings.push({src:'', targets:'', name:''});
+  renderMappings();
+  updateMappingCount();
+}
+
+function removeMappingRow(i) {
+  state.mappings.splice(i, 1);
+  renderMappings();
+  updateMappingCount();
+}
+
+function saveMappings() {
+  saveToLS('skuMappings', state.mappings);
+  updateMappingCount();
+  toast('✅ 映射配置已保存', 'success');
+}
+
+function updateMappingCount() {
+  document.getElementById('mappingCount').textContent = `${state.mappings.length} 条映射`;
+}
+
+function exportMapping() {
+  const data = JSON.stringify(state.mappings, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'sku_mappings.json';
+  a.click();
+}
+
+function importMappingClick() { document.getElementById('importMappingFile').click(); }
+
+function importMapping(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (Array.isArray(data)) {
+        state.mappings = data;
+        renderMappings();
+        saveMappings();
+        toast('✅ 映射导入成功', 'success');
+      }
+    } catch(err) { toast('❌ JSON解析失败', 'error'); }
+  };
+  reader.readAsText(file);
+}
+
+// ===== PARAMS =====
+function updateParam(id) {
+  if (id === 'safetyDays') {
+    const v = document.getElementById('safetyDays').value;
+    document.getElementById('safetyDaysVal').textContent = v + '天';
+  } else if (id === 'fluctCoeff') {
+    const v = document.getElementById('fluctCoeff').value;
+    document.getElementById('fluctCoeffVal').textContent = (v/100).toFixed(2);
+  }
+  if (state.analysis) recalcTable();
+}
+
+function recalcTable() { if (state.analysis) renderTab1(); }
+</script>
+<script>
+// ===== MAIN ANALYSIS ENGINE =====
+
+function getMappingForSrc(srcSku) {
+  return state.mappings.find(m => m.src.trim() === srcSku.trim()) || null;
+}
+
+function getMappingForTarget(targetSku) {
+  return state.mappings.find(m => {
+    return m.targets.split(',').map(s=>s.trim()).includes(targetSku.trim());
+  }) || null;
+}
+
+function getAllTargetSkus(srcSku) {
+  const m = getMappingForSrc(srcSku);
+  if (m) return m.targets.split(',').map(s=>s.trim()).filter(Boolean);
+  return [srcSku];
+}
+
+function findProductName(sku) {
+  // Check mapping by src
+  const bySrc = getMappingForSrc(sku);
+  if (bySrc) return bySrc.name;
+  // Check by target
+  const byTarget = getMappingForTarget(sku);
+  if (byTarget) return byTarget.name;
+  // Check in pending data
+  if (state.rawData.pending) {
+    const row = state.rawData.pending.find(r => (r['SKU']||'').trim() === sku);
+    if (row) return row['Title'] || sku;
+  }
+  return sku;
+}
+
+function parseExcelDate(v) {
+  if (!v) return null;
+  if (v instanceof Date) return v;
+  const s = String(v).trim();
+  // Try yyyy-mm-dd
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return new Date(+m[1], +m[2]-1, +m[3]);
+  // Try serial number
+  const n = Number(s);
+  if (!isNaN(n) && n > 40000) {
+    // Excel serial date
+    const d = new Date((n - 25569) * 86400 * 1000);
+    d.setMinutes(d.getMinutes() + d.getTimezoneOffset());
+    return d;
+  }
+  // Try slash format
+  const m2 = s.match(/(\d{1,4})[\/\-](\d{1,2})[\/\-](\d{1,4})/);
+  if (m2) {
+    const a = +m2[1], b = +m2[2], c = +m2[3];
+    if (a > 1000) return new Date(a, b-1, c);
+    return new Date(c, b-1, a);
+  }
+  return null;
+}
+
+function dateStr(d) {
+  if (!d) return '';
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function addWorkdays(date, days) {
+  let d = new Date(date);
+  let added = 0;
+  while (added < days) {
+    d.setDate(d.getDate() + 1);
+    if (d.getDay() !== 0 && d.getDay() !== 6) added++;
+  }
+  return d;
+}
+
+async function runAnalysis() {
+  const loaded = FILE_LABELS.filter(f => state.rawData[f.key]);
+  if (loaded.length < 2) {
+    toast('❌ 请至少上传2个数据文件', 'error');
+    return;
+  }
+
+  showProgress(5, '初始化分析...');
+  await sleep(10);
+
+  try {
+    setProgress(10, '处理待发货数据...');
+    await sleep(10);
+    const pendingMap = processPending(state.rawData.pending || []);
+
+    setProgress(20, '处理逻辑仓库存...');
+    await sleep(10);
+    const warehouseMap = processWarehouse(state.rawData.warehouse || []);
+
+    setProgress(30, '处理销量数据...');
+    await sleep(10);
+    const salesMap = processSales(state.rawData.sales || []);
+
+    setProgress(45, '处理头程明细...');
+    await sleep(10);
+    const transitMap = processTransit(state.rawData.transit || []);
+
+    setProgress(55, '处理分货计划...');
+    await sleep(10);
+    const allocationMap = processAllocation(state.rawData.allocation || []);
+
+    setProgress(65, '处理销量预测...');
+    await sleep(10);
+    const forecastMap = processForecast(state.rawData.forecast || []);
+
+    setProgress(75, '计算周转指标...');
+    await sleep(10);
+    
+    // Determine SKU list
+    const allSkus = new Set([
+      ...CORE_SKUS,
+      ...Object.keys(warehouseMap),
+      ...Object.keys(salesMap)
+    ]);
+
+    const rows = [];
+    for (const sku of allSkus) {
+      const row = computeSku(sku, {pendingMap, warehouseMap, salesMap, transitMap, allocationMap, forecastMap});
+      rows.push(row);
+    }
+
+    setProgress(90, '生成报表...');
+    await sleep(10);
+
+    state.analysis = { rows, pendingMap, warehouseMap, salesMap, transitMap, allocationMap, forecastMap };
+    saveToLS('lastAnalysis', state.analysis);
+    const now = new Date().toLocaleString('zh-CN');
+    saveToLS('lastAnalyzedTime', now);
+    document.getElementById('lastAnalyzedTime').textContent = '上次分析: ' + now;
+
+    // Populate SKU selects
+    populateSkuSelects(rows);
+
+    setProgress(100, '完成!');
+    await sleep(300);
+    hideProgress();
+    renderAll();
+    toast('✅ 分析完成! 共分析 ' + rows.length + ' 个SKU', 'success');
+  } catch(e) {
+    hideProgress();
+    console.error(e);
+    toast('❌ 分析出错: ' + e.message, 'error');
+  }
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ===== DATA PROCESSORS =====
+
+function processPending(rows) {
+  // Group by SKU, take max for Committed and Available
+  const map = {};
+  rows.forEach(r => {
+    const sku = (r['SKU'] || '').trim();
+    if (!sku) return;
+    const committed = parseFloat(r['Committed (not editable)'] || r['Committed'] || 0) || 0;
+    const available = parseFloat(r['Available (not editable)'] || r['Available'] || 0) || 0;
+    const onhand = parseFloat(r['On hand (current)'] || r['On hand'] || 0) || 0;
+    if (!map[sku]) {
+      map[sku] = { committed: 0, available: 0, onhand: 0, title: r['Title'] || sku };
+    }
+    map[sku].committed = Math.max(map[sku].committed, committed);
+    map[sku].available = Math.max(map[sku].available, available);
+    map[sku].onhand = Math.max(map[sku].onhand, onhand);
+  });
+  return map;
+}
+
+function processWarehouse(rows) {
+  const map = {};
+  rows.forEach(r => {
+    const sku = (r['商品SKU'] || r['SKU'] || '').trim();
+    if (!sku) return;
+    const avail = parseFloat(r['可用量'] || 0) || 0;
+    const total = parseFloat(r['在库量'] || r['总量'] || avail) || 0;
+    if (!map[sku]) map[sku] = { available: 0, total: 0 };
+    map[sku].available += avail;
+    map[sku].total += total;
+  });
+  return map;
+}
+
+function processSales(rows) {
+  const map = {};
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  rows.forEach(r => {
+    const sku = (r['SKU'] || '').trim();
+    if (!sku) return;
+    const dateStr = r['天'] || r['Date'] || r['日期'] || '';
+    const dateVal = parseExcelDate(dateStr);
+    if (!dateVal) return;
+    const qty = parseFloat(r['净售出商品数'] || r['Quantity'] || 0) || 0;
+    const amount = parseFloat(r['净销售额'] || r['Sales'] || 0) || 0;
+    const ret = parseFloat(r['退货'] || 0) || 0;
+
+    if (!map[sku]) map[sku] = [];
+    map[sku].push({ date: dateVal, qty, amount, ret });
+  });
+  return map;
+}
+
+function processTransit(rows) {
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const map = {};
+
+  rows.forEach(r => {
+    const sku = (r['SKU'] || '').trim();
+    if (!sku) return;
+    // Filter: cargo type contains "3D打印机" or SKU starts with PF
+    const cargoType = r['货物类型'] || r['类型'] || '';
+    const isPrinter = cargoType.includes('3D打印机') || sku.startsWith('PF');
+    if (!isPrinter) return;
+
+    const shelfDate = r['上架日期'] || r['入库日期'] || '';
+    const isAlreadyOnShelf = shelfDate && String(shelfDate).trim() !== '';
+    if (isAlreadyOnShelf) return;
+
+    // 妥投日期
+    const touDate = parseExcelDate(r['妥投日期'] || r['到港时间ETA'] || '');
+    if (touDate && touDate < today) return;
+
+    const qty = parseFloat(r['数量'] || 0) || 0;
+    if (qty <= 0) return;
+
+    // Compute expected arrival: ETA + 5 working days + 3 days
+    const eta = parseExcelDate(r['到港时间ETA'] || r['ETA'] || '');
+    let arrivalDate = touDate || eta;
+    if (arrivalDate) {
+      arrivalDate = addWorkdays(arrivalDate, 5);
+      arrivalDate = new Date(arrivalDate.getTime() + 3 * 86400000);
+    }
+
+    if (!map[sku]) map[sku] = [];
+    map[sku].push({
+      qty,
+      eta,
+      touDate,
+      arrivalDate,
+      etd: parseExcelDate(r['开船时间ETD'] || ''),
+      shipNo: r['发货单号'] || '',
+      carrier: r['运输方式'] || '',
+    });
+  });
+
+  // Sort each SKU by arrival date
+  Object.keys(map).forEach(sku => {
+    map[sku].sort((a,b) => {
+      if (!a.arrivalDate) return 1;
+      if (!b.arrivalDate) return -1;
+      return a.arrivalDate - b.arrivalDate;
+    });
+  });
+
+  return map;
+}
+
+function processAllocation(rows) {
+  const map = {};
+  if (!rows || rows.length === 0) return map;
+
+  // Find date columns (yyyy-mm-dd format)
+  const sampleRow = rows[0] || {};
+  const dateKeys = Object.keys(sampleRow).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(String(k).trim()) || parseExcelDate(k));
+
+  rows.forEach(r => {
+    const srcSku = (r['SKU'] || '').trim();
+    if (!srcSku) return;
+
+    // Map source SKU to targets
+    const targets = getAllTargetSkus(srcSku);
+    const weekData = {};
+
+    dateKeys.forEach(dk => {
+      const date = parseExcelDate(String(dk));
+      if (!date) return;
+      const qty = parseFloat(r[dk] || 0) || 0;
+      if (qty > 0) weekData[dateStr(date)] = qty;
+    });
+
+    // For H2C Laser: split between SL001 and SL002 by ratio (default 50/50)
+    if (srcSku === 'PF003-N+SA007-JP') {
+      const t1 = 'PF003-N+SA007-JP+SL001-JP';
+      const t2 = 'PF003-N+SA007-JP+SL002-JP';
+      if (!map[t1]) map[t1] = {};
+      if (!map[t2]) map[t2] = {};
+      Object.keys(weekData).forEach(d => {
+        map[t1][d] = (map[t1][d] || 0) + Math.floor(weekData[d] / 2);
+        map[t2][d] = (map[t2][d] || 0) + Math.ceil(weekData[d] / 2);
+      });
+    } else {
+      // Distribute equally among all targets
+      targets.forEach(tSku => {
+        if (!map[tSku]) map[tSku] = {};
+        Object.keys(weekData).forEach(d => {
+          map[tSku][d] = (map[tSku][d] || 0) + weekData[d];
+        });
+      });
+    }
+  });
+
+  return map;
+}
+
+function processForecast(rows) {
+  const map = {};
+  const monthCols = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  rows.forEach(r => {
+    const sku = (r['SKU'] || '').trim();
+    if (!sku) return;
+    const byMonth = {};
+    monthCols.forEach(col => {
+      const v = parseFloat(r[col] || 0);
+      if (!isNaN(v) && v > 0) byMonth[col] = v;
+    });
+    map[sku] = byMonth;
+  });
+  return map;
+}
+
+// ===== COMPUTE PER SKU =====
+function computeSku(sku, { pendingMap, warehouseMap, salesMap, transitMap, allocationMap, forecastMap }) {
+  const period = parseInt(document.getElementById('calcPeriod')?.value || 30);
+  const safetyDays = parseInt(document.getElementById('safetyDays')?.value || 14);
+  const fluctCoeff = (parseInt(document.getElementById('fluctCoeff')?.value || 100)) / 100;
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  // Warehouse available
+  const wh = warehouseMap[sku] || {};
+  const whAvail = wh.available || 0;
+  const whTotal = wh.total || 0;
+
+  // Shopify committed - check mapping targets too
+  let committed = 0;
+  const targetsForSku = getAllTargetSkus(sku);
+  targetsForSku.forEach(t => {
+    const p = pendingMap[t] || {};
+    committed = Math.max(committed, p.committed || 0);
+  });
+  // Also check direct
+  if (pendingMap[sku]) committed = Math.max(committed, pendingMap[sku].committed || 0);
+
+  const stockNet = whAvail - committed;
+
+  // Sales data
+  const salesRecords = [];
+  // gather from this sku + mapped targets
+  const skuSet = new Set([sku, ...targetsForSku]);
+  skuSet.forEach(s => {
+    if (salesMap[s]) salesRecords.push(...salesMap[s]);
+  });
+  salesRecords.sort((a,b) => b.date - a.date);
+
+  function calcDailySales(days) {
+    const cutoff = new Date(today.getTime() - days * 86400000);
+    const relevant = salesRecords.filter(s => s.date >= cutoff && s.date <= today);
+    if (relevant.length === 0) return 0;
+    const total = relevant.reduce((sum, s) => sum + s.qty, 0);
+    return total / days;
+  }
+
+  const dailySales = calcDailySales(period);
+  const sales7 = calcDailySales(7);
+  const sales14 = calcDailySales(14);
+  const sales30 = calcDailySales(30);
+  const sales60 = calcDailySales(60);
+
+  const sales30Total = salesRecords
+    .filter(s => s.date >= new Date(today.getTime() - 30 * 86400000))
+    .reduce((sum,s) => sum + s.qty, 0);
+
+  // Transit
+  const transitList = [];
+  skuSet.forEach(s => { if (transitMap[s]) transitList.push(...transitMap[s]); });
+  transitList.sort((a,b) => {
+    if (!a.arrivalDate) return 1; if (!b.arrivalDate) return -1;
+    return a.arrivalDate - b.arrivalDate;
+  });
+  const transitTotal = transitList.reduce((sum,t) => sum + t.qty, 0);
+  const nextTransit = transitList[0] || null;
+  const nextArrivalDate = nextTransit?.arrivalDate || null;
+  const nextArrivalQty = nextTransit?.qty || 0;
+
+  // Allocation
+  const allocData = {};
+  skuSet.forEach(s => { if (allocationMap[s]) Object.assign(allocData, allocationMap[s]); });
+  
+  const now4w = new Date(today.getTime() + 28 * 86400000);
+  const now8w = new Date(today.getTime() + 56 * 86400000);
+  const now12w = new Date(today.getTime() + 84 * 86400000);
+  let plan4w = 0, plan8w = 0, plan12w = 0;
+  Object.keys(allocData).forEach(dStr => {
+    const d = parseExcelDate(dStr);
+    if (!d) return;
+    const qty = allocData[dStr] || 0;
+    if (d >= today && d <= now4w) plan4w += qty;
+    if (d >= today && d <= now8w) plan8w += qty;
+    if (d >= today && d <= now12w) plan12w += qty;
+  });
+
+  // Forecast
+  const forecastData = {};
+  skuSet.forEach(s => { if (forecastMap[s]) Object.assign(forecastData, forecastMap[s]); });
+  const monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  const nextMonth = monthNames[today.getMonth() + 1 < 12 ? today.getMonth() + 1 : 0] || monthNames[today.getMonth()];
+  const forecastNext = forecastData[nextMonth] || null;
+
+  // Sellable days
+  const sellDays = dailySales > 0 ? stockNet / dailySales : (stockNet > 0 ? 999 : 0);
+
+  // Stockout simulation (90 days)
+  let simStock = stockNet;
+  let outDate = null;
+  const simData = []; // {day, stock}
+  
+  // Build transit and allocation events
+  const events = {}; // dateStr -> qty
+  transitList.forEach(t => {
+    if (t.arrivalDate && t.arrivalDate >= today) {
+      const ds = dateStr(t.arrivalDate);
+      events[ds] = (events[ds] || 0) + t.qty;
+    }
+  });
+  Object.keys(allocData).forEach(ds => {
+    const d = parseExcelDate(ds);
+    if (d && d >= today) events[ds] = (events[ds] || 0) + (allocData[ds] || 0);
+  });
+
+  for (let i = 0; i <= 90; i++) {
+    const d = new Date(today.getTime() + i * 86400000);
+    const ds = dateStr(d);
+    if (i > 0) simStock -= dailySales * fluctCoeff;
+    if (events[ds]) simStock += events[ds];
+    simData.push({ day: i, date: d, stock: Math.max(simStock, -999) });
+    if (simStock <= 0 && !outDate && i > 0) outDate = d;
+  }
+
+  const daysLeft = outDate ? Math.round((outDate - today) / 86400000) : (stockNet > 0 ? 999 : 0);
+
+  // Safety stock & replenishment
+  const safetyStock = safetyDays * dailySales;
+  const replenish = Math.max(0, Math.ceil(safetyStock - stockNet - transitTotal - plan4w));
+
+  // Status
+  let status, statusLabel;
+  if (stockNet <= 0) { status='oos'; statusLabel='⚫ 已缺货'; }
+  else if (daysLeft < 15) { status='critical'; statusLabel='🔴 缺货风险'; }
+  else if (daysLeft < 30) { status='warning'; statusLabel='🟡 偏低'; }
+  else { status='safe'; statusLabel='🟢 充足'; }
+
+  return {
+    sku, name: findProductName(sku),
+    whAvail, whTotal, committed, stockNet,
+    sales30Total, dailySales, sales7, sales14, sales30, sales60,
+    sellDays: sellDays > 900 ? 999 : sellDays,
+    transitTotal, nextArrivalDate, nextArrivalQty,
+    plan4w, plan8w, plan12w,
+    outDate, daysLeft,
+    replenish,
+    forecastNext,
+    status, statusLabel,
+    simData, events,
+    safetyDays, safetyStock,
+  };
+}
+
+function populateSkuSelects(rows) {
+  const simSel = document.getElementById('simSkuSelect');
+  const salesSel = document.getElementById('salesSkuFilter');
+  simSel.innerHTML = '<option value="">-- 选择SKU --</option>';
+  salesSel.innerHTML = '<option value="all">全部</option>';
+  rows.filter(r => r.whAvail > 0 || r.dailySales > 0).forEach(r => {
+    const o1 = new Option(`${r.sku} (${r.name})`, r.sku);
+    const o2 = new Option(`${r.sku} (${r.name})`, r.sku);
+    simSel.appendChild(o1);
+    salesSel.appendChild(o2);
+  });
+}
+</script>
+<script>
+// ===== RENDER ALL =====
+function renderAll() {
+  if (!state.analysis) return;
+  renderTab1();
+  renderTab2();
+  renderTab3();
+}
+
+// ===== TAB 1 RENDER =====
+function renderTab1() {
+  const { rows } = state.analysis;
+  const period = parseInt(document.getElementById('calcPeriod')?.value || 30);
+
+  // Recompute with current params
+  const computed = rows.map(r => computeSku(r.sku, state.analysis));
+
+  state.filteredRows = computed;
+
+  // Stats
+  const total = computed.length;
+  const critical = computed.filter(r => r.status === 'critical').length;
+  const warning = computed.filter(r => r.status === 'warning').length;
+  const safe = computed.filter(r => r.status === 'safe').length;
+  const oos = computed.filter(r => r.status === 'oos').length;
+  const avgDays = computed.filter(r=>r.sellDays<999 && r.sellDays > 0).reduce((s,r)=>s+r.sellDays,0) / Math.max(1, computed.filter(r=>r.sellDays<999 && r.sellDays>0).length);
+
+  document.getElementById('statCards').innerHTML = `
+    <div class="stat-card"><div class="stat-label">总SKU数量</div><div class="stat-value">${total}</div><div class="stat-sub">已分析</div></div>
+    <div class="stat-card red"><div class="stat-label">🔴 缺货风险</div><div class="stat-value">${critical+oos}</div><div class="stat-sub">15天内断货</div></div>
+    <div class="stat-card yellow"><div class="stat-label">🟡 需关注</div><div class="stat-value">${warning}</div><div class="stat-sub">15-30天断货</div></div>
+    <div class="stat-card green"><div class="stat-label">🟢 库存充足</div><div class="stat-value">${safe}</div><div class="stat-sub">30天以上</div></div>
+    <div class="stat-card blue"><div class="stat-label">平均可售天数</div><div class="stat-value">${avgDays.toFixed(1)}</div><div class="stat-sub">天</div></div>`;
+
+  renderHealthPie(computed);
+  renderDaysBar(computed);
+  renderTable(computed);
+}
+
+function fmt(n, digits=1) {
+  if (n === null || n === undefined || isNaN(n)) return '-';
+  if (n === 999) return '999+';
+  return typeof digits === 'number' ? n.toFixed(digits) : n;
+}
+
+function renderTable(rows) {
+  state.sortCol = state.sortCol || 'daysLeft';
+  const sorted = [...rows].sort((a,b) => {
+    let av = a[state.sortCol], bv = b[state.sortCol];
+    if (av === null || av === undefined) av = 99999;
+    if (bv === null || bv === undefined) bv = 99999;
+    if (av === 999) av = 99999;
+    if (bv === 999) bv = 99999;
+    if (typeof av === 'string') return av.localeCompare(bv) * state.sortDir;
+    return (av - bv) * state.sortDir;
+  });
+
+  const search = (document.getElementById('invSearch')?.value || '').toLowerCase();
+  const statusF = document.getElementById('statusFilter')?.value || '';
+
+  const filtered = sorted.filter(r => {
+    if (search && !r.sku.toLowerCase().includes(search) && !r.name.toLowerCase().includes(search)) return false;
+    if (statusF && r.status !== statusF) return false;
+    return true;
+  });
+
+  const tbody = document.getElementById('invTableBody');
+  tbody.innerHTML = '';
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="17"><div class="no-data"><div class="no-data-icon">📭</div>暂无数据</div></td></tr>';
+    return;
+  }
+
+  filtered.forEach(r => {
+    const tr = document.createElement('tr');
+    const badgeClass = {safe:'badge-green', warning:'badge-yellow', critical:'badge-red', oos:'badge-black'}[r.status] || 'badge-gray';
+
+    tr.innerHTML = `
+      <td style="font-family:monospace;font-size:11px;">${r.sku}</td>
+      <td style="font-size:12px;">${r.name}</td>
+      <td>${r.whAvail !== undefined ? r.whAvail : '<span class="muted">无数据</span>'}</td>
+      <td>${r.committed > 0 ? r.committed : '-'}</td>
+      <td style="font-weight:${r.stockNet<=0?'bold':'normal'};color:${r.stockNet<=0?'var(--accent-red)':'inherit'}">${r.stockNet}</td>
+      <td>${r.sales30Total > 0 ? Math.round(r.sales30Total) : '<span class="muted">-</span>'}</td>
+      <td>${r.dailySales > 0 ? r.dailySales.toFixed(1) : '<span class="muted">-</span>'}</td>
+      <td style="font-weight:600;color:${r.sellDays<15?'var(--accent-red)':r.sellDays<30?'var(--accent-yellow)':'var(--accent-green)'}">${r.sellDays===999?'999+':fmt(r.sellDays,0)}</td>
+      <td>${r.transitTotal > 0 ? r.transitTotal : '-'}</td>
+      <td style="font-size:11px;">${r.nextArrivalDate ? dateStr(r.nextArrivalDate) : '-'}</td>
+      <td>${r.nextArrivalQty || '-'}</td>
+      <td>${r.plan4w > 0 ? r.plan4w : '-'}</td>
+      <td style="font-size:11px;color:var(--accent-red);">${r.outDate ? dateStr(r.outDate) : (r.stockNet<=0?'已缺货':'充足')}</td>
+      <td style="font-weight:600;color:${r.daysLeft<15?'var(--accent-red)':r.daysLeft<30?'var(--accent-yellow)':'inherit'}">${r.daysLeft===999?'-':r.daysLeft}</td>
+      <td style="color:${r.replenish>0?'var(--accent-red)':'var(--accent-green)'};">${r.replenish > 0 ? r.replenish : '-'}</td>
+      <td>${r.forecastNext !== null ? r.forecastNext : '<span class="muted">-</span>'}</td>
+      <td><span class="badge ${badgeClass}">${r.statusLabel}</span></td>`;
+    tbody.appendChild(tr);
+  });
+
+  // Update sort indicators
+  document.querySelectorAll('#invTable thead th').forEach(th => {
+    th.classList.remove('sorted-asc','sorted-desc');
+  });
+}
+
+let sortColMap = {
+  sku:0, name:1, available:2, committed:3, stockNet:4, sales30:5, dailySales:6,
+  sellDays:7, transit:8, nextArrival:9, nextQty:10, plan4w:11, outDate:12, daysLeft:13, replenish:14, forecast:15, status:16
+};
+
+function sortTable(col) {
+  if (state.sortCol === col) state.sortDir *= -1;
+  else { state.sortCol = col; state.sortDir = 1; }
+  renderTable(state.filteredRows);
+}
+
+function filterTable() {
+  renderTable(state.filteredRows);
+}
+
+// ===== CHARTS TAB 1 =====
+function clearCharts() {
+  Object.values(state.charts).forEach(c => { try { c.destroy(); } catch(e){} });
+  state.charts = {};
+}
+
+function getColors() {
+  const theme = document.documentElement.getAttribute('data-theme');
+  return {
+    text: theme === 'dark' ? '#8b949e' : '#4a5568',
+    grid: theme === 'dark' ? '#21262d' : '#e2e8f0',
+    red: '#f85149', yellow: '#d29922', green: '#3fb950', blue: '#388bfd', purple: '#bc8cff',
+  };
+}
+
+function renderHealthPie(rows) {
+  const c = getColors();
+  const counts = {
+    '🔴 缺货风险': rows.filter(r=>r.status==='critical').length,
+    '🟡 偏低': rows.filter(r=>r.status==='warning').length,
+    '🟢 充足': rows.filter(r=>r.status==='safe').length,
+    '⚫ 已缺货': rows.filter(r=>r.status==='oos').length,
+  };
+
+  if (state.charts.healthPie) state.charts.healthPie.destroy();
+  state.charts.healthPie = new Chart(document.getElementById('healthPieChart'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(counts),
+      datasets: [{ data: Object.values(counts), backgroundColor: [c.red, c.yellow, c.green, '#444'], borderWidth: 0 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position:'right', labels: { color: c.text, boxWidth: 12, padding: 12, font:{size:12} } }
+      }
+    }
+  });
+}
+
+function renderDaysBar(rows) {
+  const c = getColors();
+  const sorted = [...rows].filter(r=>r.dailySales>0).sort((a,b)=>a.sellDays-b.sellDays).slice(0,15);
+  const labels = sorted.map(r => r.sku.length > 18 ? r.sku.slice(0,16)+'…' : r.sku);
+  const data = sorted.map(r => r.sellDays === 999 ? 200 : r.sellDays);
+  const colors = sorted.map(r => r.status==='critical'||r.status==='oos'?c.red:r.status==='warning'?c.yellow:c.green);
+
+  if (state.charts.daysBar) state.charts.daysBar.destroy();
+  state.charts.daysBar = new Chart(document.getElementById('daysBarChart'), {
+    type: 'bar',
+    data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 4, borderWidth: 0 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: c.grid }, ticks: { color: c.text }, title: { display: true, text: '可售天数', color: c.text } },
+        y: { grid: { display: false }, ticks: { color: c.text, font:{size:10} } }
+      }
+    }
+  });
+}
+
+function renderSimChart() {
+  const sku = document.getElementById('simSkuSelect').value;
+  if (!sku || !state.analysis) return;
+
+  const row = computeSku(sku, state.analysis);
+  const c = getColors();
+  const today = new Date(); today.setHours(0,0,0,0);
+  const safetyDays = parseInt(document.getElementById('safetyDays').value || 14);
+  const dailySales = row.dailySales;
+  const safetyStock = row.safetyStock;
+
+  const labels = row.simData.map(d => d.day % 7 === 0 ? dateStr(d.date) : '');
+  const stocks = row.simData.map(d => Math.max(d.stock, -100));
+
+  const datasets = [
+    {
+      label: '模拟库存',
+      data: stocks,
+      borderColor: c.blue,
+      backgroundColor: c.blue + '18',
+      fill: true,
+      pointRadius: 0,
+      tension: 0.4,
+    },
+    {
+      label: '安全库存线',
+      data: new Array(91).fill(safetyStock),
+      borderColor: c.yellow,
+      borderDash: [6,4],
+      pointRadius: 0,
+      borderWidth: 1.5,
+      fill: false,
+    },
+    {
+      label: '断货线',
+      data: new Array(91).fill(0),
+      borderColor: c.red,
+      borderDash: [4,4],
+      pointRadius: 0,
+      borderWidth: 1,
+      fill: false,
+    }
+  ];
+
+  // Arrival events as scatter points
+  const arrivalPoints = [];
+  row.simData.forEach(d => {
+    const ds = dateStr(d.date);
+    if (row.events[ds]) arrivalPoints.push({ x: d.day, y: d.stock, label: '+' + row.events[ds] });
+  });
+
+  if (arrivalPoints.length > 0) {
+    datasets.push({
+      label: '到货/分货',
+      type: 'scatter',
+      data: arrivalPoints.map(p => ({ x: p.x, y: p.y })),
+      backgroundColor: c.green,
+      pointRadius: 6,
+      pointStyle: 'triangle',
+    });
+  }
+
+  if (state.charts.simLine) state.charts.simLine.destroy();
+  state.charts.simLine = new Chart(document.getElementById('simLineChart'), {
+    type: 'line',
+    data: { labels: row.simData.map(d=>d.day), datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: c.text } },
+        tooltip: {
+          callbacks: {
+            title: ctx => {
+              const day = ctx[0].label;
+              const d = new Date(today.getTime() + day * 86400000);
+              return 'Day ' + day + ' (' + dateStr(d) + ')';
+            }
+          }
+        }
+      },
+      scales: {
+        x: { grid: { color: c.grid }, ticks: { color: c.text, maxTicksLimit: 10, callback: (v,i) => i%7===0?'D'+v:'' } },
+        y: { grid: { color: c.grid }, ticks: { color: c.text }, title: { display: true, text: '库存量', color: c.text } }
+      }
+    }
+  });
+}
+</script>
+<script>
+// ===== TAB 2: SALES ANALYSIS =====
+function renderTab2() {
+  if (!state.analysis) return;
+  const { salesMap, forecastMap } = state.analysis;
+  const c = getColors();
+  const today = new Date(); today.setHours(0,0,0,0);
+  const dim = document.getElementById('salesDimension')?.value || 'month';
+  const skuFilter = document.getElementById('salesSkuFilter')?.value || 'all';
+
+  // Aggregate sales by month per SKU
+  const months = ['1月','2月','3月','4月','5月','6月','7月','8月'];
+  const monthNums = [1,2,3,4,5,6,7,8];
+  const year = today.getFullYear();
+
+  // Get SKU list from analysis
+  const skus = state.analysis.rows.filter(r => r.dailySales > 0 || r.sales30Total > 0).map(r => r.sku);
+  const targetSkus = skuFilter === 'all' ? skus : [skuFilter];
+
+  // Monthly actual sales
+  const actualBySkuMonth = {};
+  targetSkus.forEach(sku => {
+    actualBySkuMonth[sku] = {};
+    const records = salesMap[sku] || [];
+    // Also get mapped targets
+    const targetsForSku = getAllTargetSkus(sku);
+    targetsForSku.forEach(t => { if (salesMap[t]) records.push(...(salesMap[t]||[])); });
+    monthNums.forEach((mo, idx) => {
+      const moRecords = records.filter(r => {
+        return r.date.getFullYear() === year && r.date.getMonth() + 1 === mo;
+      });
+      actualBySkuMonth[sku][months[idx]] = moRecords.reduce((s,r) => s + r.qty, 0);
+    });
+  });
+
+  // Forecast
+  const forecastBySkuMonth = {};
+  targetSkus.forEach(sku => {
+    const fData = forecastMap[sku] || {};
+    const targetsForSku = getAllTargetSkus(sku);
+    const merged = {...fData};
+    targetsForSku.forEach(t => { if (forecastMap[t]) Object.assign(merged, forecastMap[t]); });
+    forecastBySkuMonth[sku] = merged;
+  });
+
+  // Sales vs Forecast chart (aggregate all selected SKUs)
+  const aggActual = months.map(m => targetSkus.reduce((s,sku) => s + (actualBySkuMonth[sku]?.[m]||0), 0));
+  const aggForecast = months.map(m => targetSkus.reduce((s,sku) => s + (forecastBySkuMonth[sku]?.[m]||0), 0));
+
+  if (state.charts.salesVsForecast) state.charts.salesVsForecast.destroy();
+  state.charts.salesVsForecast = new Chart(document.getElementById('salesVsForecastChart'), {
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [
+        { label: '实际销量', data: aggActual, backgroundColor: c.blue + 'cc', borderRadius: 4, borderWidth: 0 },
+        { label: '预测销量', data: aggForecast, backgroundColor: c.text + '44', borderRadius: 4, borderWidth: 0 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: c.text } },
+        tooltip: {
+          callbacks: {
+            afterBody: ctx => {
+              const i = ctx[0].dataIndex;
+              const act = aggActual[i], fore = aggForecast[i];
+              if (fore > 0) {
+                const dev = ((act - fore) / fore * 100).toFixed(1);
+                return [`偏差: ${dev}%`];
+              }
+            }
+          }
+        }
+      },
+      scales: {
+        x: { grid: { color: c.grid }, ticks: { color: c.text } },
+        y: { grid: { color: c.grid }, ticks: { color: c.text } }
+      }
+    }
+  });
+
+  // Sales trend (recent 30 days)
+  const trendData = {};
+  targetSkus.forEach(sku => {
+    (salesMap[sku]||[]).forEach(r => {
+      if (r.date >= new Date(today.getTime() - 30*86400000)) {
+        const ds = dateStr(r.date);
+        trendData[ds] = (trendData[ds]||0) + r.qty;
+      }
+    });
+  });
+  const trendDates = Object.keys(trendData).sort();
+  const trendQtys = trendDates.map(d => trendData[d]);
+
+  if (state.charts.salesTrend) state.charts.salesTrend.destroy();
+  state.charts.salesTrend = new Chart(document.getElementById('salesTrendChart'), {
+    type: 'line',
+    data: {
+      labels: trendDates,
+      datasets: [{
+        label: '日销量',
+        data: trendQtys,
+        borderColor: c.purple,
+        backgroundColor: c.purple + '20',
+        fill: true, tension: 0.4, pointRadius: 2,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: c.grid }, ticks: { color: c.text, maxTicksLimit: 8 } },
+        y: { grid: { color: c.grid }, ticks: { color: c.text } }
+      }
+    }
+  });
+
+  // Sales rank
+  const rankData = targetSkus.map(sku => ({
+    sku: sku.length > 20 ? sku.slice(0,18)+'…' : sku,
+    qty: targetSkus.length === 1 ? aggActual.reduce((s,v)=>s+v,0) :
+      months.reduce((s,m) => s + (actualBySkuMonth[sku]?.[m]||0), 0)
+  })).sort((a,b)=>b.qty-a.qty).slice(0,10);
+
+  if (state.charts.salesRank) state.charts.salesRank.destroy();
+  state.charts.salesRank = new Chart(document.getElementById('salesRankChart'), {
+    type: 'bar',
+    data: {
+      labels: rankData.map(r=>r.sku),
+      datasets: [{ data: rankData.map(r=>r.qty), backgroundColor: c.blue+'cc', borderRadius: 4, borderWidth: 0 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: c.grid }, ticks: { color: c.text } },
+        y: { grid: { display: false }, ticks: { color: c.text, font:{size:10} } }
+      }
+    }
+  });
+
+  // Sales table
+  renderSalesTable(targetSkus, actualBySkuMonth, forecastBySkuMonth, months);
+
+  // Return rate
+  const returnData = targetSkus.map(sku => {
+    const recs = salesMap[sku] || [];
+    const gross = recs.reduce((s,r) => s + Math.max(r.qty,0), 0);
+    const ret = recs.reduce((s,r) => s + Math.abs(Math.min(r.ret||0, 0)), 0);
+    const rate = gross > 0 ? ret / gross * 100 : 0;
+    return { sku: sku.length > 20 ? sku.slice(0,18)+'…' : sku, rate };
+  }).sort((a,b)=>b.rate-a.rate).slice(0,10);
+
+  if (state.charts.returnRate) state.charts.returnRate.destroy();
+  state.charts.returnRate = new Chart(document.getElementById('returnRateChart'), {
+    type: 'bar',
+    data: {
+      labels: returnData.map(r=>r.sku),
+      datasets: [{ data: returnData.map(r=>r.rate.toFixed(1)), backgroundColor: c.red+'aa', borderRadius: 4, borderWidth: 0 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: c.grid }, ticks: { color: c.text, font:{size:10} } },
+        y: { grid: { color: c.grid }, ticks: { color: c.text, callback: v => v+'%' }, title: { display: true, text:'退货率%', color: c.text } }
+      }
+    }
+  });
+}
+
+function renderSalesTable(skus, actualBySkuMonth, forecastBySkuMonth, months) {
+  const search = (document.getElementById('salesSearch')?.value || '').toLowerCase();
+
+  const thead = document.getElementById('salesTableHead');
+  const tbody = document.getElementById('salesTableBody');
+
+  thead.innerHTML = `<tr>
+    <th>SKU</th>
+    ${months.map(m=>`<th>实际(${m})</th><th>预测(${m})</th><th>偏差</th>`).join('')}
+    <th>总体准确率</th>
+  </tr>`;
+
+  tbody.innerHTML = '';
+
+  const filtered = skus.filter(sku => !search || sku.toLowerCase().includes(search));
+
+  filtered.forEach(sku => {
+    const tr = document.createElement('tr');
+    let totalAct = 0, totalFore = 0;
+    let cells = '';
+    months.forEach(m => {
+      const act = actualBySkuMonth[sku]?.[m] || 0;
+      const fore = forecastBySkuMonth[sku]?.[m] || 0;
+      const dev = fore > 0 ? ((act - fore) / fore * 100) : null;
+      totalAct += act; totalFore += fore;
+      const devStyle = dev !== null && Math.abs(dev) > 30 ? 'background:var(--accent-red-subtle);color:var(--accent-red);' : '';
+      cells += `<td>${act || '-'}</td><td style="color:var(--text-muted)">${fore || '-'}</td>
+        <td style="${devStyle}">${dev !== null ? dev.toFixed(1)+'%' : '-'}</td>`;
+    });
+    const accuracy = totalFore > 0 ? ((1 - Math.abs(totalAct - totalFore) / totalFore) * 100) : null;
+    tr.innerHTML = `<td style="font-family:monospace;font-size:11px;">${sku}</td>${cells}
+      <td style="font-weight:600;color:${accuracy===null?'inherit':accuracy>70?'var(--accent-green)':'var(--accent-red)'}">${accuracy !== null ? accuracy.toFixed(1)+'%' : '-'}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function filterSalesTable() { if (state.analysis) renderTab2(); }
+
+// ===== TAB 3: MONITOR =====
+function renderTab3() {
+  if (!state.analysis) return;
+  const { rows, salesMap, transitMap } = state.analysis;
+  const computed = rows.map(r => computeSku(r.sku, state.analysis));
+  const today = new Date(); today.setHours(0,0,0,0);
+  const c = getColors();
+
+  // A: Health pie
+  if (state.charts.monHealth) state.charts.monHealth.destroy();
+  const hc = {
+    critical: computed.filter(r=>r.status==='critical').length,
+    warning: computed.filter(r=>r.status==='warning').length,
+    safe: computed.filter(r=>r.status==='safe').length,
+    oos: computed.filter(r=>r.status==='oos').length,
+  };
+  state.charts.monHealth = new Chart(document.getElementById('monHealthChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['缺货风险','偏低','充足','已缺货'],
+      datasets: [{ data: [hc.critical, hc.warning, hc.safe, hc.oos], backgroundColor: [c.red, c.yellow, c.green, '#444'], borderWidth: 0 }]
+    },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{labels:{color:c.text,boxWidth:10,font:{size:11}}}} }
+  });
+  const avgDays = computed.filter(r=>r.sellDays<999&&r.sellDays>0).reduce((s,r)=>s+r.sellDays,0) / Math.max(1,computed.filter(r=>r.sellDays<999&&r.sellDays>0).length);
+  document.getElementById('monHealthStats').innerHTML = `<span style="color:var(--text-secondary)">平均周转天数: </span><strong>${avgDays.toFixed(1)} 天</strong>`;
+
+  // B: Alert stats
+  document.getElementById('monAlertStats').innerHTML = `
+    <div class="stat-card red"><div class="stat-label">🔴 紧急</div><div class="stat-value">${hc.critical+hc.oos}</div></div>
+    <div class="stat-card yellow"><div class="stat-label">🟡 关注</div><div class="stat-value">${hc.warning}</div></div>`;
+
+  const risk5 = computed.filter(r=>r.status==='critical'||r.status==='oos').sort((a,b)=>a.daysLeft-b.daysLeft).slice(0,5);
+  document.getElementById('monRiskList').innerHTML = risk5.map(r=>`
+    <li>
+      <span style="font-size:11px;font-family:monospace;">${r.sku}</span>
+      <span class="badge badge-red">${r.daysLeft===999?'已缺货':r.daysLeft+'天'}</span>
+    </li>`).join('') || '<li style="color:var(--text-muted)">暂无预警</li>';
+
+  // C: Transit
+  let transitTotal = 0;
+  const arrivals7 = [], arrivals14 = [];
+  const d7 = new Date(today.getTime() + 7*86400000);
+  const d14 = new Date(today.getTime() + 14*86400000);
+  Object.values(transitMap).forEach(list => {
+    list.forEach(t => {
+      transitTotal += t.qty;
+      if (t.arrivalDate && t.arrivalDate <= d7) arrivals7.push(t);
+      if (t.arrivalDate && t.arrivalDate <= d14) arrivals14.push(t);
+    });
+  });
+  document.getElementById('monTransitStats').innerHTML = `
+    <div class="stat-card blue"><div class="stat-label">在途总量</div><div class="stat-value">${transitTotal}</div></div>
+    <div class="stat-card"><div class="stat-label">7天内预计到货</div><div class="stat-value">${arrivals7.reduce((s,t)=>s+t.qty,0)}</div></div>
+    <div class="stat-card"><div class="stat-label">14天内预计到货</div><div class="stat-value">${arrivals14.reduce((s,t)=>s+t.qty,0)}</div></div>`;
+
+  // D: Sales trend
+  const now7 = computed.reduce((s,r) => s + (r.sales7 * 7), 0);
+  const prev7 = computed.reduce((s,r) => {
+    const recs = (salesMap[r.sku]||[]).filter(d => {
+      return d.date >= new Date(today.getTime()-14*86400000) && d.date < new Date(today.getTime()-7*86400000);
+    });
+    return s + recs.reduce((ss,rec)=>ss+rec.qty,0);
+  }, 0);
+  const trendPct = prev7 > 0 ? ((now7-prev7)/prev7*100).toFixed(1) : 0;
+  const trendUp = trendPct >= 0;
+  document.getElementById('monSalesTrend').innerHTML = `
+    <div style="display:flex;align-items:baseline;gap:10px;">
+      <span style="font-size:24px;font-weight:700;">${Math.round(now7)}</span>
+      <span style="color:var(--text-secondary)">近7天总销量</span>
+      <span style="color:${trendUp?'var(--accent-green)':'var(--accent-red)'};">${trendUp?'↑':'↓'}${Math.abs(trendPct)}%</span>
+    </div>`;
+
+  const top5 = computed.filter(r=>r.sales7>0).sort((a,b)=>b.sales7*7-a.sales7*7).slice(0,5);
+  document.getElementById('monTopSales').innerHTML = top5.map(r=>`
+    <li>
+      <span style="font-size:11px;">${r.name}</span>
+      <span style="font-size:12px;font-weight:600;">${Math.round(r.sales7*7)}</span>
+    </li>`).join('') || '<li style="color:var(--text-muted)">暂无数据</li>';
+
+  // E: Forecast accuracy
+  const { forecastMap } = state.analysis;
+  const monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  const curMonth = monthNames[today.getMonth()];
+  
+  let accuracyList = [];
+  computed.forEach(r => {
+    const fData = forecastMap[r.sku] || {};
+    const fore = fData[curMonth] || 0;
+    const act = r.sales30Total;
+    if (fore > 0 && act > 0) {
+      const acc = (1 - Math.abs(act - fore) / fore) * 100;
+      const dev = ((act - fore) / fore * 100);
+      accuracyList.push({ sku: r.sku, name: r.name, acc, dev, fore, act });
+    }
+  });
+
+  const avgAcc = accuracyList.length > 0 ? accuracyList.reduce((s,v)=>s+v.acc,0)/accuracyList.length : null;
+  document.getElementById('monForecastStats').innerHTML = `
+    <div style="display:flex;align-items:baseline;gap:8px;">
+      <span style="font-size:24px;font-weight:700;color:${avgAcc===null?'inherit':avgAcc>70?'var(--accent-green)':'var(--accent-red)'}">${avgAcc !== null ? avgAcc.toFixed(1)+'%' : '-'}</span>
+      <span style="color:var(--text-secondary)">本月预测准确率 (${curMonth})</span>
+    </div>`;
+
+  const worst5 = accuracyList.sort((a,b)=>a.acc-b.acc).slice(0,5);
+  document.getElementById('monWorstForecast').innerHTML = worst5.map(r=>`
+    <li>
+      <span style="font-size:11px;">${r.name}</span>
+      <span class="badge ${Math.abs(r.dev)>30?'badge-red':'badge-yellow'}">${r.dev.toFixed(0)}%</span>
+    </li>`).join('') || '<li style="color:var(--text-muted)">暂无数据</li>';
+}
+
+// ===== EXPORT =====
+function exportCSV(type) {
+  if (!state.analysis) { toast('请先运行分析', 'error'); return; }
+  const computed = state.analysis.rows.map(r => computeSku(r.sku, state.analysis));
+  let rows, filename;
+
+  if (type === 'inventory') {
+    rows = [['SKU','产品名称','海外仓可用量','Shopify占用','当前净库存','近30天销量','日均销量','可售天数','在途总量','最近到货日','未来4周分货','预计断货日','距断货天数','建议补货量','下月预测','状态']];
+    computed.forEach(r => {
+      rows.push([r.sku,r.name,r.whAvail,r.committed,r.stockNet,Math.round(r.sales30Total),r.dailySales.toFixed(1),r.sellDays===999?'充足':r.sellDays.toFixed(0),r.transitTotal,r.nextArrivalDate?dateStr(r.nextArrivalDate):'',r.plan4w,r.outDate?dateStr(r.outDate):(r.stockNet<=0?'已缺货':'充足'),r.daysLeft===999?'':r.daysLeft,r.replenish,r.forecastNext||'',r.statusLabel]);
+    });
+    filename = 'inventory_analysis.csv';
+  } else if (type === 'alerts') {
+    const alerts = computed.filter(r=>r.status==='critical'||r.status==='oos'||r.status==='warning');
+    rows = [['SKU','产品名称','状态','距断货天数','建议补货量','在途总量','未来4周分货']];
+    alerts.forEach(r => {
+      rows.push([r.sku,r.name,r.statusLabel,r.daysLeft===999?'':r.daysLeft,r.replenish,r.transitTotal,r.plan4w]);
+    });
+    filename = 'alerts.csv';
+  } else {
+    toast('导出功能开发中', 'error'); return;
+  }
+
+  const csv = rows.map(r => r.map(v => '"' + String(v||'').replace(/"/g,'""') + '"').join(',')).join('\n');
+  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  toast('✅ CSV导出成功', 'success');
+}
+
+// ===== BOOT =====
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
