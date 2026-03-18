@@ -1,0 +1,1679 @@
+
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+							<style>
+								body {
+									background-color: white; /* Ensure the iframe has a white background */
+								}
+
+								
+							</style>
+                        </head>
+                        <body>
+                            <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>基础运营综合管理平台 v2 — 修复版</title>
+<style>
+  /* ===== 全局样式 ===== */
+  :root {
+    --primary: #4f46e5;
+    --primary-light: #818cf8;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --success: #22c55e;
+    --dark: #1e293b;
+    --gray: #64748b;
+    --light: #f8fafc;
+    --border: #e2e8f0;
+    --radius: 10px;
+    --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--light);
+    color: var(--dark);
+    line-height: 1.6;
+  }
+  /* 头部 */
+  .header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: #fff; padding: 18px 32px;
+    display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 4px 12px rgba(79,70,229,0.3);
+  }
+  .header h1 { font-size: 22px; font-weight: 700; }
+  .header-actions { display: flex; gap: 10px; align-items: center; }
+  .header-actions button {
+    background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 8px; padding: 6px 14px; cursor: pointer; font-size: 13px;
+    transition: background 0.2s;
+  }
+  .header-actions button:hover { background: rgba(255,255,255,0.35); }
+
+  /* 安全提示条 */
+  .security-bar {
+    background: #f0fdf4; border-bottom: 1px solid #bbf7d0;
+    padding: 8px 32px; font-size: 12px; color: #166534; text-align: center;
+  }
+
+  /* 容器 */
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+  /* 折叠面板 */
+  .panel {
+    background: #fff; border-radius: var(--radius); box-shadow: var(--shadow);
+    margin-bottom: 20px; overflow: hidden;
+  }
+  .panel-header {
+    padding: 16px 20px; cursor: pointer; display: flex; justify-content: space-between;
+    align-items: center; font-weight: 600; font-size: 15px;
+    background: #f8fafc; border-bottom: 1px solid var(--border);
+    user-select: none;
+  }
+  .panel-header:hover { background: #f1f5f9; }
+  .panel-body { padding: 20px; }
+  .panel-body.collapsed { display: none; }
+
+  /* 按钮 */
+  .btn {
+    padding: 8px 18px; border: none; border-radius: 8px; cursor: pointer;
+    font-size: 13px; font-weight: 600; transition: all 0.2s; display: inline-flex;
+    align-items: center; gap: 6px;
+  }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: #4338ca; }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-danger:hover { background: #dc2626; }
+  .btn-success { background: var(--success); color: #fff; }
+  .btn-success:hover { background: #16a34a; }
+  .btn-warning { background: var(--warning); color: #fff; }
+  .btn-warning:hover { background: #d97706; }
+  .btn-outline {
+    background: transparent; color: var(--primary); border: 1.5px solid var(--primary);
+  }
+  .btn-outline:hover { background: var(--primary); color: #fff; }
+  .btn-sm { padding: 5px 12px; font-size: 12px; }
+
+  /* 文件上传区 */
+  .upload-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+  }
+  .upload-card {
+    border: 2px dashed var(--border); border-radius: var(--radius);
+    padding: 16px; text-align: center; transition: border-color 0.2s;
+    position: relative;
+  }
+  .upload-card:hover { border-color: var(--primary-light); }
+  .upload-card.has-file { border-color: var(--success); border-style: solid; background: #f0fdf4; }
+  .upload-card label { display: block; cursor: pointer; }
+  .upload-card input[type="file"] { display: none; }
+  .upload-card .file-icon { font-size: 28px; margin-bottom: 6px; }
+  .upload-card .file-name { font-size: 11px; color: var(--gray); margin-top: 6px; word-break: break-all; }
+  .upload-card .file-status { font-size: 11px; margin-top: 4px; }
+  .upload-card .file-status.loaded { color: var(--success); }
+  .upload-card .file-status.error { color: var(--danger); }
+  .upload-card .delete-file {
+    position: absolute; top: 6px; right: 6px; background: var(--danger); color: #fff;
+    border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 12px;
+    cursor: pointer; display: none; align-items: center; justify-content: center; line-height: 1;
+  }
+  .upload-card.has-file .delete-file { display: flex; }
+
+  /* SKU映射表 */
+  .mapping-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .mapping-table th { background: #f1f5f9; padding: 10px; text-align: left; font-weight: 600; }
+  .mapping-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  .mapping-table input {
+    width: 100%; padding: 6px 10px; border: 1px solid var(--border);
+    border-radius: 6px; font-size: 13px;
+  }
+  .mapping-table input:focus { outline: none; border-color: var(--primary); }
+
+  /* 标签页 */
+  .tabs { display: flex; gap: 0; margin-bottom: 0; border-bottom: 2px solid var(--border); }
+  .tab-btn {
+    padding: 12px 24px; background: transparent; border: none; cursor: pointer;
+    font-size: 14px; font-weight: 600; color: var(--gray); position: relative;
+    transition: color 0.2s;
+  }
+  .tab-btn.active { color: var(--primary); }
+  .tab-btn.active::after {
+    content: ''; position: absolute; bottom: -2px; left: 0; right: 0;
+    height: 2px; background: var(--primary);
+  }
+  .tab-content { display: none; padding: 20px 0; }
+  .tab-content.active { display: block; }
+
+  /* 控制栏 */
+  .controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 16px; }
+  .controls label { font-size: 13px; font-weight: 600; }
+  .controls select, .controls input[type="number"] {
+    padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px;
+  }
+
+  /* 数据表格 */
+  .data-table-wrap { overflow-x: auto; }
+  .data-table {
+    width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap;
+  }
+  .data-table th {
+    background: #f8fafc; padding: 10px 12px; text-align: left; font-weight: 600;
+    border-bottom: 2px solid var(--border); position: sticky; top: 0; cursor: pointer;
+  }
+  .data-table th:hover { background: #e2e8f0; }
+  .data-table td { padding: 8px 12px; border-bottom: 1px solid #f1f5f9; }
+  .data-table tr:hover { background: #f8fafc; }
+
+  /* 状态标签 */
+  .badge {
+    display: inline-block; padding: 2px 10px; border-radius: 12px;
+    font-size: 11px; font-weight: 600;
+  }
+  .badge-danger { background: #fef2f2; color: #dc2626; }
+  .badge-warning { background: #fffbeb; color: #d97706; }
+  .badge-success { background: #f0fdf4; color: #16a34a; }
+  .badge-dark { background: #f1f5f9; color: #475569; }
+
+  /* 筛选标签 */
+  .filter-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .filter-tag {
+    padding: 4px 14px; border-radius: 16px; font-size: 12px; cursor: pointer;
+    border: 1.5px solid var(--border); background: #fff; transition: all 0.2s;
+  }
+  .filter-tag.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+  /* 图表容器 */
+  .chart-container {
+    position: relative; height: 350px; margin: 16px 0;
+    background: #fff; border-radius: var(--radius); padding: 16px;
+  }
+
+  /* 看板卡片 */
+  .dash-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+  }
+  .dash-card {
+    background: #fff; border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 20px; overflow: hidden;
+  }
+  .dash-card h3 { font-size: 14px; color: var(--gray); margin-bottom: 12px; }
+
+  /* 加载遮罩 */
+  .loading-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(255,255,255,0.85); z-index: 9999; justify-content: center;
+    align-items: center; flex-direction: column;
+  }
+  .loading-overlay.show { display: flex; }
+  .spinner {
+    width: 48px; height: 48px; border: 4px solid var(--border);
+    border-top-color: var(--primary); border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* 诊断弹窗 */
+  .diag-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); z-index: 10000; display: flex;
+    align-items: center; justify-content: center;
+  }
+  .diag-content {
+    background: #fff; border-radius: 12px; padding: 24px; max-width: 850px;
+    width: 92%; max-height: 82vh; overflow: auto;
+  }
+  .diag-content pre {
+    white-space: pre-wrap; word-break: break-all; background: #f8f9fa;
+    padding: 16px; border-radius: 8px; line-height: 1.6; font-size: 13px;
+    font-family: 'SF Mono', Monaco, Consolas, monospace;
+  }
+
+  /* 暗色模式 */
+  body.dark { background: #0f172a; color: #e2e8f0; }
+  body.dark .panel, body.dark .dash-card { background: #1e293b; }
+  body.dark .panel-header { background: #1e293b; border-color: #334155; }
+  body.dark .panel-header:hover { background: #334155; }
+  body.dark .data-table th { background: #1e293b; border-color: #334155; }
+  body.dark .data-table td { border-color: #334155; }
+  body.dark .data-table tr:hover { background: #334155; }
+  body.dark .upload-card { border-color: #334155; }
+  body.dark .chart-container { background: #1e293b; }
+  body.dark .diag-content { background: #1e293b; }
+  body.dark .diag-content pre { background: #0f172a; color: #e2e8f0; }
+
+  /* 响应式 */
+  @media (max-width: 768px) {
+    .header { padding: 14px 16px; flex-direction: column; gap: 10px; }
+    .container { padding: 12px; }
+    .upload-grid { grid-template-columns: repeat(2, 1fr); }
+    .dash-grid { grid-template-columns: 1fr; }
+    .tabs { overflow-x: auto; }
+    .tab-btn { padding: 10px 16px; font-size: 13px; }
+  }
+</style>
+<!-- SheetJS -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- 加载遮罩 -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <p style="margin-top:16px;font-weight:600;color:var(--primary)">📊 数据处理中…</p>
+</div>
+
+<!-- 头部 -->
+<header class="header">
+  <h1>基础运营管理平台v2.0</h1>
+  <div class="header-actions">
+    <button onclick="exportMappings()">📤 导出映射</button>
+    <button onclick="document.getElementById('importMappingFile').click()">📥 导入映射</button>
+    <input type="file" id="importMappingFile" accept=".json" style="display:none" onchange="importMappings(event)">
+    <button onclick="toggleDark()" id="darkToggle">☀️</button>
+  </div>
+</header>
+
+<!-- 安全提示 -->
+<div class="security-bar">
+  🔒 数据安全：所有文件仅在浏览器本地处理，不上传任何服务器。数据持久存储于本地，刷新保留；重新上传会覆盖旧数据；仅手动点击"删除"按钮或"清除所有"才会清空数据。
+</div>
+
+<div class="container">
+
+  <!-- 数据文件上传面板 -->
+  <div class="panel">
+    <div class="panel-header" onclick="togglePanel(this)">
+      📂 数据文件上传 <span class="arrow">▼</span>
+    </div>
+    <div class="panel-body" id="uploadPanel">
+      <div class="upload-grid" id="uploadGrid">
+        <!-- 由JS动态生成 -->
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="runAnalysis()">⚡ 开始分析</button>
+        <button class="btn btn-danger" onclick="clearAllData()">🗑 清除所有数据</button>
+        <button class="btn btn-warning" id="btn-diagnose" onclick="runDiagnostics()">🔬 数据诊断</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SKU映射面板 -->
+  <div class="panel">
+    <div class="panel-header" onclick="togglePanel(this)">
+      🔗 SKU映射配置 <span class="arrow">▼</span>
+    </div>
+    <div class="panel-body collapsed" id="mappingPanel">
+      <table class="mapping-table" id="mappingTable">
+        <thead>
+          <tr><th>源SKU(待分货表)</th><th>目标SKU(其他表,逗号分隔)</th><th>产品简称</th><th style="width:80px">操作</th></tr>
+        </thead>
+        <tbody id="mappingBody"></tbody>
+      </table>
+      <div style="margin-top:12px;display:flex;gap:10px;">
+        <button class="btn btn-outline btn-sm" onclick="addMappingRow()">+ 新增行</button>
+        <button class="btn btn-primary btn-sm" onclick="saveMappings()">💾 保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 主标签页 -->
+  <div class="panel">
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab(event,'tab-inventory')">📦 库存周转与补货预警</button>
+      <button class="tab-btn" onclick="switchTab(event,'tab-sales')">📈 销量分析与预测对比</button>
+      <button class="tab-btn" onclick="switchTab(event,'tab-dashboard')">🖥 综合监控看板</button>
+    </div>
+
+    <!-- Tab: 库存 -->
+    <div class="tab-content active" id="tab-inventory">
+      <div class="controls">
+        <label>安全库存天数</label>
+        <input type="number" id="safetyDays" value="14" min="1" max="90" style="width:70px">
+        <label>日均销量周期</label>
+        <select id="avgPeriod">
+          <option value="7">近7天</option>
+          <option value="14">近14天</option>
+          <option value="30" selected>近30天</option>
+          <option value="60">近60天</option>
+        </select>
+        <label>波动系数</label>
+        <input type="number" id="volatility" value="1.00" min="0.5" max="2" step="0.05" style="width:70px">
+        <button class="btn btn-success btn-sm" onclick="exportAnalysis()">📥 导出分析</button>
+        <button class="btn btn-warning btn-sm" onclick="exportAlerts()">⚠️ 导出预警</button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+        <div class="chart-container"><canvas id="chartHealth"></canvas></div>
+        <div class="chart-container"><canvas id="chartTopSku"></canvas></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+        <div class="chart-container">
+          <h4 style="margin-bottom:8px;">库存模拟趋势(90天)</h4>
+          <select id="simSku" onchange="updateSimChart()" style="margin-bottom:8px;padding:4px 8px;border-radius:6px;border:1px solid var(--border);">
+            <option value="">— 选择SKU —</option>
+          </select>
+          <canvas id="chartSim"></canvas>
+        </div>
+        <div>
+          <div class="chart-container" style="height:160px;margin-bottom:12px;">
+            <h4 style="margin-bottom:8px;">在途货物明细</h4>
+            <select id="transitSku" onchange="showTransitDetail()" style="margin-bottom:8px;padding:4px 8px;border-radius:6px;border:1px solid var(--border);">
+              <option value="">— 选择SKU —</option>
+            </select>
+            <div id="transitDetail" style="font-size:12px;overflow-y:auto;max-height:80px;"></div>
+          </div>
+          <div class="chart-container" style="height:160px;">
+            <h4 style="margin-bottom:8px;">分货计划明细</h4>
+            <select id="allocSku" onchange="showAllocDetail()" style="margin-bottom:8px;padding:4px 8px;border-radius:6px;border:1px solid var(--border);">
+              <option value="">— 选择SKU —</option>
+            </select>
+            <div id="allocDetail" style="font-size:12px;overflow-y:auto;max-height:80px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-tags" id="statusFilter">
+        <span class="filter-tag active" data-val="all">全部状态</span>
+        <span class="filter-tag" data-val="risk">🔴 缺货风险</span>
+        <span class="filter-tag" data-val="low">🟡 偏低</span>
+        <span class="filter-tag" data-val="ok">🟢 充足</span>
+        <span class="filter-tag" data-val="out">⚫ 已缺货</span>
+      </div>
+      <div class="filter-tags" id="categoryFilter">
+        <span class="filter-tag active" data-val="all">全部品类</span>
+      </div>
+      <div class="data-table-wrap">
+        <table class="data-table" id="inventoryTable">
+          <thead><tr>
+            <th>SKU</th><th>产品名称</th><th>仓可用</th><th>仓在库</th><th>SF占用</th>
+            <th>净库存</th><th>近30天销</th><th>日均销</th><th>可售天</th>
+            <th>在途量</th><th>最近到货日</th><th>最近到货量</th>
+            <th>4周分货</th><th>8周分货</th><th>预计断货日</th><th>距断货</th>
+            <th>建议补货</th><th>下月预测</th><th>状态</th>
+          </tr></thead>
+          <tbody id="inventoryBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Tab: 销量分析 -->
+    <div class="tab-content" id="tab-sales">
+      <div class="controls">
+        <label>时间维度</label>
+        <select id="timeDim"><option value="day">日</option><option value="week">周</option><option value="month" selected>月</option></select>
+        <label>SKU筛选</label>
+        <select id="salesSkuFilter"><option value="all">全部</option></select>
+        <label>时间范围</label>
+        <select id="salesTimeRange">
+          <option value="thisYear">今年</option><option value="lastYear">去年</option><option value="all">全部</option>
+        </select>
+        <button class="btn btn-success btn-sm" onclick="exportSalesComparison()">📥 导出对比数据</button>
+      </div>
+      <div class="chart-container"><h4>月度实际销量 vs 预测销量</h4><canvas id="chartSalesVsForecast"></canvas></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="chart-container"><h4>销量趋势</h4><canvas id="chartSalesTrend"></canvas></div>
+        <div class="chart-container"><h4>SKU销量排名(年累计)</h4><canvas id="chartSkuRank"></canvas></div>
+      </div>
+      <h4 style="margin:16px 0 8px;">预测准确率明细</h4>
+      <div class="filter-tags" id="accuracyFilter">
+        <span class="filter-tag active" data-val="all">全部</span>
+        <span class="filter-tag" data-val="good">准确率≥70%</span>
+        <span class="filter-tag" data-val="bad">准确率&lt;70%</span>
+      </div>
+      <div class="data-table-wrap">
+        <table class="data-table" id="forecastTable">
+          <thead><tr><th>SKU</th><th>月份</th><th>实际销量</th><th>预测销量</th><th>偏差</th><th>准确率</th></tr></thead>
+          <tbody id="forecastBody"></tbody>
+        </table>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;">
+        <div class="chart-container"><h4>退货率分析</h4><canvas id="chartReturn"></canvas></div>
+        <div class="chart-container"><h4>月度销售额趋势</h4><canvas id="chartRevenue"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Tab: 看板 -->
+    <div class="tab-content" id="tab-dashboard">
+      <div class="dash-grid">
+        <div class="dash-card"><h3>📊 库存健康度</h3><div id="dashHealth"></div></div>
+        <div class="dash-card"><h3>⚠️ 补货紧急度</h3><div id="dashUrgent"></div></div>
+        <div class="dash-card"><h3>断货风险 Top 5</h3><div id="dashRiskTop"></div></div>
+        <div class="dash-card"><h3>🚢 在途 & 分货概览</h3><div id="dashTransit"></div><h4 style="margin-top:12px;">近期到货计划</h4><div id="dashArrival"></div></div>
+        <div class="dash-card"><h3>📈 销量趋势</h3><div id="dashSalesTrend"></div><h4 style="margin-top:12px;">畅销 Top 5</h4><div id="dashTopSales"></div></div>
+        <div class="dash-card"><h3>🎯 预测 vs 实际</h3><div id="dashForecast"></div><h4 style="margin-top:12px;">偏差最大 Top 5</h4><div id="dashDeviation"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// =====================================================================
+//  全局状态 & 配置
+// =====================================================================
+const FILE_DEFS = [
+  { key: 'inventory',  label: '库存数据',     icon: '📦' },
+  { key: 'sales',      label: '销量数据',     icon: '📈' },
+  { key: 'forecast',   label: '预测数据',     icon: '🔮' },
+  { key: 'transit',    label: '在途数据',     icon: '🚢' },
+  { key: 'allocation', label: '分货数据',     icon: '📋' },
+  { key: 'sfStock',    label: 'SF占用库存',   icon: '🏭' },
+  { key: 'returns',    label: '退货数据',     icon: '↩️' },
+  { key: 'revenue',    label: '销售额数据',   icon: '💰' }
+];
+
+let rawData = {};      // { key: rows[] }
+let salesRecs = [];    // 统一销量记录
+let skuMappings = [];  // SKU 映射
+let chartInstances = {};
+
+// =====================================================================
+//  ★★★ 修复 1: Date 序列化丢失 — parseXlsx + parseDate + formatDateStr
+// =====================================================================
+
+/** Date 对象 → "yyyy-mm-dd" 字符串 */
+function formatDateStr(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return ` ${y}-$ {m}-${day}`;
+}
+
+/**
+ * 统一日期解析: 支持 "yyyy-mm-dd" / "yyyy/mm/dd" / "mm/dd/yyyy"
+ *   / ISO 字符串 / Excel 序列号 / Date 对象
+ * 始终返回 Date 对象 或 null
+ */
+function parseDate(v) {
+  if (v == null || v === '') return null;
+  if (v instanceof Date) return isNaN(v) ? null : v;
+
+  // Excel 序列号
+  if (typeof v === 'number' && v > 20000) {
+    const d = new Date(Math.round((v - 25569) * 86400 * 1000));
+    return isNaN(d) ? null : d;
+  }
+
+  const s = String(v).trim();
+
+  // ISO: "2024-01-15T00:00:00.000Z" 或 "2024-01-15"
+  const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (iso) { const d = new Date(+iso[1], +iso[2]-1, +iso[3]); return isNaN(d) ? null : d; }
+
+  // "yyyy/mm/dd"
+  const slash1 = s.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
+  if (slash1) { const d = new Date(+slash1[1], +slash1[2]-1, +slash1[3]); return isNaN(d) ? null : d; }
+
+  // "mm/dd/yyyy"
+  const slash2 = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (slash2) { const d = new Date(+slash2[3], +slash2[1]-1, +slash2[2]); return isNaN(d) ? null : d; }
+
+  return null;
+}
+
+/**
+ * 解析 Excel 文件
+ * ★ 核心修复: 所有 Date 对象在解析时即转为 "yyyy-mm-dd" 字符串
+ */
+function parseXlsx(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const wb = XLSX.read(data, { type: 'array', cellDates: true });
+        const sheet = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+
+        // ★ 修复: Date → "yyyy-mm-dd" 字符串，避免 JSON 序列化丢失
+        rows.forEach(row => {
+          Object.keys(row).forEach(key => {
+            const v = row[key];
+            if (v instanceof Date && !isNaN(v)) {
+              row[key] = formatDateStr(v);
+            }
+          });
+        });
+
+        resolve(rows);
+      } catch (err) { reject(err); }
+    };
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+// =====================================================================
+//  ★★★ 修复 2: 销量列名动态识别 — detectColumn + procSales 重写
+// =====================================================================
+
+/**
+ * 动态列检测：先精确匹配，再正则模糊匹配
+ */
+function detectColumn(headers, rules) {
+  for (const rule of rules) {
+    if (rule.exact) {
+      for (const name of rule.exact) {
+        const found = headers.find(h => h.trim() === name);
+        if (found) return found;
+      }
+    }
+    if (rule.regex) {
+      const found = headers.find(h => rule.regex.test(h.trim()));
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+/** SKU 标准化: 大写 + 去空格 */
+function normSku(s) {
+  if (!s) return '';
+  return String(s).toUpperCase().replace(/\s+/g, '').trim();
+}
+
+/**
+ * ★ 完全重写: 处理销量原始数据 → salesRecs[]
+ */
+function procSales(rows) {
+  if (!rows || rows.length === 0) {
+    console.warn('[procSales] 空数据');
+    return [];
+  }
+
+  const headers = Object.keys(rows[0]);
+  console.log('[procSales] 检测到列名:', headers);
+
+  // 日期列检测
+  const dateCol = detectColumn(headers, [
+    { exact: ['天', '日期', 'Date', 'date', 'Day', 'day', '日', '报告日期', 'Order Date'] },
+    { regex: /^(天|日期|date|day|order.?date|报告日期)$/i }
+  ]);
+
+  // SKU列检测
+  const skuCol = detectColumn(headers, [
+    { exact: ['SKU', 'sku', '产品SKU', 'Variant SKU', 'variant_sku', 'SKU编码', '产品变体SKU'] },
+    { regex: /sku/i }
+  ]);
+
+  // 销量列检测
+  const qtyCol = detectColumn(headers, [
+    { exact: ['净售出数', '净售出', '售出商品数', '数量', 'Net quantity', 'Items sold', 'Quantity', '净售出商品数'] },
+    { regex: /净售出|售出商品|items.?sold|net.?qty|net.?quantity|^quantity $|^数量$ /i }
+  ]);
+
+  console.log(`[procSales] 列映射 → 日期:" ${dateCol}" SKU:"$ {skuCol}" 销量:"${qtyCol}"`);
+
+  if (!skuCol) {
+    console.error('[procSales] ❌ 未找到SKU列！可用列:', headers);
+    alert('⚠️ 销量文件中未检测到SKU列，请检查文件格式。\n可用列: ' + headers.join(', '));
+    return [];
+  }
+
+  let parsed = 0, skipped = 0;
+  const results = [];
+
+  rows.forEach((r, idx) => {
+    const sku = normSku(r[skuCol]);
+    if (!sku) { skipped++; return; }
+
+    // 日期解析: 优先日期列，fallback 扫描所有列
+    let date = null;
+    if (dateCol && r[dateCol] != null && r[dateCol] !== '') {
+      date = parseDate(r[dateCol]);
+    }
+    if (!date) {
+      for (const h of headers) {
+        if (h === skuCol || h === qtyCol) continue;
+        const tryD = parseDate(r[h]);
+        if (tryD) { date = tryD; break; }
+      }
+    }
+
+    if (!date) {
+      skipped++;
+      if (idx < 3) console.warn(`[procSales] 行${idx} 日期解析失败:`, r);
+      return;
+    }
+
+    let qty = 0;
+    if (qtyCol) qty = Number(r[qtyCol]) || 0;
+
+    results.push({
+      date: formatDateStr(date),   // ★ 始终存 "yyyy-mm-dd"
+      sku: sku,
+      qty: qty
+    });
+    parsed++;
+  });
+
+  console.log(`[procSales] ✅ 解析完成: parsed= ${parsed}, skipped=$ {skipped}, total=${rows.length}`);
+  return results;
+}
+
+// =====================================================================
+//  ★★★ 修复 3: skuSet 反向映射 + 递归扩展
+// =====================================================================
+
+/**
+ * 给定 SKU，返回它及所有映射关联 SKU 的 Set
+ * ★ 增加反向查找 + 递归扩展
+ */
+function skuSet(inputSku) {
+  const norm = normSku(inputSku);
+  const result = new Set([norm]);
+
+  if (!skuMappings || skuMappings.length === 0) return result;
+
+  // 正向: inputSku 作为 src
+  skuMappings.forEach(m => {
+    if (normSku(m.src) === norm) {
+      (m.targets || []).forEach(t => result.add(normSku(t)));
+    }
+  });
+
+  // ★ 反向: inputSku 作为某个映射的 target → 加入 src + 所有兄弟 target
+  skuMappings.forEach(m => {
+    const targets = (m.targets || []).map(t => normSku(t));
+    if (targets.includes(norm)) {
+      result.add(normSku(m.src));
+      targets.forEach(t => result.add(t));
+    }
+  });
+
+  // 递归扩展（最多3层防死循环）
+  let prevSize = 0, iter = 0;
+  while (result.size > prevSize && iter < 3) {
+    prevSize = result.size;
+    iter++;
+    skuMappings.forEach(m => {
+      const srcN = normSku(m.src);
+      const targets = (m.targets || []).map(t => normSku(t));
+      if (result.has(srcN) || targets.some(t => result.has(t))) {
+        result.add(srcN);
+        targets.forEach(t => result.add(t));
+      }
+    });
+  }
+
+  return result;
+}
+
+// =====================================================================
+//  dailyAvg — 使用修复后的 parseDate + skuSet
+// =====================================================================
+
+function dailyAvg(skus, days) {
+  if (!days || days <= 0) return 0;
+  const now = new Date();
+  now.setHours(23,59,59,999);
+  const cutoff = new Date(now);
+  cutoff.setDate(cutoff.getDate() - days);
+  cutoff.setHours(0,0,0,0);
+
+  const group = skuSet(skus);
+  let total = 0;
+
+  salesRecs.forEach(rec => {
+    const d = parseDate(rec.date);   // ★ "yyyy-mm-dd" 字符串 → Date
+    if (!d) return;
+    if (d < cutoff || d > now) return;
+    if (group.has(normSku(rec.sku))) {
+      total += (Number(rec.qty) || 0);
+    }
+  });
+
+  return total / days;
+}
+
+// =====================================================================
+//  UI 交互
+// =====================================================================
+
+function togglePanel(header) {
+  const body = header.nextElementSibling;
+  body.classList.toggle('collapsed');
+  const arrow = header.querySelector('.arrow');
+  if (arrow) arrow.textContent = body.classList.contains('collapsed') ? '▶' : '▼';
+}
+
+function switchTab(e, tabId) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+
+function toggleDark() {
+  document.body.classList.toggle('dark');
+  const btn = document.getElementById('darkToggle');
+  btn.textContent = document.body.classList.contains('dark') ? '🌙' : '☀️';
+  localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+}
+
+// =====================================================================
+//  文件上传
+// =====================================================================
+
+function buildUploadCards() {
+  const grid = document.getElementById('uploadGrid');
+  grid.innerHTML = '';
+  FILE_DEFS.forEach(fd => {
+    const card = document.createElement('div');
+    card.className = 'upload-card';
+    card.id = `card-${fd.key}`;
+    card.innerHTML = `
+      <button class="delete-file" title="删除" onclick="deleteFile('${fd.key}')">✕</button>
+      <label for="file-${fd.key}">
+        <div class="file-icon">${fd.icon}</div>
+        <div style="font-size:13px;font-weight:600;">${fd.label}</div>
+        <div class="file-name" id="fname-${fd.key}">点击上传 .xlsx</div>
+        <div class="file-status" id="fstatus-${fd.key}"></div>
+        <input type="file" id="file- ${fd.key}" accept=".xlsx,.xls,.csv" onchange="handleFile('$ {fd.key}',event)">
+      </label>
+    `;
+    // 恢复已有数据状态
+    const stored = localStorage.getItem(`data_${fd.key}`);
+    if (stored) {
+      try {
+        const rows = JSON.parse(stored);
+        rawData[fd.key] = rows;
+        card.classList.add('has-file');
+        document.getElementById(`fname-${fd.key}`)&& setTimeout(()=>{
+          const fn = document.getElementById(`fname-${fd.key}`);
+          const fs = document.getElementById(`fstatus-${fd.key}`);
+          if(fn) fn.textContent = `已加载 (${rows.length}行)`;
+          if(fs) { fs.textContent = '✅ 已就绪'; fs.className = 'file-status loaded'; }
+        },0);
+      } catch(e) {}
+    }
+    grid.appendChild(card);
+  });
+}
+
+async function handleFile(key, e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const card = document.getElementById(`card-${key}`);
+  const fname = document.getElementById(`fname-${key}`);
+  const fstatus = document.getElementById(`fstatus-${key}`);
+
+  fname.textContent = file.name;
+  fstatus.textContent = '⏳ 解析中...';
+  fstatus.className = 'file-status';
+
+  try {
+    const rows = await parseXlsx(file);  // ★ 已修复: Date → "yyyy-mm-dd"
+    rawData[key] = rows;
+    localStorage.setItem(`data_${key}`, JSON.stringify(rows));
+    card.classList.add('has-file');
+    fstatus.textContent = `✅ ${rows.length} 行`;
+    fstatus.className = 'file-status loaded';
+    console.log(`[upload]  ${key}: $ {rows.length} rows, cols:`, rows.length > 0 ? Object.keys(rows[0]) : []);
+  } catch (err) {
+    fstatus.textContent = '❌ 解析失败';
+    fstatus.className = 'file-status error';
+    console.error(`[upload] ${key} error:`, err);
+  }
+}
+
+function deleteFile(key) {
+  localStorage.removeItem(`data_${key}`);
+  delete rawData[key];
+  const card = document.getElementById(`card-${key}`);
+  card.classList.remove('has-file');
+  document.getElementById(`fname-${key}`).textContent = '点击上传 .xlsx';
+  const fs = document.getElementById(`fstatus-${key}`);
+  fs.textContent = '';
+  fs.className = 'file-status';
+  // 重置 file input
+  document.getElementById(`file-${key}`).value = '';
+}
+
+function clearAllData() {
+  if (!confirm('确定要清除所有已上传的数据和映射吗？')) return;
+  FILE_DEFS.forEach(fd => {
+    localStorage.removeItem(`data_${fd.key}`);
+    delete rawData[fd.key];
+  });
+  localStorage.removeItem('skuMappings');
+  skuMappings = [];
+  salesRecs = [];
+  buildUploadCards();
+  renderMappings();
+  clearResults();
+  alert('✅ 所有数据已清除');
+}
+
+// =====================================================================
+//  SKU映射管理
+// =====================================================================
+
+function loadMappings() {
+  try {
+    const s = localStorage.getItem('skuMappings');
+    skuMappings = s ? JSON.parse(s) : [];
+  } catch(e) { skuMappings = []; }
+}
+
+function saveMappings() {
+  const rows = document.querySelectorAll('#mappingBody tr');
+  skuMappings = [];
+  rows.forEach(tr => {
+    const inputs = tr.querySelectorAll('input');
+    const src = (inputs[0]?.value || '').trim();
+    const targetsStr = (inputs[1]?.value || '').trim();
+    const name = (inputs[2]?.value || '').trim();
+    if (src) {
+      skuMappings.push({
+        src,
+        targets: targetsStr.split(/[,，]/).map(s=>s.trim()).filter(Boolean),
+        name
+      });
+    }
+  });
+  localStorage.setItem('skuMappings', JSON.stringify(skuMappings));
+  alert('✅ 映射已保存');
+}
+
+function renderMappings() {
+  const body = document.getElementById('mappingBody');
+  body.innerHTML = '';
+  skuMappings.forEach((m, i) => {
+    addMappingRowWith(m.src, (m.targets||[]).join(', '), m.name);
+  });
+}
+
+function addMappingRow() {
+  addMappingRowWith('', '', '');
+}
+
+function addMappingRowWith(src, targets, name) {
+  const body = document.getElementById('mappingBody');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="text" value="${escapeAttr(src)}" placeholder="如 PF003-S+SA007-JP"></td>
+    <td><input type="text" value="${escapeAttr(targets)}" placeholder="PF003-S+SA007-JP1, PF003-S+SA007-JP2"></td>
+    <td><input type="text" value="${escapeAttr(name)}" placeholder="产品简称"></td>
+    <td><button class="btn btn-danger btn-sm" onclick="this.closest('tr').remove()">删除</button></td>
+  `;
+  body.appendChild(tr);
+}
+
+function escapeAttr(s) { return String(s||'').replace(/"/g, '&quot;'); }
+
+function exportMappings() {
+  const blob = new Blob([JSON.stringify(skuMappings, null, 2)], {type:'application/json'});
+  downloadBlob(blob, 'sku_mappings.json');
+}
+
+function importMappings(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      skuMappings = JSON.parse(ev.target.result);
+      localStorage.setItem('skuMappings', JSON.stringify(skuMappings));
+      renderMappings();
+      alert('✅ 映射导入成功');
+    } catch(err) { alert('❌ 导入失败: ' + err.message); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// =====================================================================
+//  核心分析逻辑
+// =====================================================================
+
+function showLoading() { document.getElementById('loadingOverlay').classList.add('show'); }
+function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
+
+function runAnalysis() {
+  showLoading();
+  setTimeout(() => {
+    try {
+      doAnalysis();
+    } catch(err) {
+      console.error('[analysis] error:', err);
+      alert('分析出错: ' + err.message);
+    } finally {
+      hideLoading();
+    }
+  }, 100);
+}
+
+function doAnalysis() {
+  loadMappings();
+
+  // 处理销量数据
+  if (rawData.sales && rawData.sales.length > 0) {
+    salesRecs = procSales(rawData.sales);
+    localStorage.setItem('salesRecs', JSON.stringify(salesRecs));
+    console.log(`[analysis] salesRecs: ${salesRecs.length} records`);
+  } else {
+    // 尝试从 localStorage 恢复
+    try {
+      const s = localStorage.getItem('salesRecs');
+      salesRecs = s ? JSON.parse(s) : [];
+    } catch(e) { salesRecs = []; }
+  }
+
+  const period = Number(document.getElementById('avgPeriod').value) || 30;
+  const safetyDays = Number(document.getElementById('safetyDays').value) || 14;
+  const volatility = Number(document.getElementById('volatility').value) || 1.0;
+
+  // 收集所有 SKU
+  const allSkus = collectAllSkus();
+  console.log(`[analysis] 发现 ${allSkus.size} 个 SKU`);
+
+  // 构建分析结果
+  const results = [];
+  allSkus.forEach(sku => {
+    const inv = getInventory(sku);
+    const sf = getSfOccupied(sku);
+    const netStock = inv.available;
+    const avg = dailyAvg(sku, period);
+    const sellableDays = avg > 0 ? Math.floor(netStock / avg) : (netStock > 0 ? 999 : 0);
+    const transit = getTransit(sku);
+    const alloc4w = getAllocation(sku, 4);
+    const alloc8w = getAllocation(sku, 8);
+    const forecast = getForecastNext(sku);
+
+    // 预计断货日
+    let stockoutDate = null, daysToStockout = null;
+    if (avg > 0) {
+      daysToStockout = Math.floor(netStock / avg);
+      const d = new Date();
+      d.setDate(d.getDate() + daysToStockout);
+      stockoutDate = formatDateStr(d);
+    }
+
+    // 建议补货量
+    const suggest = Math.max(0, Math.ceil(avg * volatility * safetyDays * 2 - netStock - transit.total));
+
+    // 状态
+    let status;
+    if (netStock <= 0 && avg > 0) status = 'out';
+    else if (sellableDays <= safetyDays * 0.5) status = 'risk';
+    else if (sellableDays <= safetyDays) status = 'low';
+    else status = 'ok';
+
+    const name = getSkuName(sku);
+
+    results.push({
+      sku, name, available: inv.available, inStock: inv.inStock,
+      sfOccupied: sf, netStock, sales30: getSales(sku, 30),
+      dailyAvg: avg, sellableDays, transitTotal: transit.total,
+      transitNext: transit.next, transitNextDate: transit.nextDate,
+      alloc4w, alloc8w, stockoutDate, daysToStockout, suggest,
+      forecast, status
+    });
+  });
+
+  renderInventoryTable(results);
+  renderCharts(results);
+  populateSelectors(results);
+  renderDashboard(results);
+
+  console.log('[analysis] ✅ 分析完成');
+}
+
+// 收集所有出现过的 SKU
+function collectAllSkus() {
+  const skus = new Set();
+
+  // 从库存表
+  (rawData.inventory || []).forEach(r => {
+    const cols = Object.keys(r);
+    const skuCol = detectColumn(cols, [
+      { exact: ['SKU', 'sku', '产品SKU', 'Variant SKU'] },
+      { regex: /sku/i }
+    ]);
+    if (skuCol && r[skuCol]) skus.add(normSku(r[skuCol]));
+  });
+
+  // 从销量记录
+  salesRecs.forEach(r => { if (r.sku) skus.add(normSku(r.sku)); });
+
+  // 从映射
+  skuMappings.forEach(m => {
+    skus.add(normSku(m.src));
+    (m.targets || []).forEach(t => skus.add(normSku(t)));
+  });
+
+  // 从其他数据表
+  ['transit', 'allocation', 'forecast'].forEach(key => {
+    (rawData[key] || []).forEach(r => {
+      const cols = Object.keys(r);
+      const skuCol = detectColumn(cols, [{ exact: ['SKU','sku'] }, { regex: /sku/i }]);
+      if (skuCol && r[skuCol]) skus.add(normSku(r[skuCol]));
+    });
+  });
+
+  return skus;
+}
+
+// 数据提取辅助函数
+function getInventory(sku) {
+  const group = skuSet(sku);
+  let available = 0, inStock = 0;
+  (rawData.inventory || []).forEach(r => {
+    const cols = Object.keys(r);
+    const skuCol = detectColumn(cols, [{ exact: ['SKU','sku','产品SKU','Variant SKU'] }, { regex: /sku/i }]);
+    if (!skuCol) return;
+    if (!group.has(normSku(r[skuCol]))) return;
+
+    const avCol = detectColumn(cols, [
+      { exact: ['可用库存','可用','Available','available'] },
+      { regex: /可用|available/i }
+    ]);
+    const isCol = detectColumn(cols, [
+      { exact: ['在库库存','在库','In Stock','instock'] },
+      { regex: /在库|in.?stock|total/i }
+    ]);
+    available += Number(r[avCol] || 0);
+    inStock += Number(r[isCol] || r[avCol] || 0);
+  });
+  return { available, inStock };
+}
+
+function getSfOccupied(sku) {
+  const group = skuSet(sku);
+  let total = 0;
+  (rawData.sfStock || []).forEach(r => {
+    const cols = Object.keys(r);
+    const skuCol = detectColumn(cols, [{ exact: ['SKU','sku'] }, { regex: /sku/i }]);
+    if (!skuCol || !group.has(normSku(r[skuCol]))) return;
+    const qCol = detectColumn(cols, [
+      { exact: ['占用数量','数量','Quantity'] },
+      { regex: /数量|qty|quantity|占用/i }
+    ]);
+    total += Number(r[qCol] || 0);
+  });
+  return total;
+}
+
+function getSales(sku, days) {
+  const now = new Date(); now.setHours(23,59,59,999);
+  const cutoff = new Date(now); cutoff.setDate(cutoff.getDate() - days); cutoff.setHours(0,0,0,0);
+  const group = skuSet(sku);
+  let total = 0;
+  salesRecs.forEach(rec => {
+    const d = parseDate(rec.date);
+    if (!d || d < cutoff || d > now) return;
+    if (group.has(normSku(rec.sku))) total += (Number(rec.qty) || 0);
+  });
+  return total;
+}
+
+function getTransit(sku) {
+  const group = skuSet(sku);
+  let total = 0, next = 0, nextDate = '';
+  const entries = [];
+  (rawData.transit || []).forEach(r => {
+    const cols = Object.keys(r);
+    const skuCol = detectColumn(cols, [{ exact: ['SKU','sku'] }, { regex: /sku/i }]);
+    if (!skuCol || !group.has(normSku(r[skuCol]))) return;
+    const qCol = detectColumn(cols, [{ exact: ['数量','Quantity','qty'] }, { regex: /数量|qty|quantity/i }]);
+    const dCol = detectColumn(cols, [{ exact: ['到货日期','预计到货','ETA','eta'] }, { regex: /到货|eta|arrival/i }]);
+    const qty = Number(r[qCol] || 0);
+    total += qty;
+    const d = dCol ? parseDate(r[dCol]) : null;
+    if (d) entries.push({ date: d, qty });
+  });
+  entries.sort((a,b) => a.date - b.date);
+  if (entries.length > 0) {
+    next = entries[0].qty;
+    nextDate = formatDateStr(entries[0].date);
+  }
+  return { total, next, nextDate };
+}
+
+function getAllocation(sku, weeks) {
+  const group = skuSet(sku);
+  let total = 0;
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() + weeks * 7);
+  (rawData.allocation || []).forEach(r => {
+    const cols = Object.keys(r);
+    const skuCol = detectColumn(cols, [{ exact: ['SKU','sku'] }, { regex: /sku/i }]);
+    if (!skuCol || !group.has(normSku(r[skuCol]))) return;
+    const qCol = detectColumn(cols, [{ exact: ['数量','Quantity','qty'] }, { regex: /数量|qty|quantity/i }]);
+    total += Number(r[qCol] || 0);
+  });
+  return total;
+}
+
+function getForecastNext(sku) {
+  const group = skuSet(sku);
+  const now = new Date();
+  const nextMonth = now.getMonth() + 1;
+  const nextYear = nextMonth > 11 ? now.getFullYear() + 1 : now.getFullYear();
+  let total = 0;
+  (rawData.forecast || []).forEach(r => {
+    const cols = Object.keys(r);
+    const skuCol = detectColumn(cols, [{ exact: ['SKU','sku'] }, { regex: /sku/i }]);
+    if (!skuCol || !group.has(normSku(r[skuCol]))) return;
+    const qCol = detectColumn(cols, [{ exact: ['预测数量','预测','Forecast'] }, { regex: /预测|forecast/i }]);
+    total += Number(r[qCol] || 0);
+  });
+  return total;
+}
+
+function getSkuName(sku) {
+  // 先从映射找
+  const n = normSku(sku);
+  for (const m of skuMappings) {
+    if (normSku(m.src) === n || (m.targets||[]).some(t => normSku(t) === n)) {
+      if (m.name) return m.name;
+    }
+  }
+  // 从库存表找
+  for (const r of (rawData.inventory || [])) {
+    const cols = Object.keys(r);
+    const skuCol = detectColumn(cols, [{ exact: ['SKU','sku'] }, { regex: /sku/i }]);
+    if (skuCol && normSku(r[skuCol]) === n) {
+      const nameCol = detectColumn(cols, [
+        { exact: ['产品名称','名称','Title','Product','产品'] },
+        { regex: /名称|title|product|name/i }
+      ]);
+      if (nameCol && r[nameCol]) return r[nameCol];
+    }
+  }
+  return '';
+}
+
+// =====================================================================
+//  渲染
+// =====================================================================
+
+const STATUS_LABELS = {
+  out: { text: '⚫ 已缺货', cls: 'badge-dark' },
+  risk: { text: '🔴 缺货风险', cls: 'badge-danger' },
+  low: { text: '🟡 偏低', cls: 'badge-warning' },
+  ok: { text: '🟢 充足', cls: 'badge-success' }
+};
+
+function renderInventoryTable(results) {
+  const body = document.getElementById('inventoryBody');
+  body.innerHTML = '';
+  results.sort((a,b) => (a.sellableDays||0) - (b.sellableDays||0));
+
+  results.forEach(r => {
+    const st = STATUS_LABELS[r.status] || STATUS_LABELS.ok;
+    const tr = document.createElement('tr');
+    tr.dataset.status = r.status;
+    tr.innerHTML = `
+      <td><strong>${esc(r.sku)}</strong></td>
+      <td>${esc(r.name)}</td>
+      <td> ${r.available}</td><td>$ {r.inStock}</td><td>${r.sfOccupied}</td>
+      <td><strong> ${r.netStock}</strong></td><td>$ {r.sales30}</td>
+      <td>${r.dailyAvg.toFixed(1)}</td>
+      <td><strong>${r.sellableDays === 999 ? '∞' : r.sellableDays}</strong></td>
+      <td> ${r.transitTotal}</td><td>$ {r.transitNextDate || '-'}</td><td>${r.transitNext || '-'}</td>
+      <td> ${r.alloc4w}</td><td>$ {r.alloc8w}</td>
+      <td>${r.stockoutDate || '-'}</td>
+      <td>${r.daysToStockout != null ? r.daysToStockout + '天' : '-'}</td>
+      <td> ${r.suggest}</td><td>$ {r.forecast}</td>
+      <td><span class="badge  ${st.cls}">$ {st.text}</span></td>
+    `;
+    body.appendChild(tr);
+  });
+
+  // 绑定筛选
+  setupFilterTags('statusFilter', (val) => {
+    body.querySelectorAll('tr').forEach(tr => {
+      tr.style.display = (val === 'all' || tr.dataset.status === val) ? '' : 'none';
+    });
+  });
+}
+
+function setupFilterTags(containerId, callback) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.querySelectorAll('.filter-tag').forEach(tag => {
+    tag.addEventListener('click', () => {
+      container.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
+      tag.classList.add('active');
+      callback(tag.dataset.val);
+    });
+  });
+}
+
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// =====================================================================
+//  图表
+// =====================================================================
+
+function destroyChart(key) {
+  if (chartInstances[key]) { chartInstances[key].destroy(); delete chartInstances[key]; }
+}
+
+function renderCharts(results) {
+  // 库存健康度分布
+  destroyChart('health');
+  const counts = { ok:0, low:0, risk:0, out:0 };
+  results.forEach(r => counts[r.status]++);
+  chartInstances.health = new Chart(document.getElementById('chartHealth'), {
+    type: 'doughnut',
+    data: {
+      labels: ['充足','偏低','缺货风险','已缺货'],
+      datasets: [{ data: [counts.ok, counts.low, counts.risk, counts.out],
+        backgroundColor: ['#22c55e','#f59e0b','#ef4444','#475569'] }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: '库存健康度分布' } } }
+  });
+
+  // Top 15 可售天数
+  destroyChart('topSku');
+  const top = results.filter(r=>r.sellableDays<999).sort((a,b)=>a.sellableDays-b.sellableDays).slice(0,15);
+  chartInstances.topSku = new Chart(document.getElementById('chartTopSku'), {
+    type: 'bar',
+    data: {
+      labels: top.map(r=>r.sku),
+      datasets: [{ label: '可售天数', data: top.map(r=>r.sellableDays),
+        backgroundColor: top.map(r => r.status==='ok'?'#22c55e':r.status==='low'?'#f59e0b':'#ef4444') }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: { title: { display: true, text: 'Top 15 SKU 可售天数' } }
+    }
+  });
+}
+
+function populateSelectors(results) {
+  const skus = results.map(r => r.sku).sort();
+  ['simSku','transitSku','allocSku'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    sel.innerHTML = '<option value="">— 选择SKU —</option>';
+    skus.forEach(s => { sel.innerHTML += `<option value=" ${esc(s)}">$ {esc(s)}</option>`; });
+  });
+}
+
+function updateSimChart() {
+  destroyChart('sim');
+  const sku = document.getElementById('simSku').value;
+  if (!sku) return;
+  const inv = getInventory(sku);
+  const period = Number(document.getElementById('avgPeriod').value) || 30;
+  const avg = dailyAvg(sku, period);
+  const labels = [], data = [];
+  let stock = inv.available;
+  for (let i = 0; i <= 90; i++) {
+    const d = new Date(); d.setDate(d.getDate() + i);
+    labels.push(formatDateStr(d));
+    data.push(Math.max(0, Math.round(stock)));
+    stock -= avg;
+  }
+  chartInstances.sim = new Chart(document.getElementById('chartSim'), {
+    type: 'line',
+    data: { labels, datasets: [{ label: '预计库存', data, borderColor: '#4f46e5', fill: true, backgroundColor: 'rgba(79,70,229,0.1)' }] },
+    options: { responsive: true, maintainAspectRatio: false }
+  });
+}
+
+function showTransitDetail() {
+  const sku = document.getElementById('transitSku').value;
+  const div = document.getElementById('transitDetail');
+  if (!sku) { div.innerHTML = ''; return; }
+  const group = skuSet(sku);
+  let html = '<table style="width:100%;font-size:11px;"><tr><th>日期</th><th>数量</th></tr>';
+  (rawData.transit || []).forEach(r => {
+    const cols = Object.keys(r);
+    const skuCol = detectColumn(cols, [{ exact: ['SKU','sku'] }, { regex: /sku/i }]);
+    if (!skuCol || !group.has(normSku(r[skuCol]))) return;
+    const dCol = detectColumn(cols, [{ regex: /到货|eta|arrival|日期/i }]);
+    const qCol = detectColumn(cols, [{ regex: /数量|qty|quantity/i }]);
+    html += `<tr><td> ${dCol ? r[dCol] : '-'}</td><td>$ {qCol ? r[qCol] : '-'}</td></tr>`;
+  });
+  div.innerHTML = html + '</table>';
+}
+
+function showAllocDetail() {
+  const sku = document.getElementById('allocSku').value;
+  const div = document.getElementById('allocDetail');
+  if (!sku) { div.innerHTML = ''; return; }
+  const group = skuSet(sku);
+  let html = '<table style="width:100%;font-size:11px;"><tr><th>周次</th><th>数量</th></tr>';
+  (rawData.allocation || []).forEach(r => {
+    const cols = Object.keys(r);
+    const skuCol = detectColumn(cols, [{ exact: ['SKU','sku'] }, { regex: /sku/i }]);
+    if (!skuCol || !group.has(normSku(r[skuCol]))) return;
+    const wCol = detectColumn(cols, [{ regex: /周|week/i }]);
+    const qCol = detectColumn(cols, [{ regex: /数量|qty|quantity/i }]);
+    html += `<tr><td> ${wCol ? r[wCol] : '-'}</td><td>$ {qCol ? r[qCol] : '-'}</td></tr>`;
+  });
+  div.innerHTML = html + '</table>';
+}
+
+// =====================================================================
+//  看板
+// =====================================================================
+
+function renderDashboard(results) {
+  // 库存健康度
+  const counts = { ok:0, low:0, risk:0, out:0 };
+  results.forEach(r => counts[r.status]++);
+  document.getElementById('dashHealth').innerHTML = `
+    <div style="font-size:24px;font-weight:700;color:var(--success);">${counts.ok} 充足</div>
+    <div style="color:var(--warning);"> ${counts.low} 偏低 &nbsp; <span style="color:var(--danger);">$ {counts.risk} 风险</span> &nbsp; <span style="color:var(--gray);">${counts.out} 缺货</span></div>
+  `;
+
+  // 补货紧急度
+  const urgent = results.filter(r => r.status === 'risk' || r.status === 'out').sort((a,b) => (a.daysToStockout||0) - (b.daysToStockout||0));
+  document.getElementById('dashUrgent').innerHTML = urgent.length === 0
+    ? '<div style="color:var(--success)">✅ 暂无紧急补货需求</div>'
+    : urgent.slice(0,5).map(r => `<div style="padding:4px 0;font-size:13px;border-bottom:1px solid var(--border);">
+        <strong> ${esc(r.sku)}</strong> — $ {r.daysToStockout != null ? r.daysToStockout+'天' : '已缺货'} — 建议补 ${r.suggest}</div>`).join('');
+
+  // 断货 Top 5
+  const riskTop = results.filter(r => r.daysToStockout != null && r.daysToStockout < 30)
+    .sort((a,b) => a.daysToStockout - b.daysToStockout).slice(0,5);
+  document.getElementById('dashRiskTop').innerHTML = riskTop.map(r =>
+    `<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;border-bottom:1px solid var(--border);">
+      <span> ${esc(r.sku)}</span><span style="color:var(--danger);font-weight:600;">$ {r.daysToStockout}天</span></div>`
+  ).join('') || '<div style="color:var(--success)">✅ 无短期断货风险</div>';
+
+  // 在途概览
+  let totalTransit = 0;
+  results.forEach(r => totalTransit += r.transitTotal);
+  document.getElementById('dashTransit').innerHTML = `<div style="font-size:20px;font-weight:700;">${totalTransit} 件在途</div>`;
+
+  // 近期到货
+  const arrivals = [];
+  results.forEach(r => { if (r.transitNextDate) arrivals.push({ sku: r.sku, date: r.transitNextDate, qty: r.transitNext }); });
+  arrivals.sort((a,b) => a.date.localeCompare(b.date));
+  document.getElementById('dashArrival').innerHTML = arrivals.slice(0,5).map(a =>
+    `<div style="font-size:12px;padding:2px 0;"> ${a.date} — $ {esc(a.sku)} — ${a.qty}件</div>`
+  ).join('') || '-';
+
+  // 销量趋势 & 畅销
+  const salesByDate = {};
+  salesRecs.forEach(rec => {
+    const month = (rec.date || '').substring(0, 7);
+    if (month) salesByDate[month] = (salesByDate[month] || 0) + (Number(rec.qty) || 0);
+  });
+  const months = Object.keys(salesByDate).sort();
+  document.getElementById('dashSalesTrend').innerHTML = months.length > 0
+    ? months.slice(-6).map(m => `<div style="font-size:12px;"> ${m}: $ {salesByDate[m]}件</div>`).join('')
+    : '<div style="color:var(--gray)">暂无销量数据</div>';
+
+  const skuSales = {};
+  salesRecs.forEach(r => { skuSales[r.sku] = (skuSales[r.sku]||0) + (Number(r.qty)||0); });
+  const top5 = Object.entries(skuSales).sort((a,b) => b[1]-a[1]).slice(0,5);
+  document.getElementById('dashTopSales').innerHTML = top5.map(([s,q]) =>
+    `<div style="display:flex;justify-content:space-between;font-size:12px;padding:2px 0;"><span> ${esc(s)}</span><strong>$ {q}</strong></div>`
+  ).join('') || '-';
+
+  // 预测 vs 实际
+  document.getElementById('dashForecast').innerHTML = '<div style="color:var(--gray)">在"销量分析"标签中查看详情</div>';
+  document.getElementById('dashDeviation').innerHTML = '-';
+}
+
+function clearResults() {
+  document.getElementById('inventoryBody').innerHTML = '';
+  ['chartHealth','chartTopSku','chartSim'].forEach(k => destroyChart(k));
+}
+
+// =====================================================================
+//  导出功能
+// =====================================================================
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+function exportAnalysis() {
+  const table = document.getElementById('inventoryTable');
+  const wb = XLSX.utils.table_to_book(table, { sheet: '库存分析' });
+  const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+  downloadBlob(new Blob([wbout]), `库存分析_${formatDateStr(new Date())}.xlsx`);
+}
+
+function exportAlerts() {
+  const rows = [];
+  document.querySelectorAll('#inventoryBody tr').forEach(tr => {
+    if (tr.dataset.status === 'risk' || tr.dataset.status === 'out' || tr.dataset.status === 'low') {
+      const cells = tr.querySelectorAll('td');
+      rows.push(Array.from(cells).map(c => c.textContent));
+    }
+  });
+  if (rows.length === 0) { alert('暂无预警数据'); return; }
+  const headers = ['SKU','产品名称','仓可用','仓在库','SF占用','净库存','近30天销','日均销','可售天','在途量','最近到货日','最近到货量','4周分货','8周分货','预计断货日','距断货','建议补货','下月预测','状态'];
+  const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, '预警');
+  const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+  downloadBlob(new Blob([wbout]), `补货预警_${formatDateStr(new Date())}.xlsx`);
+}
+
+function exportSalesComparison() {
+  alert('📥 销量对比导出功能 — 待实现');
+}
+
+// =====================================================================
+//  ★★★ 数据诊断功能（新增）
+// =====================================================================
+
+function runDiagnostics() {
+  const diagResults = [];
+
+  diagResults.push('═══════════════════════════════════════');
+  diagResults.push('  🔬 数据诊断报告  ' + new Date().toLocaleString());
+  diagResults.push('═══════════════════════════════════════');
+
+  // 1. 各文件数据诊断
+  FILE_DEFS.forEach(fd => {
+    const rows = rawData[fd.key];
+    let report = `\n📄  ${fd.label} ($ {fd.key})`;
+
+    if (!rows || rows.length === 0) {
+      report += '\n  ⚠️ 未上传或空数据';
+      diagResults.push(report);
+      return;
+    }
+
+    const headers = Object.keys(rows[0]);
+    report += `\n  📊 行数: ${rows.length}`;
+    report += `\n  📋 列名: [${headers.join(', ')}]`;
+
+    // 日期解析测试
+    const dateCol = detectColumn(headers, [
+      { exact: ['天', '日期', 'Date', 'date', 'Day'] },
+      { regex: /^(天|日期|date|day|order.?date)$/i }
+    ]);
+    report += `\n  🔍 日期列检测:  ${dateCol ? `"$ {dateCol}" ✅` : '❌ 未找到'}`;
+
+    if (dateCol) {
+      rows.slice(0, 3).forEach((r, i) => {
+        const raw = r[dateCol];
+        const parsed = parseDate(raw);
+        const status = parsed ? `✅ → ${formatDateStr(parsed)}` : '❌ 解析失败';
+        report += `\n    行 ${i}: "$ {raw}" ( ${typeof raw}) $ {status}`;
+      });
+    } else {
+      report += '\n    逐列尝试第1行:';
+      headers.forEach(h => {
+        const raw = rows[0][h];
+        const parsed = parseDate(raw);
+        if (parsed) report += `\n      " ${h}": "$ {raw}" → ✅ 可解析为日期`;
+      });
+    }
+
+    // SKU列检测
+    const skuCol = detectColumn(headers, [{ exact: ['SKU','sku','产品SKU','Variant SKU'] }, { regex: /sku/i }]);
+    report += `\n  🏷️ SKU列:  ${skuCol ? `"$ {skuCol}" ✅` : '❌ 未找到'}`;
+
+    // 数量/销量列检测
+    const qtyCol = detectColumn(headers, [
+      { exact: ['净售出数','净售出','数量','Net quantity','Items sold','Quantity'] },
+      { regex: /净售出|售出|items.?sold|quantity|数量/i }
+    ]);
+    report += `\n  📦 数量列:  ${qtyCol ? `"$ {qtyCol}" ✅` : '❌ 未找到'}`;
+
+    // 样本数据
+    report += '\n  📝 样本 (前2行):';
+    rows.slice(0, 2).forEach((r, i) => {
+      const entries = headers.slice(0, 6).map(h => ` ${h}="$ {r[h]}"`);
+      report += `\n    行 ${i}: {$ {entries.join(', ')}${headers.length > 6 ? ', ...' : ''}}`;
+    });
+
+    diagResults.push(report);
+  });
+
+  // 2. salesRecs 诊断
+  diagResults.push('\n\n📈 salesRecs 统计:');
+  if (salesRecs.length > 0) {
+    const validDates = salesRecs.filter(r => parseDate(r.date) !== null).length;
+    const invalidDates = salesRecs.length - validDates;
+    diagResults.push(`  总记录: ${salesRecs.length}`);
+    diagResults.push(`  日期有效: ${validDates} ✅`);
+    diagResults.push(`  日期无效:  ${invalidDates} $ {invalidDates > 0 ? '❌' : ''}`);
+
+    // 日期范围
+    const dates = salesRecs.map(r => parseDate(r.date)).filter(Boolean).sort((a,b) => a-b);
+    if (dates.length > 0) {
+      diagResults.push(`  日期范围:  ${formatDateStr(dates[0])} ~ $ {formatDateStr(dates[dates.length-1])}`);
+    }
+
+    // 测试 dailyAvg
+    const testSku = salesRecs[0].sku;
+    const avg7 = dailyAvg(testSku, 7);
+    const avg30 = dailyAvg(testSku, 30);
+    diagResults.push(`  🧪 dailyAvg 测试 (SKU="${testSku}"):`);
+    diagResults.push(`    7天日均: ${avg7.toFixed(2)}`);
+    diagResults.push(`    30天日均: ${avg30.toFixed(2)}`);
+
+    // 样本
+    diagResults.push(`  样本前3条:`);
+    salesRecs.slice(0, 3).forEach((r, i) => {
+      diagResults.push(`    [ ${i}] date="$ {r.date}" sku=" ${r.sku}" qty=$ {r.qty}`);
+    });
+  } else {
+    diagResults.push('  ⚠️ 无 salesRecs（需先点击"开始分析"或上传销量文件）');
+  }
+
+  // 3. SKU映射诊断
+  diagResults.push('\n\n🔗 SKU映射诊断:');
+  if (skuMappings.length > 0) {
+    diagResults.push(`  映射条目: ${skuMappings.length}`);
+    skuMappings.slice(0, 8).forEach(m => {
+      diagResults.push(`   ${m.src} → [$ {(m.targets||[]).join(', ')}] ${m.name ? '('+m.name+')' : ''}`);
+      const fwdSet = skuSet(m.src);
+      diagResults.push(`    正向 skuSet(" ${m.src}") = {$ {[...fwdSet].join(', ')}}`);
+      if (m.targets && m.targets[0]) {
+        const revSet = skuSet(m.targets[0]);
+        diagResults.push(`    反向 skuSet(" ${m.targets[0]}") = {$ {[...revSet].join(', ')}}`);
+      }
+    });
+  } else {
+    diagResults.push('  ⚠️ 无映射配置');
+  }
+
+  // 4. localStorage 状态
+  diagResults.push('\n\n💾 localStorage 状态:');
+  FILE_DEFS.forEach(fd => {
+    const s = localStorage.getItem(`data_${fd.key}`);
+    diagResults.push(`  data_ ${fd.key}: $ {s ? (s.length/1024).toFixed(1)+'KB' : '空'}`);
+  });
+  const sr = localStorage.getItem('salesRecs');
+  diagResults.push(`  salesRecs: ${sr ? (sr.length/1024).toFixed(1)+'KB' : '空'}`);
+
+  showDiagModal(diagResults.join('\n'));
+}
+
+function showDiagModal(content) {
+  const old = document.getElementById('diag-modal');
+  if (old) old.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'diag-modal';
+  modal.className = 'diag-overlay';
+  modal.innerHTML = `
+    <div class="diag-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h3 style="margin:0;">🔬 数据诊断报告</h3>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-outline btn-sm" onclick="copyDiag()">📋 复制</button>
+          <button class="btn btn-danger btn-sm" onclick="this.closest('#diag-modal').remove()">✕ 关闭</button>
+        </div>
+      </div>
+      <pre id="diagContent">${escapeHtml(content)}</pre>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+}
+
+function copyDiag() {
+  const text = document.getElementById('diagContent')?.textContent || '';
+  navigator.clipboard.writeText(text).then(() => alert('✅ 已复制到剪贴板'));
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// =====================================================================
+//  初始化
+// =====================================================================
+
+window.addEventListener('DOMContentLoaded', () => {
+  // 暗色模式
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark');
+    document.getElementById('darkToggle').textContent = '🌙';
+  }
+
+  buildUploadCards();
+  loadMappings();
+  renderMappings();
+
+  // 恢复 salesRecs
+  try {
+    const s = localStorage.getItem('salesRecs');
+    if (s) salesRecs = JSON.parse(s);
+  } catch(e) {}
+
+  // 恢复 rawData
+  FILE_DEFS.forEach(fd => {
+    if (!rawData[fd.key]) {
+      try {
+        const s = localStorage.getItem(`data_${fd.key}`);
+        if (s) rawData[fd.key] = JSON.parse(s);
+      } catch(e) {}
+    }
+  });
+
+  console.log('[init] 平台已加载，salesRecs:', salesRecs.length, '条');
+});
+</script>
+</body>
+</html>
+
+							<script>
+                            	
+							</script>
+                        </body>
+                        </html>
+                    
