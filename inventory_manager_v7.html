@@ -1,19 +1,4 @@
-
-                        <!DOCTYPE html>
-                        <html lang="en">
-                        <head>
-                            <meta charset="UTF-8">
-                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-							<style>
-								body {
-									background-color: white; /* Ensure the iframe has a white background */
-								}
-
-								
-							</style>
-                        </head>
-                        <body>
-                            <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -23,521 +8,116 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
 :root {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f5f7fa;
-  --bg-card: #ffffff;
-  --text-primary: #1a1a2e;
-  --text-secondary: #555;
-  --border: #e0e0e0;
-  --accent: #4a90d9;
-  --accent-hover: #357abd;
-  --danger: #e74c3c;
-  --warning: #f39c12;
-  --success: #27ae60;
-  --shadow: 0 2px 8px rgba(0,0,0,0.1);
-  --radius: 8px;
+  --bg-primary:#ffffff;--bg-secondary:#f5f7fa;--bg-card:#ffffff;
+  --text-primary:#1a1a2e;--text-secondary:#555;--border:#e0e0e0;
+  --accent:#4a90d9;--accent-hover:#357abd;--danger:#e74c3c;
+  --warning:#f39c12;--success:#27ae60;--shadow:0 2px 8px rgba(0,0,0,0.1);
+  --radius:8px;
 }
-
 [data-theme="dark"] {
-  --bg-primary: #1a1a2e;
-  --bg-secondary: #16213e;
-  --bg-card: #0f3460;
-  --text-primary: #e0e0e0;
-  --text-secondary: #a0a0a0;
-  --border: #2a2a4a;
-  --accent: #5dade2;
-  --accent-hover: #3498db;
-  --shadow: 0 2px 8px rgba(0,0,0,0.3);
+  --bg-primary:#1a1a2e;--bg-secondary:#16213e;--bg-card:#0f3460;
+  --text-primary:#e0e0e0;--text-secondary:#a0a0a0;--border:#2a2a4a;
+  --accent:#5dade2;--accent-hover:#3498db;--shadow:0 2px 8px rgba(0,0,0,0.3);
 }
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  line-height: 1.6;
-  min-height: 100vh;
-}
-
-.header {
-  background: linear-gradient(135deg, var(--accent), #6c5ce7);
-  color: white;
-  padding: 16px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-}
-
-.header h1 { font-size: 1.4rem; }
-
-.header-actions { display: flex; gap: 10px; align-items: center; }
-
-.theme-toggle {
-  background: rgba(255,255,255,0.2);
-  border: none;
-  color: white;
-  padding: 8px 14px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 0.9rem;
-}
-
-.security-banner {
-  background: linear-gradient(90deg, #d4edda, #c3e6cb);
-  color: #155724;
-  padding: 10px 24px;
-  font-size: 0.85rem;
-  border-bottom: 1px solid #b1dfbb;
-}
-
-[data-theme="dark"] .security-banner {
-  background: linear-gradient(90deg, #1a3a2a, #1a4a2a);
-  color: #7dcea0;
-  border-bottom-color: #2a5a3a;
-}
-
-.container { max-width: 1600px; margin: 0 auto; padding: 16px; }
-
-.collapsible {
-  background: var(--bg-card);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  margin-bottom: 16px;
-  overflow: hidden;
-}
-
-.collapsible-header {
-  padding: 14px 20px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 600;
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border);
-  user-select: none;
-}
-
-.collapsible-header:hover { background: var(--bg-secondary); }
-
-.collapsible-body { padding: 16px 20px; display: none; }
-.collapsible-body.open { display: block; }
-
-.chevron { transition: transform 0.3s; font-size: 0.8rem; }
-.chevron.open { transform: rotate(180deg); }
-
-.upload-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 12px;
-}
-
-.upload-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px;
-  background: var(--bg-secondary);
-  border-radius: 6px;
-  border: 1px solid var(--border);
-}
-
-.upload-item label {
-  flex: 1;
-  font-size: 0.85rem;
-}
-
-.upload-item .file-status {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  min-width: 80px;
-}
-
-.upload-item .file-status.uploaded { color: var(--success); font-weight: 600; }
-
-.btn {
-  padding: 8px 18px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.btn-primary { background: var(--accent); color: white; }
-.btn-primary:hover { background: var(--accent-hover); }
-.btn-danger { background: var(--danger); color: white; }
-.btn-danger:hover { background: #c0392b; }
-.btn-success { background: var(--success); color: white; }
-.btn-sm { padding: 4px 10px; font-size: 0.75rem; }
-.btn-outline {
-  background: transparent;
-  border: 1px solid var(--accent);
-  color: var(--accent);
-}
-
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.analyze-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 20px;
-  background: var(--bg-card);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  margin-bottom: 16px;
-}
-
-.tab-bar {
-  display: flex;
-  gap: 0;
-  background: var(--bg-card);
-  border-radius: var(--radius) var(--radius) 0 0;
-  box-shadow: var(--shadow);
-  overflow: hidden;
-}
-
-.tab-btn {
-  flex: 1;
-  padding: 14px 20px;
-  border: none;
-  background: var(--bg-card);
-  color: var(--text-secondary);
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
-  border-bottom: 3px solid transparent;
-  transition: all 0.2s;
-}
-
-.tab-btn.active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-  background: var(--bg-secondary);
-}
-
-.tab-btn:hover:not(.active) { background: var(--bg-secondary); }
-
-.tab-content {
-  display: none;
-  background: var(--bg-card);
-  border-radius: 0 0 var(--radius) var(--radius);
-  box-shadow: var(--shadow);
-  padding: 20px;
-}
-
-.tab-content.active { display: block; }
-
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.stat-card {
-  padding: 16px;
-  border-radius: var(--radius);
-  text-align: center;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-}
-
-.stat-card .value {
-  font-size: 2rem;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.stat-card .label {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  margin-top: 4px;
-}
-
-.stat-card.danger .value { color: var(--danger); }
-.stat-card.warning .value { color: var(--warning); }
-.stat-card.success .value { color: var(--success); }
-
-.params-bar {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  flex-wrap: wrap;
-  padding: 12px 16px;
-  background: var(--bg-secondary);
-  border-radius: var(--radius);
-  margin-bottom: 16px;
-  border: 1px solid var(--border);
-}
-
-.param-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-}
-
-.param-group label { white-space: nowrap; font-weight: 500; }
-.param-group input, .param-group select {
-  padding: 4px 8px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  background: var(--bg-card);
-  color: var(--text-primary);
-}
-
-.data-table-wrapper {
-  overflow-x: auto;
-  margin: 16px 0;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-}
-
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.8rem;
-  white-space: nowrap;
-}
-
-.data-table th {
-  position: sticky;
-  top: 0;
-  background: var(--accent);
-  color: white;
-  padding: 10px 12px;
-  text-align: left;
-  cursor: pointer;
-  user-select: none;
-  font-weight: 500;
-}
-
-.data-table th:hover { background: var(--accent-hover); }
-.data-table td {
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--border);
-}
-
-.data-table tbody tr:hover { background: var(--bg-secondary); }
-.data-table tbody tr:nth-child(even) { background: rgba(0,0,0,0.02); }
-
-[data-theme="dark"] .data-table tbody tr:nth-child(even) { background: rgba(255,255,255,0.02); }
-
-.status-badge {
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  display: inline-block;
-}
-
-.status-safe { background: #d4edda; color: #155724; }
-.status-low { background: #fff3cd; color: #856404; }
-.status-risk { background: #f8d7da; color: #721c24; }
-.status-out { background: #333; color: #fff; }
-
-[data-theme="dark"] .status-safe { background: #1a4a2a; color: #7dcea0; }
-[data-theme="dark"] .status-low { background: #4a3a1a; color: #f0c040; }
-[data-theme="dark"] .status-risk { background: #4a1a1a; color: #f08080; }
-
-.search-filter-bar {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.search-input {
-  padding: 8px 14px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg-card);
-  color: var(--text-primary);
-  min-width: 200px;
-  font-size: 0.85rem;
-}
-
-.filter-select {
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg-card);
-  color: var(--text-primary);
-  font-size: 0.85rem;
-}
-
-.charts-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 16px;
-  margin-top: 20px;
-}
-
-.chart-card {
-  background: var(--bg-secondary);
-  border-radius: var(--radius);
-  padding: 16px;
-  border: 1px solid var(--border);
-}
-
-.chart-card h3 {
-  font-size: 0.95rem;
-  margin-bottom: 12px;
-  color: var(--text-primary);
-}
-
-.chart-container { position: relative; height: 300px; }
-
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 16px;
-}
-
-.dashboard-block {
-  background: var(--bg-secondary);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  overflow: hidden;
-}
-
-.dashboard-block-header {
-  padding: 12px 16px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  border-bottom: 1px solid var(--border);
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.dashboard-block-body { padding: 16px; }
-
-.dashboard-metric {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 0.85rem;
-}
-
-.dashboard-metric:last-child { border-bottom: none; }
-
-.loading-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10000;
-  display: none;
-}
-
-.loading-box {
-  background: var(--bg-card);
-  padding: 30px 40px;
-  border-radius: var(--radius);
-  text-align: center;
-  min-width: 300px;
-}
-
-.loading-box .spinner {
-  width: 40px; height: 40px;
-  border: 4px solid var(--border);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 16px;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.progress-bar {
-  width: 100%;
-  height: 6px;
-  background: var(--border);
-  border-radius: 3px;
-  margin-top: 12px;
-  overflow: hidden;
-}
-
-.progress-bar-fill {
-  height: 100%;
-  background: var(--accent);
-  border-radius: 3px;
-  width: 0%;
-  transition: width 0.3s;
-}
-
-.mapping-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.8rem;
-}
-
-.mapping-table th, .mapping-table td {
-  padding: 8px 10px;
-  border: 1px solid var(--border);
-  text-align: left;
-}
-
-.mapping-table th { background: var(--bg-secondary); font-weight: 600; }
-.mapping-table input {
-  width: 100%;
-  padding: 4px 6px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  font-size: 0.8rem;
-  background: var(--bg-card);
-  color: var(--text-primary);
-}
-
-.mapping-actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
-
-.export-bar {
-  display: flex;
-  gap: 10px;
-  margin-top: 16px;
-  flex-wrap: wrap;
-}
-
-.no-data-msg {
-  text-align: center;
-  padding: 40px;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-}
-
-.sku-chart-selector {
-  margin-bottom: 12px;
-}
-
-.sku-chart-selector select {
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg-card);
-  color: var(--text-primary);
-  font-size: 0.85rem;
-  min-width: 250px;
-}
-
-@media (max-width: 768px) {
-  .upload-grid { grid-template-columns: 1fr; }
-  .cards-grid { grid-template-columns: repeat(2, 1fr); }
-  .params-bar { flex-direction: column; align-items: stretch; }
-  .charts-grid { grid-template-columns: 1fr; }
-  .dashboard-grid { grid-template-columns: 1fr; }
-  .tab-btn { font-size: 0.75rem; padding: 10px 8px; }
-  .header h1 { font-size: 1.1rem; }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Hiragino Sans',sans-serif;background:var(--bg-secondary);color:var(--text-primary);line-height:1.6;min-height:100vh;}
+.header{background:linear-gradient(135deg,var(--accent),#6c5ce7);color:#fff;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 10px rgba(0,0,0,.2);}
+.header h1{font-size:1.4rem;}
+.header-actions{display:flex;gap:10px;align-items:center;}
+.theme-toggle{background:rgba(255,255,255,.2);border:none;color:#fff;padding:8px 14px;border-radius:20px;cursor:pointer;font-size:.9rem;}
+.security-banner{background:linear-gradient(90deg,#d4edda,#c3e6cb);color:#155724;padding:10px 24px;font-size:.85rem;border-bottom:1px solid #b1dfbb;}
+[data-theme="dark"] .security-banner{background:linear-gradient(90deg,#1a3a2a,#1a4a2a);color:#7dcea0;border-bottom-color:#2a5a3a;}
+.container{max-width:1600px;margin:0 auto;padding:16px;}
+.collapsible{background:var(--bg-card);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden;}
+.collapsible-header{padding:14px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:600;background:var(--bg-card);border-bottom:1px solid var(--border);user-select:none;}
+.collapsible-header:hover{background:var(--bg-secondary);}
+.collapsible-body{padding:16px 20px;display:none;}
+.collapsible-body.open{display:block;}
+.chevron{transition:transform .3s;font-size:.8rem;}
+.chevron.open{transform:rotate(180deg);}
+.upload-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;}
+.upload-item{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg-secondary);border-radius:6px;border:1px solid var(--border);}
+.upload-item .file-status{font-size:.75rem;color:var(--text-secondary);min-width:80px;}
+.upload-item .file-status.uploaded{color:var(--success);font-weight:600;}
+.btn{padding:8px 18px;border:none;border-radius:6px;cursor:pointer;font-size:.85rem;font-weight:500;transition:all .2s;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{background:var(--accent-hover);}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-danger:hover{background:#c0392b;}
+.btn-success{background:var(--success);color:#fff;}
+.btn-sm{padding:4px 10px;font-size:.75rem;}
+.btn-outline{background:transparent;border:1px solid var(--accent);color:var(--accent);}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+.analyze-bar{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:var(--bg-card);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:16px;}
+.tab-bar{display:flex;gap:0;background:var(--bg-card);border-radius:var(--radius) var(--radius) 0 0;box-shadow:var(--shadow);overflow:hidden;}
+.tab-btn{flex:1;padding:14px 20px;border:none;background:var(--bg-card);color:var(--text-secondary);cursor:pointer;font-size:.9rem;font-weight:500;border-bottom:3px solid transparent;transition:all .2s;}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);background:var(--bg-secondary);}
+.tab-btn:hover:not(.active){background:var(--bg-secondary);}
+.tab-content{display:none;background:var(--bg-card);border-radius:0 0 var(--radius) var(--radius);box-shadow:var(--shadow);padding:20px;}
+.tab-content.active{display:block;}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:20px;}
+.stat-card{padding:16px;border-radius:var(--radius);text-align:center;background:var(--bg-secondary);border:1px solid var(--border);}
+.stat-card .value{font-size:2rem;font-weight:700;line-height:1.2;}
+.stat-card .label{font-size:.8rem;color:var(--text-secondary);margin-top:4px;}
+.stat-card.danger .value{color:var(--danger);}
+.stat-card.warning .value{color:var(--warning);}
+.stat-card.success .value{color:var(--success);}
+.params-bar{display:flex;gap:20px;align-items:center;flex-wrap:wrap;padding:12px 16px;background:var(--bg-secondary);border-radius:var(--radius);margin-bottom:16px;border:1px solid var(--border);}
+.param-group{display:flex;align-items:center;gap:8px;font-size:.85rem;}
+.param-group label{white-space:nowrap;font-weight:500;}
+.param-group input,.param-group select{padding:4px 8px;border:1px solid var(--border);border-radius:4px;background:var(--bg-card);color:var(--text-primary);}
+.data-table-wrapper{overflow-x:auto;margin:16px 0;border:1px solid var(--border);border-radius:var(--radius);}
+.data-table{width:100%;border-collapse:collapse;font-size:.8rem;white-space:nowrap;}
+.data-table th{position:sticky;top:0;background:var(--accent);color:#fff;padding:10px 12px;text-align:left;cursor:pointer;user-select:none;font-weight:500;}
+.data-table th:hover{background:var(--accent-hover);}
+.data-table td{padding:8px 12px;border-bottom:1px solid var(--border);}
+.data-table tbody tr:hover{background:var(--bg-secondary);}
+.data-table tbody tr:nth-child(even){background:rgba(0,0,0,.02);}
+[data-theme="dark"] .data-table tbody tr:nth-child(even){background:rgba(255,255,255,.02);}
+.status-badge{padding:2px 8px;border-radius:12px;font-size:.75rem;font-weight:600;display:inline-block;}
+.status-safe{background:#d4edda;color:#155724;}
+.status-low{background:#fff3cd;color:#856404;}
+.status-risk{background:#f8d7da;color:#721c24;}
+.status-out{background:#333;color:#fff;}
+[data-theme="dark"] .status-safe{background:#1a4a2a;color:#7dcea0;}
+[data-theme="dark"] .status-low{background:#4a3a1a;color:#f0c040;}
+[data-theme="dark"] .status-risk{background:#4a1a1a;color:#f08080;}
+.search-filter-bar{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+.search-input{padding:8px 14px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-primary);min-width:200px;font-size:.85rem;}
+.filter-select{padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-primary);font-size:.85rem;}
+.charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:16px;margin-top:20px;}
+.chart-card{background:var(--bg-secondary);border-radius:var(--radius);padding:16px;border:1px solid var(--border);}
+.chart-card h3{font-size:.95rem;margin-bottom:12px;color:var(--text-primary);}
+.chart-container{position:relative;height:300px;}
+.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:16px;}
+.dashboard-block{background:var(--bg-secondary);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;}
+.dashboard-block-header{padding:12px 16px;font-weight:600;font-size:.9rem;border-bottom:1px solid var(--border);}
+.dashboard-block-body{padding:16px;}
+.dashboard-metric{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:.85rem;}
+.dashboard-metric:last-child{border-bottom:none;}
+.loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:none;justify-content:center;align-items:center;z-index:10000;}
+.loading-overlay.show{display:flex;}
+.loading-box{background:var(--bg-card);padding:30px 40px;border-radius:var(--radius);text-align:center;min-width:300px;}
+.spinner{width:40px;height:40px;border:4px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.progress-bar{width:100%;height:6px;background:var(--border);border-radius:3px;margin-top:12px;overflow:hidden;}
+.progress-bar-fill{height:100%;background:var(--accent);border-radius:3px;width:0;transition:width .3s;}
+.mapping-table{width:100%;border-collapse:collapse;font-size:.8rem;}
+.mapping-table th,.mapping-table td{padding:8px 10px;border:1px solid var(--border);text-align:left;}
+.mapping-table th{background:var(--bg-secondary);font-weight:600;}
+.mapping-table input{width:100%;padding:4px 6px;border:1px solid var(--border);border-radius:4px;font-size:.8rem;background:var(--bg-card);color:var(--text-primary);}
+.mapping-actions{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;}
+.export-bar{display:flex;gap:10px;flex-wrap:wrap;}
+.no-data-msg{text-align:center;padding:40px;color:var(--text-secondary);font-size:.9rem;}
+.sku-chart-selector select{padding:8px 12px;border:1px solid var(--border);border-radius:6px;background:var(--bg-card);color:var(--text-primary);font-size:.85rem;min-width:250px;}
+@media(max-width:768px){
+  .upload-grid{grid-template-columns:1fr;}
+  .cards-grid{grid-template-columns:repeat(2,1fr);}
+  .params-bar{flex-direction:column;align-items:stretch;}
+  .charts-grid{grid-template-columns:1fr;}
+  .dashboard-grid{grid-template-columns:1fr;}
+  .tab-btn{font-size:.75rem;padding:10px 8px;}
+  .header h1{font-size:1.1rem;}
 }
 </style>
 </head>
@@ -570,68 +150,7 @@ body {
       <span class="chevron open">▼</span>
     </div>
     <div class="collapsible-body open" id="uploadArea">
-      <div class="upload-grid">
-        <div class="upload-item">
-          <div style="flex:1">
-            <div style="font-weight:600;font-size:0.85rem">① 待发货.csv</div>
-            <div style="font-size:0.75rem;color:var(--text-secondary)">Shopify待发货数</div>
-            <div class="file-status" id="status_shopify">未上传</div>
-          </div>
-          <input type="file" id="file_shopify" accept=".csv,.xlsx" style="display:none" onchange="handleFileUpload('shopify',this)">
-          <button class="btn btn-primary btn-sm" onclick="document.getElementById('file_shopify').click()">选择文件</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteFile('shopify')" title="删除">✕</button>
-        </div>
-        <div class="upload-item">
-          <div style="flex:1">
-            <div style="font-weight:600;font-size:0.85rem">② 逻辑仓库存.xlsx</div>
-            <div style="font-size:0.75rem;color:var(--text-secondary)">海外仓库存</div>
-            <div class="file-status" id="status_warehouse">未上传</div>
-          </div>
-          <input type="file" id="file_warehouse" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleFileUpload('warehouse',this)">
-          <button class="btn btn-primary btn-sm" onclick="document.getElementById('file_warehouse').click()">选择文件</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteFile('warehouse')">✕</button>
-        </div>
-        <div class="upload-item">
-          <div style="flex:1">
-            <div style="font-weight:600;font-size:0.85rem">③ 待分货.xlsx</div>
-            <div style="font-size:0.75rem;color:var(--text-secondary)">分货计划</div>
-            <div class="file-status" id="status_allocation">未上传</div>
-          </div>
-          <input type="file" id="file_allocation" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleFileUpload('allocation',this)">
-          <button class="btn btn-primary btn-sm" onclick="document.getElementById('file_allocation').click()">选择文件</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteFile('allocation')">✕</button>
-        </div>
-        <div class="upload-item">
-          <div style="flex:1">
-            <div style="font-weight:600;font-size:0.85rem">④ 头程明细.xlsx</div>
-            <div style="font-size:0.75rem;color:var(--text-secondary)">头程物流</div>
-            <div class="file-status" id="status_shipping">未上传</div>
-          </div>
-          <input type="file" id="file_shipping" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleFileUpload('shipping',this)">
-          <button class="btn btn-primary btn-sm" onclick="document.getElementById('file_shipping').click()">选择文件</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteFile('shipping')">✕</button>
-        </div>
-        <div class="upload-item">
-          <div style="flex:1">
-            <div style="font-weight:600;font-size:0.85rem">⑤ 销量数据.csv</div>
-            <div style="font-size:0.75rem;color:var(--text-secondary)">销量数据</div>
-            <div class="file-status" id="status_sales">未上传</div>
-          </div>
-          <input type="file" id="file_sales" accept=".csv,.xlsx" style="display:none" onchange="handleFileUpload('sales',this)">
-          <button class="btn btn-primary btn-sm" onclick="document.getElementById('file_sales').click()">选择文件</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteFile('sales')">✕</button>
-        </div>
-        <div class="upload-item">
-          <div style="flex:1">
-            <div style="font-weight:600;font-size:0.85rem">⑥ 销量预测.xlsx</div>
-            <div style="font-size:0.75rem;color:var(--text-secondary)">月度预测</div>
-            <div class="file-status" id="status_forecast">未上传</div>
-          </div>
-          <input type="file" id="file_forecast" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleFileUpload('forecast',this)">
-          <button class="btn btn-primary btn-sm" onclick="document.getElementById('file_forecast').click()">选择文件</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteFile('forecast')">✕</button>
-        </div>
-      </div>
+      <div class="upload-grid" id="uploadGrid"></div>
     </div>
   </div>
 
@@ -644,14 +163,7 @@ body {
     <div class="collapsible-body" id="mappingArea">
       <div class="data-table-wrapper" style="max-height:400px;overflow-y:auto">
         <table class="mapping-table" id="mappingTable">
-          <thead>
-            <tr>
-              <th style="width:25%">源SKU（待分货表）</th>
-              <th style="width:40%">目标SKU（多个用逗号分隔）</th>
-              <th style="width:20%">产品简称</th>
-              <th style="width:15%">操作</th>
-            </tr>
-          </thead>
+          <thead><tr><th style="width:25%">源SKU（待分货表）</th><th style="width:40%">目标SKU（多个用逗号分隔）</th><th style="width:20%">产品简称</th><th style="width:15%">操作</th></tr></thead>
           <tbody id="mappingBody"></tbody>
         </table>
       </div>
@@ -667,8 +179,8 @@ body {
 
   <!-- Analyze Button -->
   <div class="analyze-bar">
-    <div style="font-size:0.85rem;color:var(--text-secondary)" id="uploadSummary">请上传数据文件后点击分析</div>
-    <button class="btn btn-primary" id="analyzeBtn" onclick="startAnalysis()">🚀 开始分析</button>
+    <div style="font-size:.85rem;color:var(--text-secondary)" id="uploadSummary">请上传数据文件后点击分析</div>
+    <button class="btn btn-primary" onclick="startAnalysis()">🚀 开始分析</button>
   </div>
 
   <!-- Tabs -->
@@ -678,7 +190,7 @@ body {
     <button class="tab-btn" onclick="switchTab(2)">📊 综合监控看板</button>
   </div>
 
-  <!-- Tab 1 -->
+  <!-- Tab 0 -->
   <div class="tab-content active" id="tab0">
     <div class="params-bar">
       <div class="param-group">
@@ -688,12 +200,7 @@ body {
       </div>
       <div class="param-group">
         <label>日均销量周期：</label>
-        <select id="avgPeriod">
-          <option value="7">7天</option>
-          <option value="14" selected>14天</option>
-          <option value="30">30天</option>
-          <option value="60">60天</option>
-        </select>
+        <select id="avgPeriod"><option value="7">7天</option><option value="14" selected>14天</option><option value="30">30天</option><option value="60">60天</option></select>
       </div>
       <div class="param-group">
         <label>销量波动系数：</label>
@@ -701,7 +208,6 @@ body {
       </div>
       <button class="btn btn-primary btn-sm" onclick="recalculate()">重新计算</button>
     </div>
-
     <div class="cards-grid" id="tab1Cards">
       <div class="stat-card"><div class="value" id="totalSkus">-</div><div class="label">总SKU数量</div></div>
       <div class="stat-card danger"><div class="value" id="urgentCount">-</div><div class="label">🔴 紧急预警(&lt;15天)</div></div>
@@ -709,1598 +215,1039 @@ body {
       <div class="stat-card success"><div class="value" id="safeCount">-</div><div class="label">🟢 安全(&gt;30天)</div></div>
       <div class="stat-card"><div class="value" id="avgDays">-</div><div class="label">平均可售天数</div></div>
     </div>
-
     <div class="search-filter-bar">
       <input class="search-input" id="tab1Search" placeholder="🔍 搜索SKU或产品名称..." oninput="filterTable1()">
       <select class="filter-select" id="tab1StatusFilter" onchange="filterTable1()">
-        <option value="all">全部状态</option>
-        <option value="safe">🟢 充足</option>
-        <option value="low">🟡 偏低</option>
-        <option value="risk">🔴 缺货风险</option>
-        <option value="out">⚫ 已缺货</option>
+        <option value="all">全部状态</option><option value="safe">🟢 充足</option><option value="low">🟡 偏低</option><option value="risk">🔴 缺货风险</option><option value="out">⚫ 已缺货</option>
       </select>
       <div class="export-bar">
         <button class="btn btn-outline btn-sm" onclick="exportCSV('analysis')">📥 导出分析结果</button>
         <button class="btn btn-outline btn-sm" onclick="exportCSV('alerts')">📥 导出预警清单</button>
       </div>
     </div>
-
     <div class="data-table-wrapper" style="max-height:500px;overflow-y:auto">
       <table class="data-table" id="inventoryTable">
-        <thead>
-          <tr>
-            <th onclick="sortTable('inventoryTable',0)">SKU ↕</th>
-            <th onclick="sortTable('inventoryTable',1)">产品名称 ↕</th>
-            <th onclick="sortTable('inventoryTable',2)">海外仓可用 ↕</th>
-            <th onclick="sortTable('inventoryTable',3)">在库量 ↕</th>
-            <th onclick="sortTable('inventoryTable',4)">Shopify占用 ↕</th>
-            <th onclick="sortTable('inventoryTable',5)">当前可用 ↕</th>
-            <th onclick="sortTable('inventoryTable',6)">30天销量 ↕</th>
-            <th onclick="sortTable('inventoryTable',7)">日均销量 ↕</th>
-            <th onclick="sortTable('inventoryTable',8)">可售天数 ↕</th>
-            <th onclick="sortTable('inventoryTable',9)">在途总量 ↕</th>
-            <th onclick="sortTable('inventoryTable',10)">最近到货日 ↕</th>
-            <th onclick="sortTable('inventoryTable',11)">最近到货量 ↕</th>
-            <th onclick="sortTable('inventoryTable',12)">4周分货量 ↕</th>
-            <th onclick="sortTable('inventoryTable',13)">预计断货日 ↕</th>
-            <th onclick="sortTable('inventoryTable',14)">距断货天数 ↕</th>
-            <th onclick="sortTable('inventoryTable',15)">建议补货量 ↕</th>
-            <th onclick="sortTable('inventoryTable',16)">下月预测 ↕</th>
-            <th onclick="sortTable('inventoryTable',17)">状态 ↕</th>
-          </tr>
-        </thead>
+        <thead><tr>
+          <th onclick="sortTable('inventoryTable',0)">SKU ↕</th>
+          <th onclick="sortTable('inventoryTable',1)">产品名称 ↕</th>
+          <th onclick="sortTable('inventoryTable',2)">海外仓可用 ↕</th>
+          <th onclick="sortTable('inventoryTable',3)">在库量 ↕</th>
+          <th onclick="sortTable('inventoryTable',4)">Shopify占用 ↕</th>
+          <th onclick="sortTable('inventoryTable',5)">当前可用 ↕</th>
+          <th onclick="sortTable('inventoryTable',6)">30天销量 ↕</th>
+          <th onclick="sortTable('inventoryTable',7)">日均销量 ↕</th>
+          <th onclick="sortTable('inventoryTable',8)">可售天数 ↕</th>
+          <th onclick="sortTable('inventoryTable',9)">在途总量 ↕</th>
+          <th onclick="sortTable('inventoryTable',10)">最近到货日 ↕</th>
+          <th onclick="sortTable('inventoryTable',11)">最近到货量 ↕</th>
+          <th onclick="sortTable('inventoryTable',12)">4周分货量 ↕</th>
+          <th onclick="sortTable('inventoryTable',13)">预计断货日 ↕</th>
+          <th onclick="sortTable('inventoryTable',14)">距断货天数 ↕</th>
+          <th onclick="sortTable('inventoryTable',15)">建议补货量 ↕</th>
+          <th onclick="sortTable('inventoryTable',16)">下月预测 ↕</th>
+          <th onclick="sortTable('inventoryTable',17)">状态 ↕</th>
+        </tr></thead>
         <tbody id="inventoryBody"></tbody>
       </table>
     </div>
     <div class="no-data-msg" id="tab1NoData">请上传数据并点击"开始分析"</div>
-
     <div class="charts-grid">
-      <div class="chart-card">
-        <h3>📊 库存健康度分布</h3>
-        <div class="chart-container"><canvas id="healthPieChart"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <h3>📊 Top 15 SKU库存可售天数</h3>
-        <div class="chart-container"><canvas id="topSkuBarChart"></canvas></div>
-      </div>
+      <div class="chart-card"><h3>📊 库存健康度分布</h3><div class="chart-container"><canvas id="healthPieChart"></canvas></div></div>
+      <div class="chart-card"><h3>📊 Top 15 SKU库存可售天数</h3><div class="chart-container"><canvas id="topSkuBarChart"></canvas></div></div>
       <div class="chart-card" style="grid-column:1/-1">
         <h3>📊 SKU库存变化模拟（未来60天）</h3>
-        <div class="sku-chart-selector">
-          <select id="skuSimSelect" onchange="updateSimChart()">
-            <option value="">选择SKU...</option>
-          </select>
-        </div>
+        <div class="sku-chart-selector"><select id="skuSimSelect" onchange="updateSimChart()"><option value="">选择SKU...</option></select></div>
         <div class="chart-container" style="height:350px"><canvas id="simLineChart"></canvas></div>
       </div>
     </div>
   </div>
 
-  <!-- Tab 2 -->
+  <!-- Tab 1 -->
   <div class="tab-content" id="tab1">
     <div class="params-bar">
-      <div class="param-group">
-        <label>SKU筛选：</label>
-        <select id="tab2SkuFilter" class="filter-select" multiple style="min-width:250px;height:80px"></select>
-      </div>
-      <div class="param-group">
-        <label>维度：</label>
-        <select id="tab2Dimension" class="filter-select" onchange="updateTab2()">
-          <option value="day">按日</option>
-          <option value="week">按周</option>
-          <option value="month" selected>按月</option>
-        </select>
-      </div>
+      <div class="param-group"><label>SKU筛选：</label><select id="tab2SkuFilter" class="filter-select" multiple style="min-width:250px;height:80px"></select></div>
+      <div class="param-group"><label>维度：</label><select id="tab2Dimension" class="filter-select" onchange="updateTab2()"><option value="day">按日</option><option value="week">按周</option><option value="month" selected>按月</option></select></div>
       <button class="btn btn-primary btn-sm" onclick="updateTab2()">刷新</button>
     </div>
-
     <div class="charts-grid">
-      <div class="chart-card">
-        <h3>📈 销量趋势</h3>
-        <div class="chart-container"><canvas id="salesTrendChart"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <h3>📊 实际 vs 预测销量</h3>
-        <div class="chart-container"><canvas id="actualVsForecastChart"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <h3>📊 预测准确率</h3>
-        <div class="chart-container"><canvas id="accuracyRadarChart"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <h3>📊 销量排名</h3>
-        <div class="chart-container"><canvas id="salesRankChart"></canvas></div>
-      </div>
+      <div class="chart-card"><h3>📈 销量趋势</h3><div class="chart-container"><canvas id="salesTrendChart"></canvas></div></div>
+      <div class="chart-card"><h3>📊 实际 vs 预测销量</h3><div class="chart-container"><canvas id="actualVsForecastChart"></canvas></div></div>
+      <div class="chart-card"><h3>📊 预测准确率</h3><div class="chart-container"><canvas id="accuracyRadarChart"></canvas></div></div>
+      <div class="chart-card"><h3>📊 销量排名</h3><div class="chart-container"><canvas id="salesRankChart"></canvas></div></div>
     </div>
-
     <h3 style="margin:20px 0 10px">📋 销量对比明细</h3>
     <div class="search-filter-bar">
       <input class="search-input" id="tab2Search" placeholder="🔍 搜索SKU..." oninput="filterTable2()">
       <button class="btn btn-outline btn-sm" onclick="exportCSV('salesCompare')">📥 导出对比数据</button>
     </div>
     <div class="data-table-wrapper" style="max-height:400px;overflow-y:auto">
-      <table class="data-table" id="salesTable">
-        <thead><tr id="salesTableHead"></tr></thead>
-        <tbody id="salesTableBody"></tbody>
-      </table>
+      <table class="data-table" id="salesTable"><thead><tr id="salesTableHead"></tr></thead><tbody id="salesTableBody"></tbody></table>
     </div>
-
     <h3 style="margin:20px 0 10px">📋 退货分析 Top5</h3>
     <div class="data-table-wrapper">
-      <table class="data-table" id="returnTable">
-        <thead><tr><th>SKU</th><th>毛销量</th><th>退货量</th><th>退货率</th></tr></thead>
-        <tbody id="returnBody"></tbody>
-      </table>
+      <table class="data-table" id="returnTable"><thead><tr><th>SKU</th><th>毛销量</th><th>退货量</th><th>退货率</th></tr></thead><tbody id="returnBody"></tbody></table>
     </div>
     <div class="no-data-msg" id="tab2NoData">请上传数据并点击"开始分析"</div>
   </div>
 
-  <!-- Tab 3 -->
+  <!-- Tab 2 -->
   <div class="tab-content" id="tab2">
-    <div class="dashboard-grid" id="dashboardGrid">
-      <div class="dashboard-block">
-        <div class="dashboard-block-header">📦 A - 库存健康度</div>
-        <div class="dashboard-block-body" id="blockA">
-          <div style="height:200px"><canvas id="dashPieChart"></canvas></div>
-          <div class="dashboard-metric"><span>库存周转天数均值</span><strong id="dashAvgTurnover">-</strong></div>
-        </div>
-      </div>
-      <div class="dashboard-block">
-        <div class="dashboard-block-header">🚨 B - 补货紧急度</div>
-        <div class="dashboard-block-body" id="blockB">
-          <div class="dashboard-metric"><span>🔴 15天内断货</span><strong id="dashUrgent" style="color:var(--danger)">-</strong></div>
-          <div class="dashboard-metric"><span>🟡 30天内断货</span><strong id="dashWatch" style="color:var(--warning)">-</strong></div>
-          <div style="margin-top:10px;font-size:0.85rem;font-weight:600">⚠ 风险最高Top5:</div>
-          <div id="dashTopRisk" style="font-size:0.8rem"></div>
-        </div>
-      </div>
-      <div class="dashboard-block">
-        <div class="dashboard-block-header">🚢 C - 在途概览</div>
-        <div class="dashboard-block-body" id="blockC">
-          <div class="dashboard-metric"><span>在途总数量</span><strong id="dashInTransit">-</strong></div>
-          <div class="dashboard-metric"><span>未来7天到货</span><strong id="dash7d">-</strong></div>
-          <div class="dashboard-metric"><span>未来14天到货</span><strong id="dash14d">-</strong></div>
-        </div>
-      </div>
-      <div class="dashboard-block">
-        <div class="dashboard-block-header">📈 D - 销量趋势</div>
-        <div class="dashboard-block-body" id="blockD">
-          <div class="dashboard-metric"><span>近7天总销量</span><strong id="dash7dSales">-</strong></div>
-          <div class="dashboard-metric"><span>vs 上7天</span><strong id="dash7dChange">-</strong></div>
-          <div style="margin-top:10px;font-size:0.85rem;font-weight:600">畅销Top5:</div>
-          <div id="dashTopSales" style="font-size:0.8rem"></div>
-        </div>
-      </div>
-      <div class="dashboard-block">
-        <div class="dashboard-block-header">🎯 E - 预测 vs 实际</div>
-        <div class="dashboard-block-body" id="blockE">
-          <div class="dashboard-metric"><span>当月预测准确率</span><strong id="dashAccuracy">-</strong></div>
-          <div class="dashboard-metric"><span>偏差最大SKU</span><strong id="dashMaxDeviation">-</strong></div>
-        </div>
-      </div>
-    </div>
+    <div class="dashboard-grid" id="dashboardGrid"></div>
     <div class="no-data-msg" id="tab3NoData">请上传数据并点击"开始分析"</div>
   </div>
 </div>
 
 <script>
 // ============ GLOBAL STATE ============
-const APP = {
-  files: {},       // raw file data stored { shopify, warehouse, allocation, shipping, sales, forecast }
-  parsed: {},      // parsed data
-  results: [],     // analysis results
-  charts: {},      // Chart.js instances
-  simData: {},     // simulation data per SKU
-  sortDirs: {},    // table sort directions
-};
-
+const APP = {files:{},parsed:{},results:[],charts:{},sortDirs:{}};
 const FILE_KEYS = ['shopify','warehouse','allocation','shipping','sales','forecast'];
-const FILE_NAMES = {
-  shopify: '待发货.csv',
-  warehouse: '逻辑仓库存.xlsx',
-  allocation: '待分货.xlsx',
-  shipping: '头程明细.xlsx',
-  sales: '销量数据.csv',
-  forecast: '销量预测.xlsx'
-};
+const FILE_LABELS = ['① 待发货.csv','② 逻辑仓库存.xlsx','③ 待分货.xlsx','④ 头程明细.xlsx','⑤ 销量数据.csv','⑥ 销量预测.xlsx'];
+const FILE_DESCS = ['Shopify待发货数','海外仓库存','分货计划','头程物流','销量数据','月度预测'];
 
-// ============ DEFAULT MAPPINGS ============
 const DEFAULT_MAPPINGS = [
-  { source: 'PF002-A-JP', targets: 'PF002-A-JP2', name: 'A1単体' },
-  { source: 'PF003-S+SA007-JP', targets: 'PF003-S+SA007-JP, PF003-S+SA007-JP1', name: 'H2S Combo' },
-  { source: 'PF003-N+SA007-JP', targets: 'PF003-N+SA007-JP+SL001-JP, PF003-N+SA007-JP+SL002-JP', name: 'H2C Laser' },
-  { source: 'PF004-U+SA007-JP', targets: 'PF004-U+SA007-JP1', name: 'P2S Combo' },
-  { source: 'PF003-M+SA007-JP', targets: 'PF003-M+SA007-JP, PF003-M+SA007-JP1', name: 'H2D Laser' },
-  { source: 'PF003-D+SA007-JP', targets: 'PF003-D+SA007-JP, PF003-D+SA007-JP1', name: 'H2D Combo' },
-  { source: 'PF001-U+SA007-JP', targets: 'PF001-U+SA007-JP, PF001-U+SA007-JP1', name: 'P1S AMS2Pro' },
-  { source: 'PF003-L+SA007-JP', targets: 'PF003-L+SA007-JP, PF003-L+SA007-JP1', name: 'H2S Laser' },
+  {source:'PF002-A-JP',targets:'PF002-A-JP2',name:'A1単体'},
+  {source:'PF003-S+SA007-JP',targets:'PF003-S+SA007-JP, PF003-S+SA007-JP1',name:'H2S Combo'},
+  {source:'PF003-N+SA007-JP',targets:'PF003-N+SA007-JP+SL001-JP, PF003-N+SA007-JP+SL002-JP',name:'H2C Laser'},
+  {source:'PF004-U+SA007-JP',targets:'PF004-U+SA007-JP1',name:'P2S Combo'},
+  {source:'PF003-M+SA007-JP',targets:'PF003-M+SA007-JP, PF003-M+SA007-JP1',name:'H2D Laser'},
+  {source:'PF003-D+SA007-JP',targets:'PF003-D+SA007-JP, PF003-D+SA007-JP1',name:'H2D Combo'},
+  {source:'PF001-U+SA007-JP',targets:'PF001-U+SA007-JP, PF001-U+SA007-JP1',name:'P1S AMS2Pro'},
+  {source:'PF003-L+SA007-JP',targets:'PF003-L+SA007-JP, PF003-L+SA007-JP1',name:'H2S Laser'}
 ];
-
 let skuMappings = [];
 
 // ============ INDEXEDDB ============
-const DB_NAME = 'OpsManagementDB';
-const DB_VERSION = 1;
-const STORE_NAME = 'files';
+const DB_NAME='OpsDB';const DB_VER=1;const STORE='files';
+function openDB(){return new Promise((ok,ng)=>{const r=indexedDB.open(DB_NAME,DB_VER);r.onupgradeneeded=e=>{if(!e.target.result.objectStoreNames.contains(STORE))e.target.result.createObjectStore(STORE,{keyPath:'key'});};r.onsuccess=()=>ok(r.result);r.onerror=()=>ng(r.error);});}
+async function saveToDB(key,data,fn){const db=await openDB();const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put({key,data:Array.from(data),fileName:fn,ts:Date.now()});return new Promise(r=>{tx.oncomplete=r;});}
+async function getFromDB(key){const db=await openDB();const tx=db.transaction(STORE,'readonly');const rq=tx.objectStore(STORE).get(key);return new Promise(r=>{rq.onsuccess=()=>r(rq.result||null);rq.onerror=()=>r(null);});}
+async function delFromDB(key){const db=await openDB();const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).delete(key);return new Promise(r=>{tx.oncomplete=r;});}
 
-function openDB() {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, DB_VERSION);
-    req.onupgradeneeded = (e) => {
-      const db = e.target.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME, { keyPath: 'key' });
-      }
-    };
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
+// ============ INIT UPLOAD GRID ============
+function initUploadGrid(){
+  const grid=document.getElementById('uploadGrid');
+  grid.innerHTML='';
+  FILE_KEYS.forEach((key,i)=>{
+    const div=document.createElement('div');
+    div.className='upload-item';
+    div.innerHTML='<div style="flex:1"><div style="font-weight:600;font-size:.85rem">'+FILE_LABELS[i]+'</div><div style="font-size:.75rem;color:var(--text-secondary)">'+FILE_DESCS[i]+'</div><div class="file-status" id="status_'+key+'">未上传</div></div><input type="file" id="file_'+key+'" accept=".csv,.xlsx,.xls" style="display:none"><button class="btn btn-primary btn-sm" id="btn_'+key+'">选择文件</button><button class="btn btn-danger btn-sm" id="del_'+key+'">✕</button>';
+    grid.appendChild(div);
+    document.getElementById('btn_'+key).addEventListener('click',function(){document.getElementById('file_'+key).click();});
+    document.getElementById('file_'+key).addEventListener('change',function(){handleFileUpload(key,this);});
+    document.getElementById('del_'+key).addEventListener('click',function(){deleteFile(key);});
   });
 }
 
-async function saveFileToDB(key, data, fileName) {
-  const db = await openDB();
-  const tx = db.transaction(STORE_NAME, 'readwrite');
-  tx.objectStore(STORE_NAME).put({ key, data, fileName, timestamp: Date.now() });
-  return new Promise((resolve, reject) => { tx.oncomplete = resolve; tx.onerror = reject; });
-}
-
-async function getFileFromDB(key) {
-  const db = await openDB();
-  const tx = db.transaction(STORE_NAME, 'readonly');
-  const req = tx.objectStore(STORE_NAME).get(key);
-  return new Promise((resolve) => { req.onsuccess = () => resolve(req.result || null); req.onerror = () => resolve(null); });
-}
-
-async function deleteFileFromDB(key) {
-  const db = await openDB();
-  const tx = db.transaction(STORE_NAME, 'readwrite');
-  tx.objectStore(STORE_NAME).delete(key);
-  return new Promise((resolve) => { tx.oncomplete = resolve; });
-}
-
 // ============ THEME ============
-function toggleTheme() {
-  const body = document.body;
-  const isDark = body.getAttribute('data-theme') === 'dark';
-  body.setAttribute('data-theme', isDark ? 'light' : 'dark');
-  localStorage.setItem('theme', isDark ? 'light' : 'dark');
-}
+function toggleTheme(){const d=document.body;d.setAttribute('data-theme',d.getAttribute('data-theme')==='dark'?'light':'dark');localStorage.setItem('theme',d.getAttribute('data-theme'));}
+function toggleCollapse(h){const b=h.nextElementSibling;const c=h.querySelector('.chevron');b.classList.toggle('open');c.classList.toggle('open');}
+function switchTab(i){document.querySelectorAll('.tab-btn').forEach((b,j)=>b.classList.toggle('active',j===i));document.querySelectorAll('.tab-content').forEach((c,j)=>c.classList.toggle('active',j===i));}
 
-// ============ COLLAPSIBLE ============
-function toggleCollapse(header) {
-  const body = header.nextElementSibling;
-  const chevron = header.querySelector('.chevron');
-  body.classList.toggle('open');
-  chevron.classList.toggle('open');
-}
-
-// ============ TAB SWITCHING ============
-function switchTab(idx) {
-  document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
-  document.querySelectorAll('.tab-content').forEach((c, i) => c.classList.toggle('active', i === idx));
-}
-
-// ============ FILE UPLOAD ============
-async function handleFileUpload(key, input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    const data = new Uint8Array(e.target.result);
-    APP.files[key] = { data, fileName: file.name };
-    await saveFileToDB(key, Array.from(data), file.name);
-    updateFileStatus(key, file.name);
+// ============ FILE HANDLING ============
+async function handleFileUpload(key,input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=async e=>{
+    const data=new Uint8Array(e.target.result);
+    APP.files[key]={data,fileName:file.name};
+    await saveToDB(key,data,file.name);
+    updateFileStatus(key,file.name);
     updateUploadSummary();
   };
   reader.readAsArrayBuffer(file);
 }
-
-function updateFileStatus(key, fileName) {
-  const el = document.getElementById('status_' + key);
-  if (fileName) {
-    el.textContent = '✅ ' + fileName;
-    el.className = 'file-status uploaded';
-  } else {
-    el.textContent = '未上传';
-    el.className = 'file-status';
-  }
+function updateFileStatus(key,fn){
+  const el=document.getElementById('status_'+key);
+  if(fn){el.textContent='✅ '+fn;el.className='file-status uploaded';}
+  else{el.textContent='未上传';el.className='file-status';}
 }
+async function deleteFile(key){delete APP.files[key];await delFromDB(key);updateFileStatus(key,null);document.getElementById('file_'+key).value='';updateUploadSummary();}
+function updateUploadSummary(){const c=FILE_KEYS.filter(k=>APP.files[k]).length;document.getElementById('uploadSummary').textContent='已上传 '+c+'/6 个文件';}
+async function restoreFiles(){for(const key of FILE_KEYS){const r=await getFromDB(key);if(r){APP.files[key]={data:new Uint8Array(r.data),fileName:r.fileName};updateFileStatus(key,r.fileName);}}updateUploadSummary();}
 
-async function deleteFile(key) {
-  delete APP.files[key];
-  await deleteFileFromDB(key);
-  updateFileStatus(key, null);
-  document.getElementById('file_' + key).value = '';
-  updateUploadSummary();
-}
-
-function updateUploadSummary() {
-  const count = FILE_KEYS.filter(k => APP.files[k]).length;
-  document.getElementById('uploadSummary').textContent = `已上传 ${count}/6 个文件`;
-}
-
-async function restoreFilesFromDB() {
-  for (const key of FILE_KEYS) {
-    const record = await getFileFromDB(key);
-    if (record) {
-      APP.files[key] = { data: new Uint8Array(record.data), fileName: record.fileName };
-      updateFileStatus(key, record.fileName);
-    }
-  }
-  updateUploadSummary();
-}
-
-// ============ SKU MAPPING ============
-function loadMappings() {
-  const saved = localStorage.getItem('skuMappings');
-  skuMappings = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_MAPPINGS));
-  renderMappingTable();
-}
-
-function saveMappings() {
-  localStorage.setItem('skuMappings', JSON.stringify(skuMappings));
-}
-
-function renderMappingTable() {
-  const body = document.getElementById('mappingBody');
-  body.innerHTML = '';
-  skuMappings.forEach((m, i) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><input value=" ${m.source}" onchange="skuMappings[$ {i}].source=this.value;saveMappings()"></td>
-      <td><input value=" ${m.targets}" onchange="skuMappings[$ {i}].targets=this.value;saveMappings()"></td>
-      <td><input value=" ${m.name}" onchange="skuMappings[$ {i}].name=this.value;saveMappings()"></td>
-      <td><button class="btn btn-danger btn-sm" onclick="skuMappings.splice(${i},1);saveMappings();renderMappingTable()">删除</button></td>`;
+// ============ MAPPING ============
+function loadMappings(){const s=localStorage.getItem('skuMappings');skuMappings=s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULT_MAPPINGS));renderMappingTable();}
+function saveMappings(){localStorage.setItem('skuMappings',JSON.stringify(skuMappings));}
+function renderMappingTable(){
+  const body=document.getElementById('mappingBody');body.innerHTML='';
+  skuMappings.forEach(function(m,i){
+    const tr=document.createElement('tr');
+    var srcInput=document.createElement('input');srcInput.value=m.source;
+    srcInput.addEventListener('change',function(){skuMappings[i].source=this.value;saveMappings();});
+    var tgtInput=document.createElement('input');tgtInput.value=m.targets;
+    tgtInput.addEventListener('change',function(){skuMappings[i].targets=this.value;saveMappings();});
+    var nameInput=document.createElement('input');nameInput.value=m.name;
+    nameInput.addEventListener('change',function(){skuMappings[i].name=this.value;saveMappings();});
+    var delBtn=document.createElement('button');delBtn.className='btn btn-danger btn-sm';delBtn.textContent='删除';
+    delBtn.addEventListener('click',function(){skuMappings.splice(i,1);saveMappings();renderMappingTable();});
+    var td1=document.createElement('td');td1.appendChild(srcInput);
+    var td2=document.createElement('td');td2.appendChild(tgtInput);
+    var td3=document.createElement('td');td3.appendChild(nameInput);
+    var td4=document.createElement('td');td4.appendChild(delBtn);
+    tr.appendChild(td1);tr.appendChild(td2);tr.appendChild(td3);tr.appendChild(td4);
     body.appendChild(tr);
   });
 }
+function addMappingRow(){skuMappings.push({source:'',targets:'',name:''});saveMappings();renderMappingTable();}
+function exportMapping(){downloadBlob(new Blob([JSON.stringify(skuMappings,null,2)],{type:'application/json'}),'sku_mappings.json');}
+function importMapping(input){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=function(e){try{skuMappings=JSON.parse(e.target.result);saveMappings();renderMappingTable();alert('导入成功');}catch(ex){alert('JSON格式错误');}};r.readAsText(f);input.value='';}
+function resetMapping(){if(!confirm('确认恢复默认映射？'))return;skuMappings=JSON.parse(JSON.stringify(DEFAULT_MAPPINGS));saveMappings();renderMappingTable();}
 
-function addMappingRow() {
-  skuMappings.push({ source: '', targets: '', name: '' });
-  saveMappings();
-  renderMappingTable();
-}
-
-function exportMapping() {
-  const blob = new Blob([JSON.stringify(skuMappings, null, 2)], { type: 'application/json' });
-  downloadBlob(blob, 'sku_mappings.json');
-}
-
-function importMapping(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      skuMappings = JSON.parse(e.target.result);
-      saveMappings();
-      renderMappingTable();
-      alert('映射导入成功！');
-    } catch { alert('JSON格式错误'); }
-  };
-  reader.readAsText(file);
-  input.value = '';
-}
-
-function resetMapping() {
-  if (!confirm('确认恢复默认映射？')) return;
-  skuMappings = JSON.parse(JSON.stringify(DEFAULT_MAPPINGS));
-  saveMappings();
-  renderMappingTable();
-}
-
-// ============ PARSE FILES ============
-function parseFile(fileObj) {
-  if (!fileObj) return null;
-  const wb = XLSX.read(fileObj.data, { type: 'array', cellDates: true });
-  const ws = wb.Sheets[wb.SheetNames[0]];
-  return XLSX.utils.sheet_to_json(ws, { defval: '' });
-}
-
-function parseAllSheets(fileObj) {
-  if (!fileObj) return {};
-  const wb = XLSX.read(fileObj.data, { type: 'array', cellDates: true });
-  const result = {};
-  wb.SheetNames.forEach(name => {
-    result[name] = XLSX.utils.sheet_to_json(wb.Sheets[name], { defval: '' });
-  });
-  return result;
-}
-
-function normalizeDate(val) {
-  if (!val) return null;
-  if (val instanceof Date) return val;
-  if (typeof val === 'number') {
-    // Excel date serial
-    const d = new Date((val - 25569) * 86400 * 1000);
-    return isNaN(d.getTime()) ? null : d;
-  }
-  if (typeof val === 'string') {
-    const d = new Date(val.replace(/\//g, '-'));
-    return isNaN(d.getTime()) ? null : d;
-  }
+// ============ PARSE ============
+function parseFile(fo){if(!fo)return null;var wb=XLSX.read(fo.data,{type:'array',cellDates:true});return XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});}
+function parseAllSheets(fo){if(!fo)return {};var wb=XLSX.read(fo.data,{type:'array',cellDates:true});var r={};wb.SheetNames.forEach(function(n){r[n]=XLSX.utils.sheet_to_json(wb.Sheets[n],{defval:''});});return r;}
+function normalizeDate(v){
+  if(!v)return null;
+  if(v instanceof Date){return isNaN(v.getTime())?null:v;}
+  if(typeof v==='number'){var d=new Date((v-25569)*86400000);return isNaN(d.getTime())?null:d;}
+  if(typeof v==='string'){var d2=new Date(v.replace(/\//g,'-'));return isNaN(d2.getTime())?null:d2;}
   return null;
 }
+function getToday(){var d=new Date();d.setHours(0,0,0,0);return d;}
+function addDays(d,n){var r=new Date(d);r.setDate(r.getDate()+n);return r;}
+function addWorkDays(d,n){var r=new Date(d);var a=0;while(a<n){r.setDate(r.getDate()+1);if(r.getDay()!==0&&r.getDay()!==6)a++;}return r;}
+function dateDiff(a,b){return Math.round((a-b)/86400000);}
+function fmtDate(d){if(!d)return'-';return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function fmtVal(v){return(v===null||v===undefined)?'无数据':v;}
+function downloadBlob(b,fn){var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=fn;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);}
 
-function getToday() {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
+// ============ LOADING ============
+function showLoading(t){document.getElementById('loadingOverlay').classList.add('show');document.getElementById('loadingText').textContent=t||'处理中...';document.getElementById('progressFill').style.width='0%';}
+function setProgress(p){document.getElementById('progressFill').style.width=p+'%';}
+function hideLoading(){document.getElementById('loadingOverlay').classList.remove('show');}
 
-function addWorkDays(date, days) {
-  const d = new Date(date);
-  let added = 0;
-  while (added < days) {
-    d.setDate(d.getDate() + 1);
-    const dow = d.getDay();
-    if (dow !== 0 && dow !== 6) added++;
-  }
-  return d;
-}
-
-function dateDiffDays(a, b) {
-  return Math.round((a - b) / (86400000));
-}
-
-function formatDate(d) {
-  if (!d) return '-';
-  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-}
-
-// Build reverse mapping: target SKU → source group name
-function buildMappingLookup() {
-  const targetToSource = {};
-  const sourceToTargets = {};
-  const nameMap = {};
-
-  skuMappings.forEach(m => {
-    const src = m.source.trim();
-    const targets = m.targets.split(',').map(s => s.trim()).filter(Boolean);
-    const name = m.name.trim();
-    sourceToTargets[src] = targets;
-    nameMap[src] = name;
-    targets.forEach(t => {
-      targetToSource[t] = src;
-      nameMap[t] = name;
-    });
-  });
-
-  return { targetToSource, sourceToTargets, nameMap };
-}
-
-// ============ CORE ANALYSIS ============
-function showLoading(msg) {
-  document.getElementById('loadingOverlay').style.display = 'flex';
-  document.getElementById('loadingText').textContent = msg || '正在处理数据...';
-  document.getElementById('progressFill').style.width = '0%';
-}
-
-function updateProgress(pct) {
-  document.getElementById('progressFill').style.width = pct + '%';
-}
-
-function hideLoading() {
-  document.getElementById('loadingOverlay').style.display = 'none';
-}
-
-async function startAnalysis() {
+// ============ ANALYSIS ============
+async function startAnalysis(){
   showLoading('正在解析文件...');
-  await new Promise(r => setTimeout(r, 100));
-
-  try {
-    updateProgress(10);
-    // Parse files
-    APP.parsed.shopify = APP.files.shopify ? parseFile(APP.files.shopify) : null;
-    APP.parsed.warehouse = APP.files.warehouse ? parseFile(APP.files.warehouse) : null;
-    APP.parsed.allocation = APP.files.allocation ? parseFile(APP.files.allocation) : null;
-    APP.parsed.shipping = APP.files.shipping ? parseFile(APP.files.shipping) : null;
-    APP.parsed.sales = APP.files.sales ? parseFile(APP.files.sales) : null;
-    APP.parsed.forecast = APP.files.forecast ? parseAllSheets(APP.files.forecast) : null;
-
-    updateProgress(30);
-    document.getElementById('loadingText').textContent = '正在计算库存数据...';
-    await new Promise(r => setTimeout(r, 50));
-
+  await new Promise(function(r){setTimeout(r,100);});
+  try{
+    setProgress(10);
+    APP.parsed.shopify=APP.files.shopify?parseFile(APP.files.shopify):null;
+    APP.parsed.warehouse=APP.files.warehouse?parseFile(APP.files.warehouse):null;
+    APP.parsed.allocation=APP.files.allocation?parseFile(APP.files.allocation):null;
+    APP.parsed.shipping=APP.files.shipping?parseFile(APP.files.shipping):null;
+    APP.parsed.sales=APP.files.sales?parseFile(APP.files.sales):null;
+    APP.parsed.forecast=APP.files.forecast?parseAllSheets(APP.files.forecast):null;
+    setProgress(30);
+    document.getElementById('loadingText').textContent='正在计算库存数据...';
+    await new Promise(function(r){setTimeout(r,50);});
     runAnalysis();
-    updateProgress(80);
-
-    document.getElementById('loadingText').textContent = '正在生成图表...';
-    await new Promise(r => setTimeout(r, 50));
-
-    renderTab1();
-    renderTab2();
-    renderTab3();
-
-    updateProgress(100);
-    document.getElementById('loadingText').textContent = '分析完成！';
-    await new Promise(r => setTimeout(r, 500));
-
-  } catch (err) {
-    console.error(err);
-    alert('分析过程出错：' + err.message);
-  }
-
+    setProgress(80);
+    document.getElementById('loadingText').textContent='正在生成图表...';
+    await new Promise(function(r){setTimeout(r,50);});
+    renderTab1();renderTab2();renderTab3();
+    setProgress(100);
+    document.getElementById('loadingText').textContent='分析完成！';
+    await new Promise(function(r){setTimeout(r,500);});
+  }catch(err){console.error(err);alert('分析出错：'+err.message);}
   hideLoading();
 }
 
-function recalculate() {
-  if (Object.keys(APP.parsed).length === 0) { alert('请先上传数据并点击分析'); return; }
+function recalculate(){
+  if(!APP.parsed.shopify&&!APP.parsed.warehouse){alert('请先上传数据并点击分析');return;}
   showLoading('重新计算...');
-  setTimeout(() => {
-    try {
-      runAnalysis();
-      renderTab1();
-      renderTab3();
-    } catch (e) { alert('计算出错：' + e.message); console.error(e); }
-    hideLoading();
-  }, 100);
+  setTimeout(function(){try{runAnalysis();renderTab1();renderTab3();}catch(e){alert('错误：'+e.message);console.error(e);}hideLoading();},100);
 }
 
-function runAnalysis() {
-  const today = getToday();
-  const safetyDays = parseInt(document.getElementById('safetyDays').value) || 14;
-  const avgPeriod = parseInt(document.getElementById('avgPeriod').value) || 14;
-  const volatility = parseFloat(document.getElementById('volatility').value) || 1.0;
-  const mapping = buildMappingLookup();
+function runAnalysis(){
+  var today=getToday();
+  var safetyDays=parseInt(document.getElementById('safetyDays').value)||14;
+  var avgPeriod=parseInt(document.getElementById('avgPeriod').value)||14;
+  var volatility=parseFloat(document.getElementById('volatility').value)||1.0;
 
-  // 1. Process Shopify data (dedup by SKU, take max Committed/Available)
-  const shopifyMap = {}; // SKU → { committed, available, onHand, title }
-  if (APP.parsed.shopify) {
-    APP.parsed.shopify.forEach(row => {
-      const sku = (row['SKU'] || '').trim();
-      if (!sku) return;
-      const committed = parseFloat(row['Committed (not editable)']) || 0;
-      const available = parseFloat(row['Available (not editable)']) || 0;
-      const onHand = parseFloat(row['On hand (current)']) || 0;
-      const title = row['Title'] || '';
-      if (!shopifyMap[sku]) {
-        shopifyMap[sku] = { committed, available, onHand, title };
-      } else {
-        shopifyMap[sku].committed = Math.max(shopifyMap[sku].committed, committed);
-        shopifyMap[sku].available = Math.max(shopifyMap[sku].available, available);
-        shopifyMap[sku].onHand = Math.max(shopifyMap[sku].onHand, onHand);
-        if (!shopifyMap[sku].title && title) shopifyMap[sku].title = title;
-      }
-    });
-  }
-
-  // 2. Process Warehouse data
-  const warehouseMap = {}; // SKU → { available, inStock }
-  if (APP.parsed.warehouse) {
-    APP.parsed.warehouse.forEach(row => {
-      const sku = (row['商品SKU'] || '').trim();
-      if (!sku) return;
-      warehouseMap[sku] = {
-        available: parseFloat(row['可用量']) || 0,
-        inStock: parseFloat(row['在库量']) || 0,
-      };
-    });
-  }
-
-  // 3. Process Shipping (head haul) data
-  const shippingRecords = []; // { sku, qty, eta, shelvingDate }
-  if (APP.parsed.shipping) {
-    APP.parsed.shipping.forEach(row => {
-      const sku = (row['SKU'] || '').trim();
-      const cargoType = (row['货物类型'] || '').toString();
-      if (!sku) return;
-      // Filter: 3D printer or PF/SA prefix
-      if (!cargoType.includes('3D打印机') && !sku.startsWith('PF') && !sku.startsWith('SA')) return;
-      // In-transit: shelving date empty
-      const shelvingDateRaw = row['上架日期'];
-      const shelvingDate = normalizeDate(shelvingDateRaw);
-      if (shelvingDate) return; // already shelved
-
-      const deliveryDate = normalizeDate(row['妥投日期']);
-      if (deliveryDate && deliveryDate < today) return; // delivered before today
-
-      const qty = parseFloat(row['数量']) || 0;
-      const eta = normalizeDate(row['到港时间ETA']) || normalizeDate(row['ETA']);
-      let estShelving = null;
-      if (eta) {
-        const afterCustoms = addWorkDays(eta, 5);
-        estShelving = addWorkDays(afterCustoms, 3);
-      }
-      shippingRecords.push({ sku, qty, eta, estShelving });
-    });
-  }
-  // Group by SKU
-  const shippingBySku = {};
-  shippingRecords.forEach(r => {
-    if (!shippingBySku[r.sku]) shippingBySku[r.sku] = [];
-    shippingBySku[r.sku].push(r);
-  });
-  // Sort by ETA
-  Object.values(shippingBySku).forEach(arr => arr.sort((a, b) => (a.eta || new Date(9999, 0)) - (b.eta || new Date(9999, 0))));
-
-  // 4. Process Allocation data
-  const allocationBySku = {}; // SKU → [{date, qty}, ...]
-  const allocationWeekDates = [];
-  if (APP.parsed.allocation) {
-    // Find date columns
-    const sample = APP.parsed.allocation[0] || {};
-    const dateCols = [];
-    Object.keys(sample).forEach(k => {
-      if (k === 'SKU' || k === '分货数量') return;
-      const d = normalizeDate(k);
-      if (d) { dateCols.push({ col: k, date: d }); allocationWeekDates.push(d); }
-      else {
-        // Try parse from header directly
-        const m = k.match(/(\d{4})-?(\d{1,2})-?(\d{1,2})/);
-        if (m) { const dd = new Date(m[1], m[2] - 1, m[3]); dateCols.push({ col: k, date: dd }); allocationWeekDates.push(dd); }
-      }
-    });
-    dateCols.sort((a, b) => a.date - b.date);
-
-    APP.parsed.allocation.forEach(row => {
-      const sku = (row['SKU'] || '').trim();
-      if (!sku) return;
-      const entries = [];
-      dateCols.forEach(dc => {
-        const qty = parseFloat(row[dc.col]) || 0;
-        if (qty > 0) entries.push({ date: dc.date, qty });
-      });
-      allocationBySku[sku] = entries;
-    });
-  }
-
-  // 5. Process Sales data
-  const salesRecords = []; // { sku, date, netQty, netSales, returns }
-  if (APP.parsed.sales) {
-    APP.parsed.sales.forEach(row => {
-      const sku = (row['产品多属性 SKU'] || row['SKU'] || '').trim();
-      if (!sku) return;
-      const dateVal = row['天'] || row['日期'];
-      const date = normalizeDate(dateVal);
-      const netQty = parseFloat(row['净售出商品数']) || 0;
-      const netSales = parseFloat(row['净销售额']) || 0;
-      const returns = parseFloat(row['退货']) || 0;
-      salesRecords.push({ sku, date, netQty, netSales, returns });
-    });
-  }
-  // Group by SKU
-  const salesBySku = {};
-  salesRecords.forEach(r => {
-    if (!salesBySku[r.sku]) salesBySku[r.sku] = [];
-    salesBySku[r.sku].push(r);
+  // Build mapping lookup
+  var srcToTargets={};var nameMap={};var tgtToSrc={};
+  skuMappings.forEach(function(m){
+    var src=m.source.trim();if(!src)return;
+    var targets=m.targets.split(',').map(function(s){return s.trim();}).filter(Boolean);
+    srcToTargets[src]=targets;
+    nameMap[src]=m.name.trim();
+    targets.forEach(function(t){tgtToSrc[t]=src;nameMap[t]=m.name.trim();});
   });
 
-  // 6. Process Forecast
-  const forecastBySku = {}; // SKU → { month: qty }
-  if (APP.parsed.forecast) {
-    const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
-    const altMonthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    Object.values(APP.parsed.forecast).forEach(sheetData => {
-      sheetData.forEach(row => {
-        const sku = (row['SKU'] || row['sku'] || row['产品SKU'] || '').trim();
-        if (!sku) return;
-        if (!sku.includes('-JP') && !sku.startsWith('SA')) return; // JP only
-        const entry = {};
-        monthNames.forEach((m, i) => {
-          const val = parseFloat(row[m]);
-          if (!isNaN(val)) entry[i + 1] = val;
+  // 1. Shopify - dedup by SKU, take max
+  var shopifyMap={};
+  if(APP.parsed.shopify){
+    APP.parsed.shopify.forEach(function(row){
+      var sku=(row['SKU']||'').trim();if(!sku)return;
+      var committed=parseFloat(row['Committed (not editable)'])||0;
+      var available=parseFloat(row['Available (not editable)'])||0;
+      var onHand=parseFloat(row['On hand (current)'])||0;
+      var title=row['Title']||'';
+      if(!shopifyMap[sku]){shopifyMap[sku]={committed:committed,available:available,onHand:onHand,title:title};}
+      else{
+        shopifyMap[sku].committed=Math.max(shopifyMap[sku].committed,committed);
+        shopifyMap[sku].available=Math.max(shopifyMap[sku].available,available);
+        shopifyMap[sku].onHand=Math.max(shopifyMap[sku].onHand,onHand);
+        if(!shopifyMap[sku].title&&title)shopifyMap[sku].title=title;
+      }
+    });
+  }
+
+  // 2. Warehouse
+  var whMap={};
+  if(APP.parsed.warehouse){
+    APP.parsed.warehouse.forEach(function(row){
+      var sku=(row['商品SKU']||'').trim();if(!sku)return;
+      whMap[sku]={available:parseFloat(row['可用量'])||0,inStock:parseFloat(row['在库量'])||0};
+    });
+  }
+
+  // 3. Shipping
+  var shipBySku={};
+  if(APP.parsed.shipping){
+    APP.parsed.shipping.forEach(function(row){
+      var sku=(row['SKU']||'').trim();if(!sku)return;
+      var cargoType=(row['货物类型']||'').toString();
+      if(!cargoType.includes('3D打印机')&&!sku.startsWith('PF')&&!sku.startsWith('SA'))return;
+      var shelvingDate=normalizeDate(row['上架日期']);
+      if(shelvingDate)return; // already shelved
+      var deliveryDate=normalizeDate(row['妥投日期']);
+      if(deliveryDate&&deliveryDate<today)return;
+      var qty=parseFloat(row['数量'])||0;
+      var eta=normalizeDate(row['到港时间ETA'])||normalizeDate(row['ETA']);
+      var estShelving=null;
+      if(eta){estShelving=addWorkDays(addWorkDays(eta,5),3);}
+      if(!shipBySku[sku])shipBySku[sku]=[];
+      shipBySku[sku].push({sku:sku,qty:qty,eta:eta,estShelving:estShelving});
+    });
+  }
+  Object.values(shipBySku).forEach(function(arr){arr.sort(function(a,b){return(a.eta||new Date(9999,0))-(b.eta||new Date(9999,0));});});
+
+  // 4. Allocation
+  var allocBySku={};
+  if(APP.parsed.allocation){
+    var sample=APP.parsed.allocation[0]||{};
+    var dateCols=[];
+    Object.keys(sample).forEach(function(k){
+      if(k==='SKU'||k==='分货数量')return;
+      var d=normalizeDate(k);
+      if(d)dateCols.push({col:k,date:d});
+    });
+    dateCols.sort(function(a,b){return a.date-b.date;});
+    APP.parsed.allocation.forEach(function(row){
+      var sku=(row['SKU']||'').trim();if(!sku)return;
+      var entries=[];
+      dateCols.forEach(function(dc){var qty=parseFloat(row[dc.col])||0;if(qty>0)entries.push({date:dc.date,qty:qty});});
+      allocBySku[sku]=entries;
+    });
+  }
+
+  // 5. Sales
+  var salesRecords=[];
+  if(APP.parsed.sales){
+    APP.parsed.sales.forEach(function(row){
+      var sku=(row['产品多属性 SKU']||row['SKU']||'').trim();if(!sku)return;
+      var date=normalizeDate(row['天']||row['日期']);
+      var netQty=parseFloat(row['净售出商品数'])||0;
+      var netSales=parseFloat(row['净销售额'])||0;
+      var grossQty=parseFloat(row['毛销售额'])?0:(parseFloat(row['订单数'])||0);
+      var returns=parseFloat(row['退货'])||0;
+      salesRecords.push({sku:sku,date:date,netQty:netQty,netSales:netSales,returns:returns});
+    });
+  }
+  var salesBySku={};
+  salesRecords.forEach(function(r){if(!salesBySku[r.sku])salesBySku[r.sku]=[];salesBySku[r.sku].push(r);});
+
+  // 6. Forecast
+  var forecastBySku={};
+  if(APP.parsed.forecast){
+    var monthKeys=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+    Object.values(APP.parsed.forecast).forEach(function(sheet){
+      sheet.forEach(function(row){
+        var sku='';
+        ['SKU','sku','产品SKU','商品SKU','产品多属性 SKU'].forEach(function(k){if(row[k])sku=String(row[k]).trim();});
+        if(!sku)return;
+        if(!sku.includes('-JP')&&!sku.startsWith('SA'))return;
+        var entry={};
+        monthKeys.forEach(function(mk,idx){
+          var v=parseFloat(row[mk]);if(!isNaN(v))entry[idx+1]=v;
         });
-        altMonthNames.forEach((m, i) => {
-          const val = parseFloat(row[m]);
-          if (!isNaN(val)) entry[i + 1] = val;
+        // Also try numeric month headers
+        Object.keys(row).forEach(function(k){
+          var mm=k.match(/^(\d{1,2})月$/);
+          if(mm){var v=parseFloat(row[k]);if(!isNaN(v))entry[parseInt(mm[1])]=v;}
         });
-        // Also try "3月" style in keys
-        Object.keys(row).forEach(k => {
-          const mm = k.match(/^(\d{1,2})月$/);
-          if (mm) {
-            const val = parseFloat(row[k]);
-            if (!isNaN(val)) entry[parseInt(mm[1])] = val;
-          }
-        });
-        if (Object.keys(entry).length > 0) forecastBySku[sku] = entry;
+        if(Object.keys(entry).length>0)forecastBySku[sku]=entry;
       });
     });
   }
 
-  // ============ BUILD SKU LIST ============
-  const allSkus = new Set();
-  Object.keys(shopifyMap).forEach(s => { if (s.startsWith('PF') || s.startsWith('SA')) allSkus.add(s); });
-  Object.keys(warehouseMap).forEach(s => { if (s.startsWith('PF') || s.startsWith('SA')) allSkus.add(s); });
-  Object.keys(salesBySku).forEach(s => { if (s.startsWith('PF') || s.startsWith('SA')) allSkus.add(s); });
+  // Build SKU groups
+  var allSkus=new Set();
+  Object.keys(shopifyMap).forEach(function(s){if(s.startsWith('PF')||s.startsWith('SA'))allSkus.add(s);});
+  Object.keys(whMap).forEach(function(s){if(s.startsWith('PF')||s.startsWith('SA'))allSkus.add(s);});
+  Object.keys(salesBySku).forEach(function(s){if(s.startsWith('PF')||s.startsWith('SA'))allSkus.add(s);});
 
-  // Merge using mapping: for source SKUs, merge their targets
-  const processedGroups = {}; // groupKey → { skus[], ... }
-
-  // Build groups from mappings
-  const { sourceToTargets, nameMap } = mapping;
-  const processedSkus = new Set();
-
-  skuMappings.forEach(m => {
-    const src = m.source.trim();
-    const targets = m.targets.split(',').map(s => s.trim()).filter(Boolean);
-    const groupKey = src;
-    processedGroups[groupKey] = { skus: targets, name: m.name, source: src };
-    targets.forEach(t => processedSkus.add(t));
-    processedSkus.add(src);
+  var groups={};
+  var used=new Set();
+  skuMappings.forEach(function(m){
+    var src=m.source.trim();if(!src)return;
+    var targets=m.targets.split(',').map(function(s){return s.trim();}).filter(Boolean);
+    groups[src]={skus:targets,name:m.name.trim(),source:src};
+    targets.forEach(function(t){used.add(t);});
+    used.add(src);
   });
+  allSkus.forEach(function(sku){if(!used.has(sku))groups[sku]={skus:[sku],name:'',source:sku};});
 
-  // Add remaining SKUs as their own group
-  allSkus.forEach(sku => {
-    if (!processedSkus.has(sku)) {
-      processedGroups[sku] = { skus: [sku], name: '', source: sku };
-    }
-  });
+  // Calculate per group
+  var results=[];
+  Object.keys(groups).forEach(function(groupKey){
+    var group=groups[groupKey];
+    var skus=group.skus;
+    var displaySku=groupKey;
 
-  // ============ CALCULATE PER GROUP ============
-  const results = [];
-
-  Object.entries(processedGroups).forEach(([groupKey, group]) => {
-    const skus = group.skus;
-    const displaySku = groupKey;
-
-    // Title / name
-    let productName = group.name || '';
-    if (!productName) {
-      for (const s of skus) {
-        if (shopifyMap[s] && shopifyMap[s].title) { productName = shopifyMap[s].title; break; }
+    // Name
+    var productName=group.name||'';
+    if(!productName){
+      for(var si=0;si<skus.length;si++){
+        if(shopifyMap[skus[si]]&&shopifyMap[skus[si]].title){productName=shopifyMap[skus[si]].title;break;}
       }
     }
 
-    // Warehouse available & in-stock (sum across target SKUs)
-    let whAvailable = null, whInStock = null;
-    let hasWarehouse = false;
-    skus.forEach(s => {
-      if (warehouseMap[s]) {
-        hasWarehouse = true;
-        whAvailable = (whAvailable || 0) + warehouseMap[s].available;
-        whInStock = (whInStock || 0) + warehouseMap[s].inStock;
-      }
+    // Warehouse
+    var whAvail=null,whInStk=null,hasWh=false;
+    skus.forEach(function(s){
+      if(whMap[s]){hasWh=true;whAvail=(whAvail||0)+whMap[s].available;whInStk=(whInStk||0)+whMap[s].inStock;}
     });
 
-    // Shopify committed (sum across target SKUs)
-    let shopifyCommitted = null;
-    let hasShopify = false;
-    skus.forEach(s => {
-      if (shopifyMap[s]) {
-        hasShopify = true;
-        shopifyCommitted = (shopifyCommitted || 0) + shopifyMap[s].committed;
-      }
+    // Shopify committed
+    var shopCommit=null,hasShop=false;
+    skus.forEach(function(s){
+      if(shopifyMap[s]){hasShop=true;shopCommit=(shopCommit||0)+shopifyMap[s].committed;}
     });
 
     // Current available
-    let currentAvailable = null;
-    if (hasWarehouse) {
-      currentAvailable = Math.max(0, (whAvailable || 0) - (shopifyCommitted || 0));
-    }
+    var curAvail=null;
+    if(hasWh){curAvail=Math.max(0,(whAvail||0)-(shopCommit||0));}
 
-    // Sales aggregation
-    let allSalesRecords = [];
-    skus.forEach(s => {
-      if (salesBySku[s]) allSalesRecords = allSalesRecords.concat(salesBySku[s]);
-    });
-    allSalesRecords.sort((a, b) => (a.date || 0) - (b.date || 0));
+    // Sales
+    var allSales=[];
+    skus.forEach(function(s){if(salesBySku[s])allSales=allSales.concat(salesBySku[s]);});
+    allSales.sort(function(a,b){return(a.date||0)-(b.date||0);});
 
-    // Daily avg sales
-    const periodDays = avgPeriod;
-    const cutoff = new Date(today);
-    cutoff.setDate(cutoff.getDate() - periodDays);
-    const periodSales = allSalesRecords.filter(r => r.date && r.date >= cutoff && r.date < today);
-    const periodQty = periodSales.reduce((s, r) => s + r.netQty, 0);
-    const dailyAvg = periodDays > 0 ? periodQty / periodDays : 0;
+    var cutoff=addDays(today,-avgPeriod);
+    var periodSales=allSales.filter(function(r){return r.date&&r.date>=cutoff&&r.date<today;});
+    var periodQty=0;periodSales.forEach(function(r){periodQty+=r.netQty;});
+    var dailyAvg=avgPeriod>0?periodQty/avgPeriod:0;
 
-    // 30-day total
-    const cutoff30 = new Date(today);
-    cutoff30.setDate(cutoff30.getDate() - 30);
-    const sales30 = allSalesRecords.filter(r => r.date && r.date >= cutoff30 && r.date < today);
-    const total30 = sales30.reduce((s, r) => s + r.netQty, 0);
+    var cutoff30=addDays(today,-30);
+    var sales30=allSales.filter(function(r){return r.date&&r.date>=cutoff30&&r.date<today;});
+    var total30=0;sales30.forEach(function(r){total30+=r.netQty;});
 
     // In-transit
-    let inTransitRecords = [];
-    skus.forEach(s => {
-      if (shippingBySku[s]) inTransitRecords = inTransitRecords.concat(shippingBySku[s]);
-    });
-    inTransitRecords.sort((a, b) => (a.eta || new Date(9999, 0)) - (b.eta || new Date(9999, 0)));
-    const inTransitTotal = inTransitRecords.reduce((s, r) => s + r.qty, 0);
-    const nextArrival = inTransitRecords.length > 0 ? inTransitRecords[0] : null;
+    var inTransit=[];
+    skus.forEach(function(s){if(shipBySku[s])inTransit=inTransit.concat(shipBySku[s]);});
+    inTransit.sort(function(a,b){return(a.eta||new Date(9999,0))-(b.eta||new Date(9999,0));});
+    var inTransitTotal=0;inTransit.forEach(function(r){inTransitTotal+=r.qty;});
+    var nextArr=inTransit.length>0?inTransit[0]:null;
 
     // Allocation
-    let allocRecords = [];
-    // Check for source SKU in allocation
-    if (allocationBySku[group.source]) {
-      allocRecords = allocationBySku[group.source];
-    }
-    // H2C Laser special: split allocation proportionally
-    if (group.source === 'PF003-N+SA007-JP' && skus.length > 1) {
-      // Calculate ratio from sales
-      const salesPerTarget = {};
-      skus.forEach(s => {
-        const records = salesBySku[s] || [];
-        salesPerTarget[s] = records.reduce((sum, r) => sum + Math.max(0, r.netQty), 0);
-      });
-      const totalSales = Object.values(salesPerTarget).reduce((a, b) => a + b, 0) || 1;
-      // Allocation is already for the group, just keep as-is for simulation
-    }
-
-    const alloc4w = allocRecords.filter(r => {
-      const diff = dateDiffDays(r.date, today);
-      return diff >= 0 && diff <= 28;
-    }).reduce((s, r) => s + r.qty, 0);
-
-    const alloc8w = allocRecords.filter(r => {
-      const diff = dateDiffDays(r.date, today);
-      return diff >= 0 && diff <= 56;
-    }).reduce((s, r) => s + r.qty, 0);
-
-    const alloc12w = allocRecords.filter(r => {
-      const diff = dateDiffDays(r.date, today);
-      return diff >= 0 && diff <= 84;
-    }).reduce((s, r) => s + r.qty, 0);
+    var allocRecs=allocBySku[group.source]||[];
+    var alloc4w=0;
+    allocRecs.forEach(function(r){var diff=dateDiff(r.date,today);if(diff>=0&&diff<=28)alloc4w+=r.qty;});
 
     // Days of stock
-    const daysOfStock = (currentAvailable !== null && dailyAvg > 0) ? Math.round(currentAvailable / dailyAvg) : null;
+    var daysOfStock=(curAvail!==null&&dailyAvg>0)?Math.round(curAvail/dailyAvg):null;
 
-    // Stockout simulation
-    let stockoutDate = null;
-    let daysToStockout = null;
-    const simDays = 90;
-    const simData = [];
-    let simStock = currentAvailable !== null ? currentAvailable : 0;
-
-    for (let d = 0; d < simDays; d++) {
-      const simDate = new Date(today);
-      simDate.setDate(simDate.getDate() + d);
-
-      // Subtract daily consumption
-      simStock -= dailyAvg * volatility;
-
-      // Add in-transit arrivals
-      inTransitRecords.forEach(r => {
-        if (r.estShelving && formatDate(r.estShelving) === formatDate(simDate)) {
-          simStock += r.qty;
-        }
-      });
-
-      // Add allocation arrivals
-      allocRecords.forEach(r => {
-        if (formatDate(r.date) === formatDate(simDate)) {
-          simStock += r.qty;
-        }
-      });
-
-      simData.push({ date: new Date(simDate), stock: Math.round(simStock * 100) / 100 });
-
-      if (simStock <= 0 && !stockoutDate) {
-        stockoutDate = new Date(simDate);
-        daysToStockout = d;
-      }
+    // Simulation
+    var simDays=90;var simData=[];
+    var simStock=curAvail!==null?curAvail:0;
+    var stockoutDate=null;var daysToStockout=null;
+    for(var d=0;d<simDays;d++){
+      var simDate=addDays(today,d);
+      simStock-=dailyAvg*volatility;
+      var simDateStr=fmtDate(simDate);
+      inTransit.forEach(function(r){if(r.estShelving&&fmtDate(r.estShelving)===simDateStr)simStock+=r.qty;});
+      allocRecs.forEach(function(r){if(fmtDate(r.date)===simDateStr)simStock+=r.qty;});
+      simData.push({date:new Date(simDate),stock:Math.round(simStock*100)/100});
+      if(simStock<=0&&!stockoutDate){stockoutDate=new Date(simDate);daysToStockout=d;}
     }
 
-    // Replenishment suggestion
-    const safetyStock = safetyDays * dailyAvg;
-    let suggestedReorder = Math.ceil(safetyStock - (currentAvailable || 0) - inTransitTotal - alloc4w);
-    if (suggestedReorder < 0) suggestedReorder = 0;
+    // Reorder
+    var safetyStock=safetyDays*dailyAvg;
+    var sugReorder=Math.ceil(safetyStock-(curAvail||0)-inTransitTotal-alloc4w);
+    if(sugReorder<0)sugReorder=0;
 
     // Forecast
-    const nextMonth = today.getMonth() + 2; // 1-based next month
-    let forecastQty = null;
-    skus.forEach(s => {
-      if (forecastBySku[s] && forecastBySku[s][nextMonth] !== undefined) {
-        forecastQty = (forecastQty || 0) + forecastBySku[s][nextMonth];
-      }
+    var nextMonth=today.getMonth()+2;
+    var forecastQty=null;
+    skus.forEach(function(s){
+      if(forecastBySku[s]&&forecastBySku[s][nextMonth]!==undefined)forecastQty=(forecastQty||0)+forecastBySku[s][nextMonth];
     });
-    // Also check source SKU
-    if (forecastBySku[group.source] && forecastBySku[group.source][nextMonth] !== undefined) {
-      if (forecastQty === null) forecastQty = forecastBySku[group.source][nextMonth];
-    }
+    if(forecastQty===null&&forecastBySku[group.source]&&forecastBySku[group.source][nextMonth]!==undefined)
+      forecastQty=forecastBySku[group.source][nextMonth];
 
     // Status
-    let status, statusClass, statusText;
-    if (currentAvailable !== null && currentAvailable <= 0) {
-      status = 'out'; statusClass = 'status-out'; statusText = '⚫ 已缺货';
-    } else if (daysToStockout !== null && daysToStockout < 15) {
-      status = 'risk'; statusClass = 'status-risk'; statusText = '🔴 缺货风险';
-    } else if (daysToStockout !== null && daysToStockout < 30) {
-      status = 'low'; statusClass = 'status-low'; statusText = '🟡 偏低';
-    } else if (daysOfStock !== null && daysOfStock < 15) {
-      status = 'risk'; statusClass = 'status-risk'; statusText = '🔴 缺货风险';
-    } else if (daysOfStock !== null && daysOfStock < 30) {
-      status = 'low'; statusClass = 'status-low'; statusText = '🟡 偏低';
-    } else {
-      status = 'safe'; statusClass = 'status-safe'; statusText = '🟢 充足';
-    }
+    var status,statusClass,statusText;
+    if(curAvail!==null&&curAvail<=0){status='out';statusClass='status-out';statusText='⚫ 已缺货';}
+    else if(daysToStockout!==null&&daysToStockout<15){status='risk';statusClass='status-risk';statusText='🔴 缺货风险';}
+    else if(daysToStockout!==null&&daysToStockout<30){status='low';statusClass='status-low';statusText='🟡 偏低';}
+    else if(daysOfStock!==null&&daysOfStock<15){status='risk';statusClass='status-risk';statusText='🔴 缺货风险';}
+    else if(daysOfStock!==null&&daysOfStock<30){status='low';statusClass='status-low';statusText='🟡 偏低';}
+    else{status='safe';statusClass='status-safe';statusText='🟢 充足';}
 
     results.push({
-      sku: displaySku,
-      name: productName,
-      whAvailable: whAvailable,
-      whInStock: whInStock,
-      shopifyCommitted: shopifyCommitted,
-      currentAvailable: currentAvailable,
-      total30: total30,
-      dailyAvg: Math.round(dailyAvg * 100) / 100,
-      daysOfStock: daysOfStock,
-      inTransitTotal: inTransitTotal,
-      nextArrivalDate: nextArrival ? nextArrival.estShelving : null,
-      nextArrivalQty: nextArrival ? nextArrival.qty : null,
-      alloc4w: alloc4w,
-      stockoutDate: stockoutDate,
-      daysToStockout: daysToStockout,
-      suggestedReorder: suggestedReorder,
-      forecastQty: forecastQty,
-      status: status,
-      statusClass: statusClass,
-      statusText: statusText,
-      simData: simData,
-      salesRecords: allSalesRecords,
-      skus: skus,
-      inTransitRecords: inTransitRecords,
-      allocRecords: allocRecords,
+      sku:displaySku,name:productName,
+      whAvailable:whAvail,whInStock:whInStk,shopifyCommitted:shopCommit,currentAvailable:curAvail,
+      total30:total30,dailyAvg:Math.round(dailyAvg*100)/100,daysOfStock:daysOfStock,
+      inTransitTotal:inTransitTotal,
+      nextArrivalDate:nextArr?nextArr.estShelving:null,nextArrivalQty:nextArr?nextArr.qty:null,
+      alloc4w:alloc4w,stockoutDate:stockoutDate,daysToStockout:daysToStockout,
+      suggestedReorder:sugReorder,forecastQty:forecastQty,
+      status:status,statusClass:statusClass,statusText:statusText,
+      simData:simData,salesRecords:allSales,skus:skus,
+      inTransitRecords:inTransit,allocRecords:allocRecs
     });
   });
 
-  results.sort((a, b) => (a.daysToStockout || 9999) - (b.daysToStockout || 9999));
-
-  APP.results = results;
-  APP.salesBySku = salesBySku;
-  APP.forecastBySku = forecastBySku;
-  APP.allSalesRecords = salesRecords;
+  results.sort(function(a,b){return(a.daysToStockout===null?9999:a.daysToStockout)-(b.daysToStockout===null?9999:b.daysToStockout);});
+  APP.results=results;
+  APP.salesBySku=salesBySku;
+  APP.forecastBySku=forecastBySku;
+  APP.allSalesRecords=salesRecords;
 }
 
 // ============ RENDER TAB 1 ============
-function renderTab1() {
-  const results = APP.results;
-  if (!results || results.length === 0) {
-    document.getElementById('tab1NoData').style.display = 'block';
-    return;
-  }
-  document.getElementById('tab1NoData').style.display = 'none';
+function renderTab1(){
+  var results=APP.results;
+  if(!results||!results.length){document.getElementById('tab1NoData').style.display='block';return;}
+  document.getElementById('tab1NoData').style.display='none';
 
-  // Summary cards
-  document.getElementById('totalSkus').textContent = results.length;
-  const urgent = results.filter(r => r.status === 'risk' || r.status === 'out').length;
-  const watch = results.filter(r => r.status === 'low').length;
-  const safe = results.filter(r => r.status === 'safe').length;
-  document.getElementById('urgentCount').textContent = urgent;
-  document.getElementById('watchCount').textContent = watch;
-  document.getElementById('safeCount').textContent = safe;
+  document.getElementById('totalSkus').textContent=results.length;
+  var urgent=0,watch=0,safe=0;
+  results.forEach(function(r){if(r.status==='risk'||r.status==='out')urgent++;else if(r.status==='low')watch++;else safe++;});
+  document.getElementById('urgentCount').textContent=urgent;
+  document.getElementById('watchCount').textContent=watch;
+  document.getElementById('safeCount').textContent=safe;
+  var daysArr=results.filter(function(r){return r.daysOfStock!==null;});
+  var avgD=daysArr.length>0?(daysArr.reduce(function(s,r){return s+r.daysOfStock;},0)/daysArr.length):0;
+  document.getElementById('avgDays').textContent=Math.round(avgD);
 
-  const avgDays = results.filter(r => r.daysOfStock !== null).reduce((s, r) => s + r.daysOfStock, 0) / (results.filter(r => r.daysOfStock !== null).length || 1);
-  document.getElementById('avgDays').textContent = Math.round(avgDays);
+  // Table - using DOM methods, NOT template strings
+  var tbody=document.getElementById('inventoryBody');
+  tbody.innerHTML='';
+  results.forEach(function(r){
+    var tr=document.createElement('tr');
+    tr.setAttribute('data-status',r.status);
 
-  // Table
-  const tbody = document.getElementById('inventoryBody');
-  tbody.innerHTML = '';
-  results.forEach(r => {
-    const tr = document.createElement('tr');
-    tr.setAttribute('data-status', r.status);
-    tr.innerHTML = `
-      <td style="font-weight:600;font-size:0.75rem">${r.sku}</td>
-      <td>${r.name || '-'}</td>
-      <td>${fmtNum(r.whAvailable)}</td>
-      <td>${fmtNum(r.whInStock)}</td>
-      <td>${fmtNum(r.shopifyCommitted)}</td>
-      <td style="font-weight:600">${fmtNum(r.currentAvailable)}</td>
-      <td>${fmtNum(r.total30)}</td>
-      <td>${r.dailyAvg > 0 ? r.dailyAvg.toFixed(1) : fmtNum(null)}</td>
-      <td style="font-weight:600">${r.daysOfStock !== null ? r.daysOfStock : '-'}</td>
-      <td>${r.inTransitTotal || 0}</td>
-      <td>${r.nextArrivalDate ? formatDate(r.nextArrivalDate) : '-'}</td>
-      <td>${fmtNum(r.nextArrivalQty)}</td>
-      <td>${r.alloc4w || 0}</td>
-      <td>${r.stockoutDate ? formatDate(r.stockoutDate) : '90天+安全'}</td>
-      <td style="font-weight:600;color: ${r.daysToStockout !== null && r.daysToStockout < 15 ? 'var(--danger)' : r.daysToStockout !== null && r.daysToStockout < 30 ? 'var(--warning)' : 'var(--success)'}">$ {r.daysToStockout !== null ? r.daysToStockout : '90+'}</td>
-      <td>${r.suggestedReorder > 0 ? r.suggestedReorder : '-'}</td>
-      <td>${fmtNum(r.forecastQty)}</td>
-      <td><span class="status-badge  ${r.statusClass}">$ {r.statusText}</span></td>
-    `;
+    var daysColor='var(--success)';
+    if(r.daysToStockout!==null&&r.daysToStockout<15)daysColor='var(--danger)';
+    else if(r.daysToStockout!==null&&r.daysToStockout<30)daysColor='var(--warning)';
+
+    var cells=[
+      r.sku,
+      r.name||'-',
+      fmtVal(r.whAvailable),
+      fmtVal(r.whInStock),
+      fmtVal(r.shopifyCommitted),
+      fmtVal(r.currentAvailable),
+      r.total30,
+      r.dailyAvg>0?r.dailyAvg.toFixed(1):'-',
+      r.daysOfStock!==null?r.daysOfStock:'-',
+      r.inTransitTotal||0,
+      r.nextArrivalDate?fmtDate(r.nextArrivalDate):'-',
+      r.nextArrivalQty!==null?r.nextArrivalQty:'-',
+      r.alloc4w||0,
+      r.stockoutDate?fmtDate(r.stockoutDate):'90天+安全',
+      r.daysToStockout!==null?r.daysToStockout:'90+',
+      r.suggestedReorder>0?r.suggestedReorder:'-',
+      r.forecastQty!==null?r.forecastQty:'无数据',
+      '' // status badge placeholder
+    ];
+
+    cells.forEach(function(val,ci){
+      var td=document.createElement('td');
+      if(ci===0){td.style.fontWeight='600';td.style.fontSize='0.75rem';}
+      if(ci===5)td.style.fontWeight='600';
+      if(ci===8)td.style.fontWeight='600';
+      if(ci===14){td.style.fontWeight='600';td.style.color=daysColor;}
+      if(ci===17){
+        var badge=document.createElement('span');
+        badge.className='status-badge '+r.statusClass;
+        badge.textContent=r.statusText;
+        td.appendChild(badge);
+      } else {
+        td.textContent=String(val);
+      }
+      tr.appendChild(td);
+    });
     tbody.appendChild(tr);
   });
 
-  // SKU selector for sim chart
-  const select = document.getElementById('skuSimSelect');
-  select.innerHTML = '<option value="">选择SKU...</option>';
-  results.forEach(r => {
-    select.innerHTML += `<option value=" ${r.sku}">$ {r.sku} - ${r.name || ''}</option>`;
+  // SKU selector for sim chart - using DOM
+  var select=document.getElementById('skuSimSelect');
+  select.innerHTML='';
+  var defaultOpt=document.createElement('option');
+  defaultOpt.value='';defaultOpt.textContent='选择SKU...';
+  select.appendChild(defaultOpt);
+  results.forEach(function(r){
+    var opt=document.createElement('option');
+    opt.value=r.sku;
+    opt.textContent=r.sku+' - '+(r.name||'');
+    select.appendChild(opt);
   });
 
-  // Charts
-  renderHealthPieChart(results);
-  renderTopSkuBarChart(results);
+  renderHealthPie(results);
+  renderTopSkuBar(results);
 }
 
-function fmtNum(val) {
-  if (val === null || val === undefined) return '<span style="color:var(--text-secondary)">无数据</span>';
-  return val;
-}
-
-function filterTable1() {
-  const search = document.getElementById('tab1Search').value.toLowerCase();
-  const status = document.getElementById('tab1StatusFilter').value;
-  const rows = document.querySelectorAll('#inventoryBody tr');
-  rows.forEach(row => {
-    const text = row.textContent.toLowerCase();
-    const rowStatus = row.getAttribute('data-status');
-    const matchSearch = !search || text.includes(search);
-    const matchStatus = status === 'all' || rowStatus === status;
-    row.style.display = matchSearch && matchStatus ? '' : 'none';
+function filterTable1(){
+  var search=document.getElementById('tab1Search').value.toLowerCase();
+  var status=document.getElementById('tab1StatusFilter').value;
+  var rows=document.querySelectorAll('#inventoryBody tr');
+  rows.forEach(function(row){
+    var text=row.textContent.toLowerCase();
+    var rs=row.getAttribute('data-status');
+    row.style.display=((!search||text.includes(search))&&(status==='all'||rs===status))?'':'none';
   });
 }
 
 // ============ CHARTS ============
-function destroyChart(key) {
-  if (APP.charts[key]) { APP.charts[key].destroy(); delete APP.charts[key]; }
-}
+function destroyChart(k){if(APP.charts[k]){APP.charts[k].destroy();delete APP.charts[k];}}
 
-function renderHealthPieChart(results) {
+function renderHealthPie(results){
   destroyChart('healthPie');
-  const counts = { safe: 0, low: 0, risk: 0, out: 0 };
-  results.forEach(r => counts[r.status]++);
-  const ctx = document.getElementById('healthPieChart').getContext('2d');
-  APP.charts.healthPie = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: ['🟢 充足', '🟡 偏低', '🔴 缺货风险', '⚫ 已缺货'],
-      datasets: [{
-        data: [counts.safe, counts.low, counts.risk, counts.out],
-        backgroundColor: ['#27ae60', '#f39c12', '#e74c3c', '#333'],
-      }]
-    },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+  var c={safe:0,low:0,risk:0,out:0};
+  results.forEach(function(r){c[r.status]++;});
+  APP.charts.healthPie=new Chart(document.getElementById('healthPieChart').getContext('2d'),{
+    type:'doughnut',
+    data:{labels:['🟢 充足','🟡 偏低','🔴 缺货风险','⚫ 已缺货'],datasets:[{data:[c.safe,c.low,c.risk,c.out],backgroundColor:['#27ae60','#f39c12','#e74c3c','#333']}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}
   });
 }
 
-function renderTopSkuBarChart(results) {
+function renderTopSkuBar(results){
   destroyChart('topSkuBar');
-  const sorted = [...results].filter(r => r.daysOfStock !== null).sort((a, b) => (a.daysOfStock || 0) - (b.daysOfStock || 0)).slice(0, 15);
-  const ctx = document.getElementById('topSkuBarChart').getContext('2d');
-  APP.charts.topSkuBar = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: sorted.map(r => r.sku.length > 20 ? r.sku.substring(0, 18) + '...' : r.sku),
-      datasets: [{
-        label: '可售天数',
-        data: sorted.map(r => r.daysOfStock),
-        backgroundColor: sorted.map(r => r.status === 'out' ? '#333' : r.status === 'risk' ? '#e74c3c' : r.status === 'low' ? '#f39c12' : '#27ae60'),
-      }]
+  var sorted=results.filter(function(r){return r.daysOfStock!==null;}).sort(function(a,b){return(a.daysOfStock||0)-(b.daysOfStock||0);}).slice(0,15);
+  APP.charts.topSkuBar=new Chart(document.getElementById('topSkuBarChart').getContext('2d'),{
+    type:'bar',
+    data:{
+      labels:sorted.map(function(r){return r.sku.length>20?r.sku.substring(0,18)+'..':r.sku;}),
+      datasets:[{label:'可售天数',data:sorted.map(function(r){return r.daysOfStock;}),
+        backgroundColor:sorted.map(function(r){return r.status==='out'?'#333':r.status==='risk'?'#e74c3c':r.status==='low'?'#f39c12':'#27ae60';})}]
     },
-    options: {
-      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
-      plugins: { legend: { display: false } },
-      scales: { x: { beginAtZero: true } }
-    }
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true}}}
   });
 }
 
-function updateSimChart() {
+function updateSimChart(){
   destroyChart('simLine');
-  const sku = document.getElementById('skuSimSelect').value;
-  if (!sku) return;
-  const result = APP.results.find(r => r.sku === sku);
-  if (!result || !result.simData) return;
-
-  const safetyDays = parseInt(document.getElementById('safetyDays').value) || 14;
-  const safetyStock = safetyDays * result.dailyAvg;
-
-  const ctx = document.getElementById('simLineChart').getContext('2d');
-  const labels = result.simData.map(d => formatDate(d.date));
-  const stockData = result.simData.map(d => d.stock);
-
-  // Mark arrival points
-  const arrivalPoints = [];
-  const allocPoints = [];
-  result.simData.forEach((d, i) => {
-    const dateStr = formatDate(d.date);
-    if (result.inTransitRecords.some(r => r.estShelving && formatDate(r.estShelving) === dateStr)) {
-      arrivalPoints.push({ x: i, y: d.stock });
-    }
-    if (result.allocRecords.some(r => formatDate(r.date) === dateStr)) {
-      allocPoints.push({ x: i, y: d.stock });
-    }
-  });
-
-  APP.charts.simLine = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [
-        {
-          label: '模拟库存量',
-          data: stockData,
-          borderColor: '#4a90d9',
-          backgroundColor: 'rgba(74,144,217,0.1)',
-          fill: true,
-          tension: 0.3,
-          pointRadius: 0,
-        },
-        {
-          label: '安全库存线',
-          data: new Array(labels.length).fill(safetyStock),
-          borderColor: '#f39c12',
-          borderDash: [5, 5],
-          pointRadius: 0,
-          fill: false,
-        },
-        {
-          label: '断货线',
-          data: new Array(labels.length).fill(0),
-          borderColor: '#e74c3c',
-          borderDash: [3, 3],
-          pointRadius: 0,
-          fill: false,
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { position: 'top' } },
-      scales: {
-        x: { ticks: { maxTicksLimit: 15, maxRotation: 45 } },
-        y: { beginAtZero: true }
-      }
-    }
+  var sku=document.getElementById('skuSimSelect').value;if(!sku)return;
+  var result=null;
+  for(var i=0;i<APP.results.length;i++){if(APP.results[i].sku===sku){result=APP.results[i];break;}}
+  if(!result||!result.simData)return;
+  var safetyDays=parseInt(document.getElementById('safetyDays').value)||14;
+  var safetyStock=safetyDays*result.dailyAvg;
+  var labels=result.simData.map(function(d){return fmtDate(d.date);});
+  var stockData=result.simData.map(function(d){return d.stock;});
+  var safetyLine=[];var zeroLine=[];
+  for(var i=0;i<labels.length;i++){safetyLine.push(safetyStock);zeroLine.push(0);}
+  APP.charts.simLine=new Chart(document.getElementById('simLineChart').getContext('2d'),{
+    type:'line',
+    data:{labels:labels,datasets:[
+      {label:'模拟库存量',data:stockData,borderColor:'#4a90d9',backgroundColor:'rgba(74,144,217,0.1)',fill:true,tension:0.3,pointRadius:0},
+      {label:'安全库存线',data:safetyLine,borderColor:'#f39c12',borderDash:[5,5],pointRadius:0,fill:false},
+      {label:'断货线',data:zeroLine,borderColor:'#e74c3c',borderDash:[3,3],pointRadius:0,fill:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{x:{ticks:{maxTicksLimit:15,maxRotation:45}},y:{beginAtZero:true}}}
   });
 }
 
 // ============ RENDER TAB 2 ============
-function renderTab2() {
-  if (!APP.allSalesRecords || APP.allSalesRecords.length === 0) {
-    document.getElementById('tab2NoData').style.display = 'block';
-    return;
-  }
-  document.getElementById('tab2NoData').style.display = 'none';
-
-  // Populate SKU filter
-  const skuSelect = document.getElementById('tab2SkuFilter');
-  const skusInSales = [...new Set(APP.allSalesRecords.map(r => r.sku))].filter(s => s.startsWith('PF') || s.startsWith('SA')).sort();
-  skuSelect.innerHTML = '';
-  skusInSales.forEach(s => {
-    const opt = document.createElement('option');
-    opt.value = s; opt.textContent = s; opt.selected = true;
-    skuSelect.appendChild(opt);
+function renderTab2(){
+  if(!APP.allSalesRecords||!APP.allSalesRecords.length){document.getElementById('tab2NoData').style.display='block';return;}
+  document.getElementById('tab2NoData').style.display='none';
+  var skuSelect=document.getElementById('tab2SkuFilter');
+  var skusInSales=[];var seen={};
+  APP.allSalesRecords.forEach(function(r){
+    if(!seen[r.sku]&&(r.sku.startsWith('PF')||r.sku.startsWith('SA'))){seen[r.sku]=true;skusInSales.push(r.sku);}
   });
-
+  skusInSales.sort();
+  skuSelect.innerHTML='';
+  skusInSales.forEach(function(s){var o=document.createElement('option');o.value=s;o.textContent=s;o.selected=true;skuSelect.appendChild(o);});
   updateTab2();
 }
 
-function updateTab2() {
-  if (!APP.allSalesRecords) return;
-  const dimension = document.getElementById('tab2Dimension').value;
-  const selectedSkus = Array.from(document.getElementById('tab2SkuFilter').selectedOptions).map(o => o.value);
+function updateTab2(){
+  if(!APP.allSalesRecords)return;
+  var dim=document.getElementById('tab2Dimension').value;
+  var selOpts=document.getElementById('tab2SkuFilter').selectedOptions;
+  var selectedSkus=[];for(var i=0;i<selOpts.length;i++)selectedSkus.push(selOpts[i].value);
 
-  // Monthly aggregation
-  const monthlyData = {}; // sku → { monthKey: { qty, sales, returns } }
-  APP.allSalesRecords.forEach(r => {
-    if (!selectedSkus.includes(r.sku)) return;
-    if (!r.date) return;
-    let key;
-    if (dimension === 'day') key = formatDate(r.date);
-    else if (dimension === 'week') {
-      const d = new Date(r.date);
-      d.setDate(d.getDate() - d.getDay());
-      key = formatDate(d);
-    } else {
-      key = r.date.getFullYear() + '-' + String(r.date.getMonth() + 1).padStart(2, '0');
-    }
-    if (!monthlyData[r.sku]) monthlyData[r.sku] = {};
-    if (!monthlyData[r.sku][key]) monthlyData[r.sku][key] = { qty: 0, sales: 0, returns: 0 };
-    monthlyData[r.sku][key].qty += r.netQty;
-    monthlyData[r.sku][key].sales += r.netSales;
-    monthlyData[r.sku][key].returns += Math.abs(r.returns);
+  var monthlyData={};
+  APP.allSalesRecords.forEach(function(r){
+    if(selectedSkus.indexOf(r.sku)===-1)return;
+    if(!r.date)return;
+    var key;
+    if(dim==='day')key=fmtDate(r.date);
+    else if(dim==='week'){var d=new Date(r.date);d.setDate(d.getDate()-d.getDay());key=fmtDate(d);}
+    else key=r.date.getFullYear()+'-'+String(r.date.getMonth()+1).padStart(2,'0');
+    if(!monthlyData[r.sku])monthlyData[r.sku]={};
+    if(!monthlyData[r.sku][key])monthlyData[r.sku][key]={qty:0,sales:0,returns:0};
+    monthlyData[r.sku][key].qty+=r.netQty;
+    monthlyData[r.sku][key].sales+=r.netSales;
+    monthlyData[r.sku][key].returns+=Math.abs(r.returns);
   });
 
-  // Get all period keys sorted
-  const allKeys = new Set();
-  Object.values(monthlyData).forEach(m => Object.keys(m).forEach(k => allKeys.add(k)));
-  const sortedKeys = [...allKeys].sort();
+  var allKeys={};Object.values(monthlyData).forEach(function(m){Object.keys(m).forEach(function(k){allKeys[k]=1;});});
+  var sortedKeys=Object.keys(allKeys).sort();
 
-  // Sales trend chart
-  renderSalesTrendChart(monthlyData, sortedKeys, selectedSkus);
-
-  // Actual vs Forecast
-  renderActualVsForecast(monthlyData, selectedSkus);
-
-  // Sales rank
-  renderSalesRankChart(selectedSkus);
-
-  // Accuracy radar
-  renderAccuracyRadar(monthlyData, selectedSkus);
-
-  // Table
-  renderSalesTable(monthlyData, sortedKeys, selectedSkus);
-
-  // Return analysis
+  renderSalesTrend(monthlyData,sortedKeys,selectedSkus);
+  renderActualVsForecast(monthlyData,selectedSkus);
+  renderAccuracyRadar(monthlyData,selectedSkus);
+  renderSalesRank(selectedSkus);
+  renderSalesTable(monthlyData,sortedKeys,selectedSkus);
   renderReturnAnalysis();
 }
 
-function renderSalesTrendChart(monthlyData, keys, skus) {
+function renderSalesTrend(md,keys,skus){
   destroyChart('salesTrend');
-  const colors = ['#4a90d9', '#e74c3c', '#27ae60', '#f39c12', '#9b59b6', '#1abc9c', '#e67e22', '#3498db', '#e91e63', '#00bcd4'];
-  const datasets = [];
-  const topSkus = skus.slice(0, 10);
-  topSkus.forEach((sku, i) => {
-    const data = monthlyData[sku] || {};
-    datasets.push({
-      label: sku.length > 20 ? sku.substring(0, 18) + '..' : sku,
-      data: keys.map(k => data[k] ? data[k].qty : 0),
-      borderColor: colors[i % colors.length],
-      tension: 0.3,
-      pointRadius: 2,
-      fill: false,
-    });
+  var colors=['#4a90d9','#e74c3c','#27ae60','#f39c12','#9b59b6','#1abc9c','#e67e22','#3498db','#e91e63','#00bcd4'];
+  var datasets=[];var top=skus.slice(0,10);
+  top.forEach(function(sku,i){
+    var data=md[sku]||{};
+    datasets.push({label:sku.length>20?sku.substring(0,18)+'..':sku,data:keys.map(function(k){return data[k]?data[k].qty:0;}),borderColor:colors[i%colors.length],tension:0.3,pointRadius:2,fill:false});
   });
-  const ctx = document.getElementById('salesTrendChart').getContext('2d');
-  APP.charts.salesTrend = new Chart(ctx, {
-    type: 'line',
-    data: { labels: keys, datasets },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { font: { size: 9 } } } },
-      scales: { x: { ticks: { maxTicksLimit: 12, maxRotation: 45 } } }
-    }
+  APP.charts.salesTrend=new Chart(document.getElementById('salesTrendChart').getContext('2d'),{
+    type:'line',data:{labels:keys,datasets:datasets},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:9}}}},scales:{x:{ticks:{maxTicksLimit:12,maxRotation:45}}}}
   });
 }
 
-function renderActualVsForecast(monthlyData, skus) {
+function renderActualVsForecast(md,skus){
   destroyChart('actualVsForecast');
-  const forecast = APP.forecastBySku || {};
-  const months = [];
-  const today = getToday();
-  for (let i = -2; i <= 3; i++) {
-    const m = today.getMonth() + 1 + i;
-    if (m >= 1 && m <= 12) months.push(m);
-  }
-
-  // Aggregate across selected SKUs per month
-  const actualByMonth = {};
-  const forecastByMonth = {};
-  months.forEach(m => { actualByMonth[m] = 0; forecastByMonth[m] = 0; });
-
-  skus.forEach(sku => {
-    const md = monthlyData[sku] || {};
-    months.forEach(m => {
-      const key = today.getFullYear() + '-' + String(m).padStart(2, '0');
-      if (md[key]) actualByMonth[m] += md[key].qty;
+  var forecast=APP.forecastBySku||{};
+  var today=getToday();
+  var months=[];
+  for(var i=-2;i<=3;i++){var m=today.getMonth()+1+i;if(m>=1&&m<=12)months.push(m);}
+  var actualByMonth={};var forecastByMonth={};
+  months.forEach(function(m){actualByMonth[m]=0;forecastByMonth[m]=0;});
+  skus.forEach(function(sku){
+    var mdata=md[sku]||{};
+    months.forEach(function(m){
+      var key=today.getFullYear()+'-'+String(m).padStart(2,'0');
+      if(mdata[key])actualByMonth[m]+=mdata[key].qty;
     });
-    if (forecast[sku]) {
-      months.forEach(m => { if (forecast[sku][m]) forecastByMonth[m] += forecast[sku][m]; });
-    }
+    if(forecast[sku])months.forEach(function(m){if(forecast[sku][m])forecastByMonth[m]+=forecast[sku][m];});
   });
-
-  const labels = months.map(m => m + '月');
-  const ctx = document.getElementById('actualVsForecastChart').getContext('2d');
-  APP.charts.actualVsForecast = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [
-        { label: '实际销量', data: months.map(m => actualByMonth[m]), backgroundColor: '#4a90d9' },
-        { label: '预测销量', data: months.map(m => forecastByMonth[m]), backgroundColor: '#bdc3c7' },
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'top' } },
-      scales: { y: { beginAtZero: true } }
-    }
+  APP.charts.actualVsForecast=new Chart(document.getElementById('actualVsForecastChart').getContext('2d'),{
+    type:'bar',
+    data:{labels:months.map(function(m){return m+'月';}),datasets:[
+      {label:'实际销量',data:months.map(function(m){return actualByMonth[m];}),backgroundColor:'#4a90d9'},
+      {label:'预测销量',data:months.map(function(m){return forecastByMonth[m];}),backgroundColor:'#bdc3c7'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{beginAtZero:true}}}
   });
 }
 
-function renderAccuracyRadar(monthlyData, skus) {
+function renderAccuracyRadar(md,skus){
   destroyChart('accuracyRadar');
-  const forecast = APP.forecastBySku || {};
-  const today = getToday();
-  const topSkus = skus.filter(s => forecast[s]).slice(0, 8);
-  if (topSkus.length === 0) return;
-
-  const accuracies = topSkus.map(sku => {
-    const md = monthlyData[sku] || {};
-    let totalAcc = 0, count = 0;
-    Object.entries(forecast[sku] || {}).forEach(([m, pred]) => {
-      if (pred <= 0) return;
-      const key = today.getFullYear() + '-' + String(m).padStart(2, '0');
-      const actual = md[key] ? md[key].qty : 0;
-      const acc = Math.max(0, 1 - Math.abs(actual - pred) / pred);
-      totalAcc += acc; count++;
+  var forecast=APP.forecastBySku||{};var today=getToday();
+  var topSkus=skus.filter(function(s){return forecast[s];}).slice(0,8);
+  if(!topSkus.length)return;
+  var accs=topSkus.map(function(sku){
+    var mdata=md[sku]||{};var totalAcc=0;var cnt=0;
+    Object.keys(forecast[sku]||{}).forEach(function(m){
+      var pred=forecast[sku][m];if(pred<=0)return;
+      var key=today.getFullYear()+'-'+String(m).padStart(2,'0');
+      var actual=mdata[key]?mdata[key].qty:0;
+      totalAcc+=Math.max(0,1-Math.abs(actual-pred)/pred);cnt++;
     });
-    return count > 0 ? Math.round(totalAcc / count * 100) : 0;
+    return cnt>0?Math.round(totalAcc/cnt*100):0;
   });
-
-  const ctx = document.getElementById('accuracyRadarChart').getContext('2d');
-  APP.charts.accuracyRadar = new Chart(ctx, {
-    type: 'radar',
-    data: {
-      labels: topSkus.map(s => s.length > 18 ? s.substring(0, 16) + '..' : s),
-      datasets: [{ label: '准确率%', data: accuracies, borderColor: '#4a90d9', backgroundColor: 'rgba(74,144,217,0.2)' }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      scales: { r: { min: 0, max: 100 } },
-      plugins: { legend: { display: false } }
-    }
+  APP.charts.accuracyRadar=new Chart(document.getElementById('accuracyRadarChart').getContext('2d'),{
+    type:'radar',
+    data:{labels:topSkus.map(function(s){return s.length>18?s.substring(0,16)+'..':s;}),datasets:[{label:'准确率%',data:accs,borderColor:'#4a90d9',backgroundColor:'rgba(74,144,217,0.2)'}]},
+    options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:100}},plugins:{legend:{display:false}}}
   });
 }
 
-function renderSalesRankChart(skus) {
+function renderSalesRank(skus){
   destroyChart('salesRank');
-  const today = getToday();
-  const cutoff30 = new Date(today); cutoff30.setDate(cutoff30.getDate() - 30);
-
-  const skuTotals = {};
-  APP.allSalesRecords.forEach(r => {
-    if (!skus.includes(r.sku)) return;
-    if (!r.date || r.date < cutoff30) return;
-    skuTotals[r.sku] = (skuTotals[r.sku] || 0) + r.netQty;
+  var today=getToday();var cutoff30=addDays(today,-30);
+  var totals={};
+  APP.allSalesRecords.forEach(function(r){
+    if(skus.indexOf(r.sku)===-1||!r.date||r.date<cutoff30)return;
+    totals[r.sku]=(totals[r.sku]||0)+r.netQty;
   });
-
-  const sorted = Object.entries(skuTotals).sort((a, b) => b[1] - a[1]).slice(0, 15);
-
-  const ctx = document.getElementById('salesRankChart').getContext('2d');
-  APP.charts.salesRank = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: sorted.map(s => s[0].length > 20 ? s[0].substring(0, 18) + '..' : s[0]),
-      datasets: [{ label: '30天销量', data: sorted.map(s => s[1]), backgroundColor: '#4a90d9' }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
-      plugins: { legend: { display: false } },
-      scales: { x: { beginAtZero: true } }
-    }
+  var sorted=Object.entries(totals).sort(function(a,b){return b[1]-a[1];}).slice(0,15);
+  APP.charts.salesRank=new Chart(document.getElementById('salesRankChart').getContext('2d'),{
+    type:'bar',
+    data:{labels:sorted.map(function(s){return s[0].length>20?s[0].substring(0,18)+'..':s[0];}),datasets:[{label:'30天销量',data:sorted.map(function(s){return s[1];}),backgroundColor:'#4a90d9'}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true}}}
   });
 }
 
-function renderSalesTable(monthlyData, keys, skus) {
-  const head = document.getElementById('salesTableHead');
-  const body = document.getElementById('salesTableBody');
-  const forecast = APP.forecastBySku || {};
-  const today = getToday();
+function renderSalesTable(md,keys,skus){
+  var head=document.getElementById('salesTableHead');
+  var body=document.getElementById('salesTableBody');
+  var forecast=APP.forecastBySku||{};
+  var today=getToday();
 
-  // Monthly keys only
-  const monthKeys = [];
-  const seenMonths = new Set();
-  keys.forEach(k => {
-    const monthKey = k.substring(0, 7);
-    if (!seenMonths.has(monthKey) && k.length <= 7) {
-      seenMonths.add(monthKey);
-      monthKeys.push(monthKey);
-    }
+  // Use month keys if dimension is month
+  var displayKeys=keys.filter(function(k){return k.length<=7;});
+  if(displayKeys.length===0)displayKeys=keys;
+
+  // Build header with DOM
+  head.innerHTML='';
+  var thSku=document.createElement('th');thSku.textContent='SKU';head.appendChild(thSku);
+  displayKeys.forEach(function(k){
+    var th1=document.createElement('th');th1.textContent=k+' 实际';head.appendChild(th1);
+    var th2=document.createElement('th');th2.textContent=k+' 预测';head.appendChild(th2);
+    var th3=document.createElement('th');th3.textContent='偏差%';head.appendChild(th3);
   });
+  var thAcc=document.createElement('th');thAcc.textContent='总体准确率';head.appendChild(thAcc);
 
-  // If dimension is month, use keys directly
-  const displayKeys = keys.length > 0 && keys[0].length <= 7 ? keys : monthKeys;
+  body.innerHTML='';
+  skus.forEach(function(sku){
+    var mdata=md[sku]||{};
+    var fc=forecast[sku]||{};
+    var tr=document.createElement('tr');
+    var tdSku=document.createElement('td');tdSku.style.fontWeight='600';tdSku.style.fontSize='0.75rem';tdSku.textContent=sku;tr.appendChild(tdSku);
 
-  head.innerHTML = '<th>SKU</th>';
-  displayKeys.forEach(k => head.innerHTML += `<th> ${k} 实际</th><th>$ {k} 预测</th><th>偏差%</th>`);
-  head.innerHTML += '<th>总体准确率</th>';
+    var totalAcc=0;var accCnt=0;
+    displayKeys.forEach(function(k){
+      var actual=mdata[k]?mdata[k].qty:0;
+      var monthNum=parseInt(k.split('-')[1]);
+      var pred=(fc[monthNum]||0);
+      var deviation=pred>0?Math.round(((actual-pred)/pred)*100):null;
+      var acc=pred>0?Math.max(0,1-Math.abs(actual-pred)/pred):null;
+      if(acc!==null){totalAcc+=acc;accCnt++;}
 
-  body.innerHTML = '';
-  skus.forEach(sku => {
-    const md = monthlyData[sku] || {};
-    const fc = forecast[sku] || {};
-    const tr = document.createElement('tr');
-    let html = `<td style="font-weight:600;font-size:0.75rem">${sku}</td>`;
-    let totalAcc = 0, accCount = 0;
-
-    displayKeys.forEach(k => {
-      const actual = md[k] ? md[k].qty : 0;
-      const monthNum = parseInt(k.split('-')[1]);
-      const pred = fc[monthNum] || 0;
-      const deviation = pred > 0 ? Math.round(((actual - pred) / pred) * 100) : '-';
-      const acc = pred > 0 ? Math.max(0, 1 - Math.abs(actual - pred) / pred) : null;
-      if (acc !== null) { totalAcc += acc; accCount++; }
-      const devStyle = typeof deviation === 'number' && Math.abs(deviation) > 30 ? 'background:#f8d7da' : '';
-      html += `<td> ${actual}</td><td>$ {pred || '-'}</td><td style=" ${devStyle}">$ {typeof deviation === 'number' ? deviation + '%' : '-'}</td>`;
+      var td1=document.createElement('td');td1.textContent=actual;tr.appendChild(td1);
+      var td2=document.createElement('td');td2.textContent=pred||'-';tr.appendChild(td2);
+      var td3=document.createElement('td');
+      if(deviation!==null){
+        td3.textContent=deviation+'%';
+        if(Math.abs(deviation)>30)td3.style.background='#f8d7da';
+      }else{td3.textContent='-';}
+      tr.appendChild(td3);
     });
 
-    const overallAcc = accCount > 0 ? Math.round(totalAcc / accCount * 100) : '-';
-    html += `<td style="font-weight:600"> ${overallAcc}$ {typeof overallAcc === 'number' ? '%' : ''}</td>`;
-    tr.innerHTML = html;
+    var tdAcc=document.createElement('td');tdAcc.style.fontWeight='600';
+    tdAcc.textContent=accCnt>0?Math.round(totalAcc/accCnt*100)+'%':'-';
+    tr.appendChild(tdAcc);
     body.appendChild(tr);
   });
 }
 
-function filterTable2() {
-  const search = document.getElementById('tab2Search').value.toLowerCase();
-  document.querySelectorAll('#salesTableBody tr').forEach(row => {
-    row.style.display = !search || row.textContent.toLowerCase().includes(search) ? '' : 'none';
-  });
+function filterTable2(){
+  var search=document.getElementById('tab2Search').value.toLowerCase();
+  document.querySelectorAll('#salesTableBody tr').forEach(function(row){row.style.display=(!search||row.textContent.toLowerCase().includes(search))?'':'none';});
 }
 
-function renderReturnAnalysis() {
-  const today = getToday();
-  const skuReturns = {};
-  APP.allSalesRecords.forEach(r => {
-    if (!r.sku.startsWith('PF') && !r.sku.startsWith('SA')) return;
-    if (!skuReturns[r.sku]) skuReturns[r.sku] = { gross: 0, returns: 0 };
-    if (r.netQty > 0) skuReturns[r.sku].gross += r.netQty + Math.abs(r.returns);
-    skuReturns[r.sku].returns += Math.abs(r.returns);
+function renderReturnAnalysis(){
+  // FIX: Calculate returns by QUANTITY not amount
+  var skuReturns={};
+  APP.allSalesRecords.forEach(function(r){
+    if(!r.sku.startsWith('PF')&&!r.sku.startsWith('SA'))return;
+    if(!skuReturns[r.sku])skuReturns[r.sku]={grossQty:0,returnQty:0};
+    // gross = net + |returns| (returns is negative qty)
+    var returnQty=Math.abs(r.returns);
+    skuReturns[r.sku].grossQty+=r.netQty+returnQty;
+    skuReturns[r.sku].returnQty+=returnQty;
   });
 
-  const sorted = Object.entries(skuReturns)
-    .map(([sku, d]) => ({ sku, gross: d.gross, returns: d.returns, rate: d.gross > 0 ? d.returns / d.gross : 0 }))
-    .filter(d => d.returns > 0)
-    .sort((a, b) => b.rate - a.rate)
-    .slice(0, 5);
+  var sorted=Object.entries(skuReturns)
+    .map(function(e){
+      var sku=e[0],d=e[1];
+      var rate=d.grossQty>0?d.returnQty/d.grossQty:0;
+      return{sku:sku,gross:d.grossQty,returns:d.returnQty,rate:rate};
+    })
+    .filter(function(d){return d.returns>0;})
+    .sort(function(a,b){return b.rate-a.rate;})
+    .slice(0,5);
 
-  const body = document.getElementById('returnBody');
-  body.innerHTML = '';
-  sorted.forEach(d => {
-    body.innerHTML += `<tr><td> ${d.sku}</td><td>$ {d.gross}</td><td> ${d.returns}</td><td style="font-weight:600;color:$ {d.rate > 0.1 ? 'var(--danger)' : ''}">${(d.rate * 100).toFixed(1)}%</td></tr>`;
+  var body=document.getElementById('returnBody');
+  body.innerHTML='';
+  sorted.forEach(function(d){
+    var tr=document.createElement('tr');
+    var td1=document.createElement('td');td1.textContent=d.sku;
+    var td2=document.createElement('td');td2.textContent=d.gross;
+    var td3=document.createElement('td');td3.textContent=d.returns;
+    var td4=document.createElement('td');td4.style.fontWeight='600';
+    if(d.rate>0.1)td4.style.color='var(--danger)';
+    td4.textContent=(d.rate*100).toFixed(1)+'%';
+    tr.appendChild(td1);tr.appendChild(td2);tr.appendChild(td3);tr.appendChild(td4);
+    body.appendChild(tr);
   });
 }
 
 // ============ RENDER TAB 3 ============
-function renderTab3() {
-  const results = APP.results;
-  if (!results || results.length === 0) {
-    document.getElementById('tab3NoData').style.display = 'block';
-    return;
-  }
-  document.getElementById('tab3NoData').style.display = 'none';
+function renderTab3(){
+  var results=APP.results;
+  if(!results||!results.length){document.getElementById('tab3NoData').style.display='block';return;}
+  document.getElementById('tab3NoData').style.display='none';
+  var today=getToday();
 
-  // Block A - Pie
-  destroyChart('dashPie');
-  const counts = { safe: 0, low: 0, risk: 0, out: 0 };
-  results.forEach(r => counts[r.status]++);
-  const ctx = document.getElementById('dashPieChart').getContext('2d');
-  APP.charts.dashPie = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: ['充足', '偏低', '风险', '缺货'],
-      datasets: [{ data: [counts.safe, counts.low, counts.risk, counts.out], backgroundColor: ['#27ae60', '#f39c12', '#e74c3c', '#333'] }]
-    },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } } }
-  });
+  var counts={safe:0,low:0,risk:0,out:0};
+  results.forEach(function(r){counts[r.status]++;});
 
-  const avgTurnover = results.filter(r => r.daysOfStock !== null).reduce((s, r) => s + r.daysOfStock, 0) / (results.filter(r => r.daysOfStock !== null).length || 1);
-  document.getElementById('dashAvgTurnover').textContent = Math.round(avgTurnover) + '天';
+  var avgTurnover=0;var turnCnt=0;
+  results.forEach(function(r){if(r.daysOfStock!==null){avgTurnover+=r.daysOfStock;turnCnt++;}});
+  avgTurnover=turnCnt>0?Math.round(avgTurnover/turnCnt):0;
 
-  // Block B
-  document.getElementById('dashUrgent').textContent = counts.risk + counts.out;
-  document.getElementById('dashWatch').textContent = counts.low;
-  const topRisk = results.filter(r => r.status === 'risk' || r.status === 'out').slice(0, 5);
-  document.getElementById('dashTopRisk').innerHTML = topRisk.map(r =>
-    `<div style="padding:4px 0;border-bottom:1px solid var(--border)"> ${r.sku} — <strong>$ {r.daysToStockout !== null ? r.daysToStockout + '天' : '已缺货'}</strong></div>`
-  ).join('');
+  var topRisk=results.filter(function(r){return r.status==='risk'||r.status==='out';}).slice(0,5);
 
-  // Block C
-  const totalInTransit = results.reduce((s, r) => s + r.inTransitTotal, 0);
-  document.getElementById('dashInTransit').textContent = totalInTransit;
-
-  const today = getToday();
-  const d7 = new Date(today); d7.setDate(d7.getDate() + 7);
-  const d14 = new Date(today); d14.setDate(d14.getDate() + 14);
-  let arrival7 = 0, arrival14 = 0;
-  results.forEach(r => {
-    r.inTransitRecords.forEach(ir => {
-      if (ir.estShelving && ir.estShelving <= d7) arrival7 += ir.qty;
-      if (ir.estShelving && ir.estShelving <= d14) arrival14 += ir.qty;
+  var totalInTransit=0;var arrival7=0;var arrival14=0;
+  var d7=addDays(today,7);var d14=addDays(today,14);
+  results.forEach(function(r){
+    totalInTransit+=r.inTransitTotal;
+    r.inTransitRecords.forEach(function(ir){
+      if(ir.estShelving&&ir.estShelving<=d7)arrival7+=ir.qty;
+      if(ir.estShelving&&ir.estShelving<=d14)arrival14+=ir.qty;
     });
   });
-  document.getElementById('dash7d').textContent = arrival7;
-  document.getElementById('dash14d').textContent = arrival14;
 
-  // Block D
-  const cutoff7 = new Date(today); cutoff7.setDate(cutoff7.getDate() - 7);
-  const cutoff14 = new Date(today); cutoff14.setDate(cutoff14.getDate() - 14);
-  let sales7 = 0, salesPrev7 = 0;
-  (APP.allSalesRecords || []).forEach(r => {
-    if (!r.date) return;
-    if (r.date >= cutoff7 && r.date < today) sales7 += r.netQty;
-    if (r.date >= cutoff14 && r.date < cutoff7) salesPrev7 += r.netQty;
+  var cutoff7=addDays(today,-7);var cutoff14=addDays(today,-14);
+  var sales7=0;var salesPrev7=0;
+  (APP.allSalesRecords||[]).forEach(function(r){
+    if(!r.date)return;
+    if(r.date>=cutoff7&&r.date<today)sales7+=r.netQty;
+    if(r.date>=cutoff14&&r.date<cutoff7)salesPrev7+=r.netQty;
   });
-  document.getElementById('dash7dSales').textContent = sales7;
-  const change = salesPrev7 > 0 ? ((sales7 - salesPrev7) / salesPrev7 * 100).toFixed(1) : '-';
-  const changeEl = document.getElementById('dash7dChange');
-  changeEl.textContent = typeof change === 'string' && change !== '-' ? (change > 0 ? '+' : '') + change + '%' : change;
-  changeEl.style.color = change > 0 ? 'var(--success)' : change < 0 ? 'var(--danger)' : '';
+  var changeVal=salesPrev7>0?((sales7-salesPrev7)/salesPrev7*100).toFixed(1):'-';
+  var changeColor=changeVal>0?'var(--success)':changeVal<0?'var(--danger)':'';
+  var changeText=(typeof changeVal==='string'&&changeVal!=='-')?((changeVal>0?'+':'')+changeVal+'%'):String(changeVal);
 
-  // Top 5 sales
-  const skuSales7 = {};
-  (APP.allSalesRecords || []).forEach(r => {
-    if (!r.date || r.date < cutoff7) return;
-    skuSales7[r.sku] = (skuSales7[r.sku] || 0) + r.netQty;
+  var skuSales7={};
+  (APP.allSalesRecords||[]).forEach(function(r){
+    if(!r.date||r.date<cutoff7)return;
+    skuSales7[r.sku]=(skuSales7[r.sku]||0)+r.netQty;
   });
-  const topSales = Object.entries(skuSales7).sort((a, b) => b[1] - a[1]).slice(0, 5);
-  document.getElementById('dashTopSales').innerHTML = topSales.map(([sku, qty]) =>
-    `<div style="padding:4px 0;border-bottom:1px solid var(--border)"> ${sku} — <strong>$ {qty}</strong></div>`
-  ).join('');
+  var topSales=Object.entries(skuSales7).sort(function(a,b){return b[1]-a[1];}).slice(0,5);
 
-  // Block E
-  const forecast = APP.forecastBySku || {};
-  const currentMonth = today.getMonth() + 1;
-  let accSum = 0, accCount = 0, maxDev = 0, maxDevSku = '-';
-  results.forEach(r => {
-    r.skus.forEach(sku => {
-      if (forecast[sku] && forecast[sku][currentMonth]) {
-        const pred = forecast[sku][currentMonth];
-        // Get actual monthly sales for current month
-        const sales = (APP.salesBySku[sku] || [])
-          .filter(s => s.date && s.date.getMonth() + 1 === currentMonth && s.date.getFullYear() === today.getFullYear())
-          .reduce((sum, s) => sum + s.netQty, 0);
-        const acc = pred > 0 ? Math.max(0, 1 - Math.abs(sales - pred) / pred) : 0;
-        accSum += acc; accCount++;
-        const dev = pred > 0 ? Math.abs(sales - pred) / pred : 0;
-        if (dev > maxDev) { maxDev = dev; maxDevSku = sku; }
+  // Forecast accuracy
+  var forecast=APP.forecastBySku||{};
+  var currentMonth=today.getMonth()+1;
+  var accSum=0;var accCnt=0;var maxDev=0;var maxDevSku='-';
+  results.forEach(function(r){
+    r.skus.forEach(function(sku){
+      if(forecast[sku]&&forecast[sku][currentMonth]!==undefined){
+        var pred=forecast[sku][currentMonth];
+        var sales=(APP.salesBySku[sku]||[]).filter(function(s){
+          return s.date&&s.date.getMonth()+1===currentMonth&&s.date.getFullYear()===today.getFullYear();
+        }).reduce(function(sum,s){return sum+s.netQty;},0);
+        var acc=pred>0?Math.max(0,1-Math.abs(sales-pred)/pred):0;
+        accSum+=acc;accCnt++;
+        var dev=pred>0?Math.abs(sales-pred)/pred:0;
+        if(dev>maxDev){maxDev=dev;maxDevSku=sku;}
       }
     });
   });
-  document.getElementById('dashAccuracy').textContent = accCount > 0 ? Math.round(accSum / accCount * 100) + '%' : '-';
-  document.getElementById('dashMaxDeviation').textContent = maxDevSku;
-}
+  var dashAccuracy=accCnt>0?Math.round(accSum/accCnt*100)+'%':'-';
 
-// ============ SORT TABLE ============
-function sortTable(tableId, colIdx) {
-  const key = tableId + '_' + colIdx;
-  APP.sortDirs[key] = !APP.sortDirs[key];
-  const asc = APP.sortDirs[key];
-  const tbody = document.querySelector(`#${tableId} tbody`);
-  const rows = Array.from(tbody.querySelectorAll('tr'));
-  rows.sort((a, b) => {
-    let va = a.cells[colIdx]?.textContent?.trim() || '';
-    let vb = b.cells[colIdx]?.textContent?.trim() || '';
-    const na = parseFloat(va.replace(/[^\d.-]/g, ''));
-    const nb = parseFloat(vb.replace(/[^\d.-]/g, ''));
-    if (!isNaN(na) && !isNaN(nb)) return asc ? na - nb : nb - na;
-    return asc ? va.localeCompare(vb) : vb.localeCompare(va);
+  // Build dashboard with DOM
+  var grid=document.getElementById('dashboardGrid');
+  grid.innerHTML='';
+
+  // Block A
+  var blockA=document.createElement('div');blockA.className='dashboard-block';
+  blockA.innerHTML='<div class="dashboard-block-header">📦 A - 库存健康度</div><div class="dashboard-block-body"><div style="height:200px"><canvas id="dashPieChart"></canvas></div><div class="dashboard-metric"><span>库存周转天数均值</span><strong>'+avgTurnover+'天</strong></div></div>';
+  grid.appendChild(blockA);
+
+  // Block B
+  var blockB=document.createElement('div');blockB.className='dashboard-block';
+  var bBody='<div class="dashboard-block-header">🚨 B - 补货紧急度</div><div class="dashboard-block-body">';
+  bBody+='<div class="dashboard-metric"><span>🔴 15天内断货</span><strong style="color:var(--danger)">'+(counts.risk+counts.out)+'</strong></div>';
+  bBody+='<div class="dashboard-metric"><span>🟡 30天内断货</span><strong style="color:var(--warning)">'+counts.low+'</strong></div>';
+  bBody+='<div style="margin-top:10px;font-size:.85rem;font-weight:600">⚠ 风险最高Top5:</div>';
+  topRisk.forEach(function(r){
+    var daysText=r.daysToStockout!==null?(r.daysToStockout+'天'):'已缺货';
+    bBody+='<div style="padding:4px 0;border-bottom:1px solid var(--border);font-size:.8rem">'+r.sku+' — <strong>'+daysText+'</strong></div>';
   });
-  rows.forEach(r => tbody.appendChild(r));
+  bBody+='</div>';
+  blockB.innerHTML=bBody;
+  grid.appendChild(blockB);
+
+  // Block C
+  var blockC=document.createElement('div');blockC.className='dashboard-block';
+  blockC.innerHTML='<div class="dashboard-block-header">🚢 C - 在途概览</div><div class="dashboard-block-body"><div class="dashboard-metric"><span>在途总数量</span><strong>'+totalInTransit+'</strong></div><div class="dashboard-metric"><span>未来7天到货</span><strong>'+arrival7+'</strong></div><div class="dashboard-metric"><span>未来14天到货</span><strong>'+arrival14+'</strong></div></div>';
+  grid.appendChild(blockC);
+
+  // Block D
+  var blockD=document.createElement('div');blockD.className='dashboard-block';
+  var dBody='<div class="dashboard-block-header">📈 D - 销量趋势</div><div class="dashboard-block-body">';
+  dBody+='<div class="dashboard-metric"><span>近7天总销量</span><strong>'+sales7+'</strong></div>';
+  dBody+='<div class="dashboard-metric"><span>vs 上7天</span><strong style="color:'+changeColor+'">'+changeText+'</strong></div>';
+  dBody+='<div style="margin-top:10px;font-size:.85rem;font-weight:600">畅销Top5:</div>';
+  topSales.forEach(function(e){
+    dBody+='<div style="padding:4px 0;border-bottom:1px solid var(--border);font-size:.8rem">'+e[0]+' — <strong>'+e[1]+'</strong></div>';
+  });
+  dBody+='</div>';
+  blockD.innerHTML=dBody;
+  grid.appendChild(blockD);
+
+  // Block E
+  var blockE=document.createElement('div');blockE.className='dashboard-block';
+  blockE.innerHTML='<div class="dashboard-block-header">🎯 E - 预测 vs 实际</div><div class="dashboard-block-body"><div class="dashboard-metric"><span>当月预测准确率</span><strong>'+dashAccuracy+'</strong></div><div class="dashboard-metric"><span>偏差最大SKU</span><strong>'+maxDevSku+'</strong></div></div>';
+  grid.appendChild(blockE);
+
+  // Dashboard pie chart
+  destroyChart('dashPie');
+  setTimeout(function(){
+    var ctx=document.getElementById('dashPieChart');
+    if(ctx){
+      APP.charts.dashPie=new Chart(ctx.getContext('2d'),{
+        type:'doughnut',
+        data:{labels:['充足','偏低','风险','缺货'],datasets:[{data:[counts.safe,counts.low,counts.risk,counts.out],backgroundColor:['#27ae60','#f39c12','#e74c3c','#333']}]},
+        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10}}}}}
+      });
+    }
+  },100);
 }
 
-// ============ EXPORT CSV ============
-function exportCSV(type) {
-  if (!APP.results || APP.results.length === 0) { alert('无数据可导出'); return; }
+// ============ SORT ============
+function sortTable(tid,col){
+  var key=tid+'_'+col;APP.sortDirs[key]=!APP.sortDirs[key];var asc=APP.sortDirs[key];
+  var tbody=document.querySelector('#'+tid+' tbody');
+  var rows=Array.from(tbody.querySelectorAll('tr'));
+  rows.sort(function(a,b){
+    var va=(a.cells[col]?a.cells[col].textContent:'').trim();
+    var vb=(b.cells[col]?b.cells[col].textContent:'').trim();
+    var na=parseFloat(va.replace(/[^\d.\-]/g,''));
+    var nb=parseFloat(vb.replace(/[^\d.\-]/g,''));
+    if(!isNaN(na)&&!isNaN(nb))return asc?na-nb:nb-na;
+    return asc?va.localeCompare(vb):vb.localeCompare(va);
+  });
+  rows.forEach(function(r){tbody.appendChild(r);});
+}
 
-  let csv = '';
-  if (type === 'analysis') {
-    csv = 'SKU,产品名称,海外仓可用,在库量,Shopify占用,当前可用,30天销量,日均销量,可售天数,在途总量,最近到货日,4周分货量,预计断货日,距断货天数,建议补货量,状态\n';
-    APP.results.forEach(r => {
-      csv += `" ${r.sku}","$ {r.name}", ${r.whAvailable ?? ''},$ {r.whInStock ?? ''}, ${r.shopifyCommitted ?? ''},$ {r.currentAvailable ?? ''}, ${r.total30},$ {r.dailyAvg}, ${r.daysOfStock ?? ''},$ {r.inTransitTotal}, ${r.nextArrivalDate ? formatDate(r.nextArrivalDate) : ''},$ {r.alloc4w}, ${r.stockoutDate ? formatDate(r.stockoutDate) : ''},$ {r.daysToStockout ?? ''}, ${r.suggestedReorder},"$ {r.statusText}"\n`;
+// ============ EXPORT ============
+function exportCSV(type){
+  if(!APP.results||!APP.results.length){alert('无数据可导出');return;}
+  var csv='';
+  if(type==='analysis'){
+    csv='SKU,产品名称,海外仓可用,在库量,Shopify占用,当前可用,30天销量,日均销量,可售天数,在途总量,最近到货日,4周分货量,预计断货日,距断货天数,建议补货量,状态\n';
+    APP.results.forEach(function(r){
+      csv+='"'+r.sku+'","'+(r.name||'')+'",'+(r.whAvailable!=null?r.whAvailable:'')+','+(r.whInStock!=null?r.whInStock:'')+','+(r.shopifyCommitted!=null?r.shopifyCommitted:'')+','+(r.currentAvailable!=null?r.currentAvailable:'')+','+r.total30+','+r.dailyAvg+','+(r.daysOfStock!=null?r.daysOfStock:'')+','+r.inTransitTotal+','+(r.nextArrivalDate?fmtDate(r.nextArrivalDate):'')+','+r.alloc4w+','+(r.stockoutDate?fmtDate(r.stockoutDate):'')+','+(r.daysToStockout!=null?r.daysToStockout:'')+','+r.suggestedReorder+',"'+r.statusText+'"\n';
     });
-  } else if (type === 'alerts') {
-    csv = 'SKU,产品名称,当前可用,日均销量,距断货天数,建议补货量,状态\n';
-    APP.results.filter(r => r.status === 'risk' || r.status === 'out' || r.status === 'low').forEach(r => {
-      csv += `" ${r.sku}","$ {r.name}", ${r.currentAvailable ?? ''},$ {r.dailyAvg}, ${r.daysToStockout ?? ''},$ {r.suggestedReorder},"${r.statusText}"\n`;
+  }else if(type==='alerts'){
+    csv='SKU,产品名称,当前可用,日均销量,距断货天数,建议补货量,状态\n';
+    APP.results.filter(function(r){return r.status==='risk'||r.status==='out'||r.status==='low';}).forEach(function(r){
+      csv+='"'+r.sku+'","'+(r.name||'')+'",'+(r.currentAvailable!=null?r.currentAvailable:'')+','+r.dailyAvg+','+(r.daysToStockout!=null?r.daysToStockout:'')+','+r.suggestedReorder+',"'+r.statusText+'"\n';
     });
-  } else if (type === 'salesCompare') {
-    const rows = document.querySelectorAll('#salesTable tr');
-    rows.forEach(tr => {
-      const cells = Array.from(tr.querySelectorAll('th, td')).map(c => `"${c.textContent}"`);
-      csv += cells.join(',') + '\n';
+  }else if(type==='salesCompare'){
+    var rows=document.querySelectorAll('#salesTable tr');
+    rows.forEach(function(tr){
+      var cells=[];
+      var tds=tr.querySelectorAll('th, td');
+      for(var i=0;i<tds.length;i++)cells.push('"'+tds[i].textContent+'"');
+      csv+=cells.join(',')+'\n';
     });
   }
-
-  const BOM = '\uFEFF';
-  downloadBlob(new Blob([BOM + csv], { type: 'text/csv;charset=utf-8' }), `export_ ${type}_$ {formatDate(new Date())}.csv`);
-}
-
-function downloadBlob(blob, filename) {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(a.href);
+  downloadBlob(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}),'export_'+type+'_'+fmtDate(new Date())+'.csv');
 }
 
 // ============ INIT ============
-async function init() {
-  // Theme
-  const savedTheme = localStorage.getItem('theme') || 'light';
-  document.body.setAttribute('data-theme', savedTheme);
-
-  // Mappings
+async function init(){
+  document.body.setAttribute('data-theme',localStorage.getItem('theme')||'light');
+  initUploadGrid();
   loadMappings();
-
-  // Restore files
-  await restoreFilesFromDB();
+  await restoreFiles();
 }
-
 init();
 </script>
 </body>
 </html>
-
-							<script>
-                            	
-							</script>
-                        </body>
-                        </html>
-                    
