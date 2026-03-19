@@ -792,11 +792,53 @@ function getField(row, ...names) {
   return undefined;
 }
 
+<!-- 在之前提供的完整HTML中，找到 getSkuFromRow 函数，替换为以下版本 -->
+<script>
+// 修复：添加"产品多属性 SKU"作为最高优先级候选
 function getSkuFromRow(row) {
-  const v = getField(row, 'SKU', 'sku', 'Sku', 'SKU编码', '商品SKU', 'VariantSKU', 'Variant SKU');
+  const v = getField(row, 
+    '产品多属性 SKU',      // 销量数据实际字段名
+    '产品多属性SKU',        // 无空格版本
+    'Variant SKU',
+    'VariantSKU', 
+    'SKU', 
+    'sku', 
+    'Sku', 
+    'SKU编码', 
+    '商品SKU',
+    '产品SKU'
+  );
   return v ? String(v).trim() : '';
 }
 
+// 同时修复 getField 函数，增加部分匹配能力
+function getField(row, ...names) {
+  // 1. 精确匹配
+  for (const n of names) {
+    if (row[n] !== undefined && row[n] !== '') return row[n];
+  }
+  // 2. 大小写不敏感匹配
+  const keys = Object.keys(row);
+  for (const n of names) {
+    const nl = n.toLowerCase().trim();
+    for (const k of keys) {
+      if (k.toLowerCase().trim() === nl) return row[k];
+    }
+  }
+  // 3. 包含匹配（关键新增！处理"产品多属性 SKU"等含空格的字段名）
+  for (const n of names) {
+    const nl = n.toLowerCase().replace(/\s+/g, '');
+    for (const k of keys) {
+      const kl = k.toLowerCase().replace(/\s+/g, '');
+      if (kl === nl) return row[k];
+      if (kl.includes(nl) || nl.includes(kl)) {
+        if (Math.abs(kl.length - nl.length) < 5) return row[k];
+      }
+    }
+  }
+  return undefined;
+}
+</script>
 // =====================================================================
 // FILE UPLOAD & STORAGE
 // =====================================================================
