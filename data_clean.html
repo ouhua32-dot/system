@@ -18,14 +18,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>运营数据清洗工具 v3.1</title>
+    <title>运营数据清洗工具 v3.3</title>
     <style>
-        :root {
-            --bg:#0a0e17;--card:#111827;--border:#1e293b;--accent:#3b82f6;
-            --accent2:#8b5cf6;--accent3:#06b6d4;--success:#10b981;
-            --warning:#f59e0b;--danger:#ef4444;--text:#e2e8f0;
-            --text2:#94a3b8;--text3:#64748b;
-        }
+        :root{--bg:#0a0e17;--card:#111827;--border:#1e293b;--accent:#3b82f6;--accent2:#8b5cf6;--accent3:#06b6d4;--success:#10b981;--warning:#f59e0b;--danger:#ef4444;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b}
         *{margin:0;padding:0;box-sizing:border-box}
         body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
         .header{background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(139,92,246,.1));border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(20px)}
@@ -45,8 +40,7 @@
         .nav-item .name{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
         .nav-item .desc{font-size:11px;color:var(--text3);margin-top:2px}
         .nav-item .status{width:7px;height:7px;border-radius:50%;display:inline-block;margin-left:auto}
-        .nav-item .status.on{background:var(--success)}
-        .nav-item .status.off{background:var(--text3)}
+        .nav-item .status.on{background:var(--success)}.nav-item .status.off{background:var(--text3)}
         .main{padding:24px 32px;overflow-y:auto}
         .upload-zone{border:2px dashed var(--border);border-radius:16px;padding:40px;text-align:center;transition:all .3s;background:rgba(255,255,255,.01);margin-bottom:24px}
         .upload-zone:hover,.upload-zone.dragover{border-color:var(--accent);background:rgba(59,130,246,.05)}
@@ -59,8 +53,6 @@
         .btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(59,130,246,.3)}
         .btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
         .btn-success{background:var(--success);color:#fff}
-        .btn-success:hover{opacity:.9}
-        .btn-success:disabled{opacity:.5;cursor:not-allowed}
         .btn-outline{background:transparent;border:1px solid var(--border);color:var(--text)}
         .btn-outline:hover{border-color:var(--accent)}
         .btn-group{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
@@ -68,34 +60,31 @@
         .panel-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.02)}
         .panel-head h3{font-size:14px;font-weight:600}
         .panel-body{padding:16px 18px}
-        .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:16px}
+        .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
         .stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px}
         .stat .label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px}
         .stat .val{font-size:24px;font-weight:700;margin-top:2px}
-        .stat .val.blue{color:var(--accent)}.stat .val.green{color:var(--success)}.stat .val.purple{color:var(--accent2)}.stat .val.cyan{color:var(--accent3)}.stat .val.yellow{color:var(--warning)}
+        .stat .val.blue{color:var(--accent)}.stat .val.green{color:var(--success)}.stat .val.purple{color:var(--accent2)}.stat .val.cyan{color:var(--accent3)}
         .tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:8px}
         table.dt{width:100%;border-collapse:collapse;font-size:12px}
         table.dt th{padding:9px 10px;background:rgba(59,130,246,.08);text-align:left;font-weight:600;white-space:nowrap;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:1}
         table.dt td{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.03);white-space:nowrap;max-width:220px;overflow:hidden;text-overflow:ellipsis}
         table.dt tr:hover td{background:rgba(255,255,255,.03)}
         .sku{font-family:'SF Mono',monospace;color:var(--accent3);font-size:12px}
-        .chip{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px}
+        .chip{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;margin:1px}
         .chip-blue{background:rgba(59,130,246,.12);color:var(--accent)}
         .chip-green{background:rgba(16,185,129,.12);color:var(--success)}
         .chip-yellow{background:rgba(245,158,11,.12);color:var(--warning)}
         .chip-red{background:rgba(239,68,68,.12);color:var(--danger)}
         .chip-purple{background:rgba(139,92,246,.12);color:var(--accent2)}
-        .chip-cyan{background:rgba(6,182,212,.12);color:var(--accent3)}
-        .log-box{background:#0d1117;border:1px solid var(--border);border-radius:8px;padding:14px;max-height:260px;overflow-y:auto;font-family:'SF Mono',monospace;font-size:11px;line-height:1.8}
-        .log-box .t{color:var(--text3)}.log-box .info{color:var(--accent3)}.log-box .ok{color:var(--success)}.log-box .warn{color:var(--warning)}.log-box .err{color:var(--danger)}
         .empty{text-align:center;padding:50px 20px;color:var(--text3)}
         .empty .icon{font-size:56px;margin-bottom:12px;opacity:.3}
         .section-title{font-size:17px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-        .toast{position:fixed;top:80px;right:32px;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;animation:fadeIn .3s;display:none}
-        .toast.show{display:block}
-        .toast-success{background:rgba(16,185,129,.9);color:#fff}
-        .toast-error{background:rgba(239,68,68,.9);color:#fff}
-        .toast-info{background:rgba(59,130,246,.9);color:#fff}
+        .toast{position:fixed;top:80px;right:32px;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;display:none;max-width:400px}
+        .toast.show{display:block;animation:fadeIn .3s}
+        .toast-success{background:rgba(16,185,129,.95);color:#fff}
+        .toast-error{background:rgba(239,68,68,.95);color:#fff}
+        .toast-info{background:rgba(59,130,246,.95);color:#fff}
         @keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
         ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
         @media(max-width:860px){.container{grid-template-columns:1fr}.sidebar{display:none}}
@@ -104,7 +93,7 @@
 <body>
 <div id="toast" class="toast"></div>
 <div class="header">
-    <h1>📊 运营数据清洗工具 v3.1</h1>
+    <h1>📊 运营数据清洗工具 v3.3</h1>
     <div class="header-badges">
         <span class="badge badge-blue" id="hFiles">0 文件</span>
         <span class="badge badge-green" id="hRows">0 行</span>
@@ -116,34 +105,39 @@
         <div class="sidebar-title">数据源</div>
         <div id="navSources"></div>
         <div class="sidebar-title">工具</div>
-        <div class="nav-item" onclick="showTab('rules')"><div class="name">⚙️ 清洗规则</div><div class="desc">6个数据源字段规则</div></div>
-        <div class="nav-item" onclick="showTab('skuaudit')"><div class="name">🔍 SKU归一化审计</div><div class="desc">JP/JP1/JP2 → JP</div></div>
+        <div class="nav-item" onclick="showTab('rules')"><div class="name">⚙️ 清洗规则</div><div class="desc">6个数据源清洗配置</div></div>
+        <div class="nav-item" onclick="showTab('skuaudit')"><div class="name">🔍 SKU归一化审计</div><div class="desc">查看所有SKU转换记录</div></div>
         <div class="sidebar-title">输出</div>
-        <div class="nav-item" onclick="showTab('export')"><div class="name">📥 批量导出</div><div class="desc">下载所有清洗结果</div></div>
+        <div class="nav-item" onclick="showTab('export')"><div class="name">📥 批量导出</div><div class="desc">下载清洗后的数据</div></div>
     </div>
     <div class="main">
         <div class="upload-zone" id="uploadZone">
             <div class="icon">📁</div>
             <h3>拖放文件或点击上传</h3>
-            <p>支持 .xlsx .xls .csv — 可同时上传多个文件</p>
+            <p>支持 .xlsx .xls .csv — 可同时上传多个文件，完整读取所有数据</p>
             <input type="file" id="fileInput" multiple accept=".xlsx,.xls,.csv">
             <br><br>
             <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">选择文件</button>
             <button class="btn btn-outline" onclick="loadDemo()" style="margin-left:8px">加载示例数据</button>
         </div>
         <div id="tabContent">
-            <div class="empty"><div class="icon">📊</div><h3>上传数据文件开始清洗</h3><p style="margin-top:6px">或点击"加载示例数据"查看效果</p></div>
+            <div class="empty"><div class="icon">📊</div><h3>上传数据文件开始清洗</h3><p style="margin-top:6px">所有数据源均做SKU归一化+合并</p></div>
         </div>
     </div>
 </div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-/* ============================================================
-   v3.1 — 修复导出功能：严格空行过滤 + 错误捕获 + 进度提示
-   ============================================================ */
+/*  v3.3 — 所有数据源SKU归一化+按维度合并
+    规则：
+    1. 待发货：按SKU合并CommittedQty
+    2. 仓库库存：按SKU合并AvailableQty
+    3. 销量数据：按SKU+日期合并NetUnitsSold（保留每天明细）
+    4. 头程明细：逐行保留，只做SKU归一化（每条物流记录独立）
+    5. 待分货：宽→长后按SKU+周合并AllocationQty
+    6. 销量预测：宽→长后按SKU+周合并ForecastQty
+*/
 
-const SOURCE_DETECT = {
+const SOURCE_DETECT={
     '待发货':{kw:['待发货'],cols:['Committed (not editable)']},
     '待分货':{kw:['待分货'],cols:[]},
     '仓库库存':{kw:['逻辑仓','库存'],cols:['可用量']},
@@ -152,7 +146,7 @@ const SOURCE_DETECT = {
     '销量预测':{kw:['销量预测','预测'],cols:[]}
 };
 
-const SKU_ALIAS = {
+const SKU_ALIAS={
     'PF002-A-JP':['PF002-A-JP2'],'PF002-A+SA005-JP':['PF002-A+SA005-JP2'],
     'PF002-M+SA005-JP':['PF002-M+SA005-JP2'],'PF003-D+SA007-JP':['PF003-D+SA007-JP1'],
     'PF003-D-JP':['PF003-D-JP1'],'PF003-S+SA007-JP':['PF003-S+SA007-JP1'],
@@ -168,57 +162,40 @@ const SKU_ALIAS = {
 
 let dataSources={},cleanedData={},logs=[],skuLog=[],activeTab='';
 
-// ---- Toast 提示 ----
-function showToast(msg, type='info', duration=3000) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = `toast show toast-${type}`;
-    clearTimeout(t._timer);
-    t._timer = setTimeout(()=>{ t.className='toast'; }, duration);
-}
+function showToast(msg,type='info',dur=3000){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast show toast-${type}`;clearTimeout(t._t);t._t=setTimeout(()=>{t.className='toast'},dur)}
 
-// ---- SKU 归一化 ----
 function normSKU(sku,src){
-    if(!sku) return '';
-    let s=String(sku).trim().toUpperCase();
-    if(!s||s==='UNDEFINED'||s==='NAN'||s==='NULL') return '';
+    if(!sku)return '';
+    let s=String(sku).trim();if(!s)return '';
+    let u=s.toUpperCase();
     for(const[std,aliases]of Object.entries(SKU_ALIAS)){
-        if(aliases.map(a=>a.toUpperCase()).includes(s)){
-            skuLog.push({from:sku,to:std.toUpperCase(),method:'精确映射',src});
+        if(aliases.map(a=>a.toUpperCase()).includes(u)){
+            skuLog.push({from:s,to:std.toUpperCase(),method:'精确映射',src});
             return std.toUpperCase();
         }
-        if(s===std.toUpperCase()) return s;
+        if(u===std.toUpperCase())return u;
     }
-    const re=/-JP(\d+)$/i;
-    if(re.test(s)){
-        const n=s.replace(re,'-JP');
-        skuLog.push({from:sku,to:n,method:'正则兜底',src});
+    if(/-JP\d+$/i.test(u)){
+        const n=u.replace(/-JP\d+$/i,'-JP');
+        skuLog.push({from:s,to:n,method:'正则兜底',src});
         return n;
     }
-    return s;
+    return u;
 }
 
-// ---- 工具函数 ----
 function toNum(v){if(v==null||v==='')return 0;if(typeof v==='number')return v;return Number(String(v).replace(/[¥$€,，\s]/g,''))||0}
 function toDate(v){
     if(!v||v==='')return '';
     let s=String(v).trim();
     if(s.includes('1901'))s=s.replace(/1901/g,'2026');
+    s=s.replace(/\s+\d{2}:\d{2}:\d{2}.*$/,'');
     if(/^\d{5}$/.test(s)){const d=new Date((Number(s)-25569)*864e5);return fmtD(d)}
-    // 处理带时间戳的日期 "2026-03-16 00:00:00"
-    s = s.replace(/\s+\d{2}:\d{2}:\d{2}.*$/,'');
     const d=new Date(s);
     return(!isNaN(d)&&d.getFullYear()>1950)?fmtD(d):s;
 }
 function fmtD(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function addLog(msg,lv='info'){logs.push({t:new Date().toLocaleTimeString(),msg,lv})}
 
-// ---- 严格判断空行 ----
-function isEmptyRow(row){
-    return Object.values(row).every(v => v===''||v===null||v===undefined);
-}
-
-// ---- 文件读取 ----
 const uz=document.getElementById('uploadZone'),fi=document.getElementById('fileInput');
 uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('dragover')});
 uz.addEventListener('dragleave',()=>uz.classList.remove('dragover'));
@@ -228,15 +205,17 @@ fi.addEventListener('change',e=>handleFiles(e.target.files));
 async function handleFiles(files){
     for(const f of files){
         try{
-            addLog(`📂 读取: ${f.name}`);
+            showToast(`📂 读取 ${f.name}...`,'info');
+            addLog(`📂 读取:  ${f.name} ($ {(f.size/1024).toFixed(1)}KB)`);
             const d=await readFile(f);
             const type=detectType(f.name,d.headers);
             dataSources[f.name]={name:f.name,type,headers:d.headers,rows:d.rows};
-            addLog(`✅ ${f.name} → [${type}] ${d.rows.length}行`,'ok');
+            addLog(`✅  ${f.name} → [$ {type}] ${d.rows.length}行`,'ok');
             cleanSource(f.name);
-        }catch(e){addLog(`❌ ${f.name}: ${e.message}`,'err');showToast(`读取失败: ${f.name}`,'error')}
+        }catch(e){addLog(`❌  ${f.name}: $ {e.message}`,'err');showToast(`❌ ${f.name}`,'error')}
     }
     refreshUI();
+    showToast(`✅ ${Object.keys(dataSources).length}个文件处理完成`,'success');
 }
 
 function readFile(file){
@@ -246,15 +225,11 @@ function readFile(file){
             try{
                 const ext=file.name.split('.').pop().toLowerCase();
                 const wb=ext==='csv'?XLSX.read(e.target.result,{type:'binary',codepage:65001}):XLSX.read(e.target.result,{type:'array'});
-                let rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
-                // ★ 读取时就过滤完全空行
-                const before = rows.length;
-                rows = rows.filter(r => !isEmptyRow(r));
-                const removed = before - rows.length;
-                if(removed > 0) addLog(`🗑️ ${file.name}: 读取时移除 ${removed} 空行`, 'warn');
+                const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:'',raw:false});
                 res({headers:rows.length?Object.keys(rows[0]):[],rows});
             }catch(e){rej(e)}
         };
+        r.onerror=()=>rej(new Error('读取失败'));
         file.name.endsWith('.csv')?r.readAsBinaryString(file):r.readAsArrayBuffer(file);
     });
 }
@@ -268,157 +243,188 @@ function detectType(name,headers){
 }
 
 /* ============================================================
-   核心清洗：每个数据源只提取用户定义的核心字段
+   核心清洗 — 所有数据源SKU归一化+按维度合并
    ============================================================ */
 function cleanSource(fn){
-    const src=dataSources[fn];
-    if(!src)return;
+    const src=dataSources[fn];if(!src)return;
     let result=[];
     const t=src.type;
+    const inputRows=src.rows.length;
 
     try{
         switch(t){
+            /* 1. 待发货：按SKU合并CommittedQty */
             case '待发货':{
                 const map={};
                 src.rows.forEach(r=>{
                     const sku=normSKU(r['SKU'],fn);
                     if(!sku)return;
-                    const qty=toNum(r['Committed (not editable)']);
-                    map[sku]=(map[sku]||0)+qty;
+                    map[sku]=(map[sku]||0)+toNum(r['Committed (not editable)']);
                 });
                 result=Object.entries(map).map(([sku,qty])=>({SKU:sku,CommittedQty:qty}));
-                addLog(`🛒 ${fn}: ${result.length} SKU待发货汇总`,'ok');
+                addLog(`🛒  ${fn}: $ {inputRows}行 → ${result.length} SKU(按SKU合并)`,'ok');
                 break;
             }
-            case '待分货':{
-                const skuCol=src.headers.find(h=>h.toUpperCase()==='SKU')||src.headers[0];
-                const weekCols=src.headers.filter(h=>h!==skuCol&&(/\d{4}/.test(h)||/^\d{5}$/.test(h)));
-                src.rows.forEach(r=>{
-                    const sku=normSKU(r[skuCol],fn);
-                    if(!sku)return;
-                    weekCols.forEach(w=>{
-                        const qty=toNum(r[w]);
-                        result.push({SKU:sku,WeekStart:toDate(w),AllocationQty:qty});
-                    });
-                });
-                addLog(`📦 ${fn}: ${result.length} 行分货数据`,'ok');
-                break;
-            }
+
+            /* 2. 仓库库存：按SKU合并AvailableQty */
             case '仓库库存':{
                 const map={};
                 src.rows.forEach(r=>{
                     const sku=normSKU(r['SKU'],fn);
                     if(!sku)return;
-                    const qty=toNum(r['可用量']);
-                    map[sku]=(map[sku]||0)+qty;
+                    map[sku]=(map[sku]||0)+toNum(r['可用量']);
                 });
                 result=Object.entries(map).map(([sku,qty])=>({SKU:sku,AvailableQty:qty}));
-                addLog(`🏭 ${fn}: ${result.length} SKU库存汇总`,'ok');
+                addLog(`🏭  ${fn}: $ {inputRows}行 → ${result.length} SKU(按SKU合并)`,'ok');
                 break;
             }
+
+            /* 3. 销量数据：按SKU+日期合并NetUnitsSold，保留每天明细 */
+            case '销量数据':{
+                const map={};
+                src.rows.forEach(r=>{
+                    const sku=normSKU(r['SKU'],fn);
+                    const date=toDate(r['天']);
+                    if(!sku||!date)return; // 跳过空行（SKU或日期为空）
+                    const key=sku+'|'+date;
+                    if(!map[key]) map[key]={SKU:sku,Date:date,NetUnitsSold:0};
+                    map[key].NetUnitsSold+=toNum(r['净售出商品数']);
+                });
+                result=Object.values(map).sort((a,b)=>{
+                    if(a.Date!==b.Date)return a.Date.localeCompare(b.Date);
+                    return a.SKU.localeCompare(b.SKU);
+                });
+                addLog(`📈  ${fn}: $ {inputRows}行 → ${result.length}行(按SKU+日期合并，空行已跳过)`,'ok');
+                break;
+            }
+
+            /* 4. 头程明细：逐行保留，只做SKU归一化 */
             case '头程明细':{
                 src.rows.forEach(r=>{
                     const sku=normSKU(r['SKU'],fn);
                     if(!sku)return;
                     result.push({
-                        ShipmentID:r['发货单号']||'',
+                        ShipmentID:String(r['发货单号']||''),
                         PickupDate:toDate(r['提货日期']),
                         ETA:toDate(r['到港时间ETA']),
-                        CargoType:r['货物类型']||'',
+                        CargoType:String(r['货物类型']||''),
                         SKU:sku,
                         Quantity:toNum(r['数量']),
                         ShelvingDate:toDate(r['上架日期']),
                         DeliveryDate:toDate(r['妥投日期'])
                     });
                 });
-                addLog(`🚢 ${fn}: ${result.length} 条头程记录`,'ok');
+                addLog(`🚢  ${fn}: $ {inputRows}行 → ${result.length}行(逐行保留，SKU已归一化)`,'ok');
                 break;
             }
-            case '销量数据':{
-                src.rows.forEach(r=>{
-                    const sku=normSKU(r['SKU'],fn);
-                    if(!sku)return;
-                    const date=toDate(r['天']);
-                    const qty=toNum(r['净售出商品数']);
-                    if(!date)return;
-                    result.push({SKU:sku,Date:date,NetUnitsSold:qty});
-                });
-                addLog(`📈 ${fn}: ${result.length} 条有效销量(空行已过滤)`,'ok');
-                break;
-            }
-            case '销量预测':{
+
+            /* 5. 待分货：宽→长后按SKU+周合并AllocationQty */
+            case '待分货':{
                 const skuCol=src.headers.find(h=>h.toUpperCase()==='SKU')||src.headers[0];
-                const weekCols=src.headers.filter(h=>/^W\d+$/i.test(h));
-                const dateCols=weekCols.length?[]:src.headers.filter(h=>h!==skuCol&&(/\d{4}/.test(h)||/^\d{5}$/.test(h)));
-                const cols=weekCols.length?weekCols:dateCols;
+                const weekCols=src.headers.filter(h=>h!==skuCol);
+                const map={};
                 src.rows.forEach(r=>{
                     const sku=normSKU(r[skuCol],fn);
                     if(!sku)return;
-                    cols.forEach(w=>{
-                        const qty=toNum(r[w]);
-                        result.push({SKU:sku,Week:w,ForecastQty:qty});
+                    weekCols.forEach(w=>{
+                        const week=toDate(w)||w;
+                        const key=sku+'|'+week;
+                        if(!map[key])map[key]={SKU:sku,WeekStart:week,AllocationQty:0};
+                        map[key].AllocationQty+=toNum(r[w]);
                     });
                 });
-                addLog(`🔮 ${fn}: ${result.length} 行预测数据`,'ok');
+                result=Object.values(map).sort((a,b)=>{
+                    if(a.WeekStart!==b.WeekStart)return a.WeekStart.localeCompare(b.WeekStart);
+                    return a.SKU.localeCompare(b.SKU);
+                });
+                addLog(`📦  ${fn}: $ {inputRows} SKU ×  ${weekCols.length}周 → $ {result.length}行(按SKU+周合并)`,'ok');
                 break;
             }
+
+            /* 6. 销量预测：宽→长后按SKU+周合并ForecastQty */
+            case '销量预测':{
+                const skuCol=src.headers.find(h=>h.toUpperCase()==='SKU')||src.headers[0];
+                const dataCols=src.headers.filter(h=>h!==skuCol);
+                const map={};
+                src.rows.forEach(r=>{
+                    const sku=normSKU(r[skuCol],fn);
+                    if(!sku)return;
+                    dataCols.forEach(w=>{
+                        const week=toDate(w)||w;
+                        const key=sku+'|'+week;
+                        if(!map[key])map[key]={SKU:sku,Week:week,ForecastQty:0};
+                        map[key].ForecastQty+=toNum(r[w]);
+                    });
+                });
+                result=Object.values(map).sort((a,b)=>{
+                    if(a.Week!==b.Week)return String(a.Week).localeCompare(String(b.Week));
+                    return a.SKU.localeCompare(b.SKU);
+                });
+                addLog(`🔮  ${fn}: $ {inputRows} SKU ×  ${dataCols.length}周 → $ {result.length}行(按SKU+周合并)`,'ok');
+                break;
+            }
+
             default:
-                addLog(`⚠️ ${fn}: 未识别类型`,'warn');
-                result=src.rows;
+                result=src.rows.map(r=>{
+                    const nr={};
+                    for(const k of Object.keys(r)){
+                        if(k.toUpperCase()==='SKU')nr.SKU=normSKU(r[k],fn);
+                        else nr[k]=r[k];
+                    }
+                    return nr;
+                });
+                addLog(`⚠️ ${fn}: 未识别类型，仅做SKU归一化`,'warn');
         }
     }catch(err){
-        addLog(`❌ 清洗 ${fn} 出错: ${err.message}`,'err');
-        showToast(`清洗出错: ${fn}`,'error');
-        result=[];
+        addLog(`❌ 清洗  ${fn} 出错: $ {err.message}`,'err');
+        showToast(`❌ 清洗出错: ${fn}`,'error');
+        result=src.rows;
     }
 
     const fields=result.length?Object.keys(result[0]):[];
-    cleanedData[fn]={type:t,rows:result,fields};
-    addLog(`✅ ${fn}: 输出 ${result.length} 行 × ${fields.length} 字段`,'ok');
+    cleanedData[fn]={type:t,rows:result,fields,inputRows};
+    addLog(`✅  ${fn}: 最终输出 $ {result.length} 行 × ${fields.length} 字段`,'ok');
 }
 
-/* ============================================================
-   UI
-   ============================================================ */
+/* ============================================================ UI ============================================================ */
 function refreshUI(){
-    const nav=document.getElementById('navSources');
-    nav.innerHTML='';
+    const nav=document.getElementById('navSources');nav.innerHTML='';
     const icons={'待发货':'🛒','待分货':'📦','仓库库存':'🏭','头程明细':'🚢','销量数据':'📈','销量预测':'🔮'};
     for(const[fn,s]of Object.entries(dataSources)){
         const c=cleanedData[fn];
         const div=document.createElement('div');
         div.className=`nav-item ${activeTab===fn?'active':''}`;
         div.onclick=()=>showSource(fn);
-        div.innerHTML=`<div class="name">${icons[s.type]||'📄'} ${s.type} <span class="status ${c?'on':'off'}"></span></div><div class="desc">${fn} · ${c?c.rows.length+'行':'待处理'}</div>`;
+        div.innerHTML=`<div class="name"> ${icons[s.type]||'📄'} $ {s.type} <span class="status  ${c?'on':'off'}"></span></div><div class="desc">$ {fn}</div><div class="desc"> ${s.rows.length}行→$ {c?c.rows.length+'行':'-'}</div>`;
         nav.appendChild(div);
     }
     const nf=Object.keys(dataSources).length;
     const nr=Object.values(cleanedData).reduce((s,d)=>s+d.rows.length,0);
-    const skus=new Set();
-    Object.values(cleanedData).forEach(d=>d.rows.forEach(r=>{if(r.SKU)skus.add(r.SKU)}));
+    const skus=new Set();Object.values(cleanedData).forEach(d=>d.rows.forEach(r=>{if(r.SKU)skus.add(r.SKU)}));
     document.getElementById('hFiles').textContent=nf+' 文件';
-    document.getElementById('hRows').textContent=nr+' 行';
+    document.getElementById('hRows').textContent=nr.toLocaleString()+' 行';
     document.getElementById('hSKUs').textContent=skus.size+' SKU';
 }
 
 function showSource(fn){
     activeTab=fn;refreshUI();
-    const s=dataSources[fn],c=cleanedData[fn];
-    if(!s)return;
+    const s=dataSources[fn],c=cleanedData[fn];if(!s)return;
     const skus=c?new Set(c.rows.map(r=>r.SKU).filter(Boolean)).size:0;
+    const mergeDesc={'待发货':'按SKU合并','仓库库存':'按SKU合并','销量数据':'按SKU+日期合并','头程明细':'逐行保留(SKU归一化)','待分货':'按SKU+周合并','销量预测':'按SKU+周合并'}[s.type]||'—';
     document.getElementById('tabContent').innerHTML=`
-        <div class="section-title">${{'待发货':'🛒','待分货':'📦','仓库库存':'🏭','头程明细':'🚢','销量数据':'📈','销量预测':'🔮'}[s.type]||'📄'} ${s.type} <span class="badge badge-blue">${fn}</span></div>
+        <div class="section-title"> ${{'待发货':'🛒','待分货':'📦','仓库库存':'🏭','头程明细':'🚢','销量数据':'📈','销量预测':'🔮'}[s.type]||'📄'} $ {s.type} <span class="badge badge-blue">${fn}</span></div>
         <div class="stats-row">
-            <div class="stat"><div class="label">原始行数</div><div class="val blue">${s.rows.length}</div></div>
-            <div class="stat"><div class="label">清洗后</div><div class="val green">${c?c.rows.length:'-'}</div></div>
-            <div class="stat"><div class="label">输出字段</div><div class="val purple">${c?c.fields.length:'-'}</div></div>
-            <div class="stat"><div class="label">SKU数</div><div class="val cyan">${skus}</div></div>
+            <div class="stat"><div class="label">输入行数</div><div class="val blue">${s.rows.length.toLocaleString()}</div></div>
+            <div class="stat"><div class="label">输出行数</div><div class="val green">${c?c.rows.length.toLocaleString():'-'}</div></div>
+            <div class="stat"><div class="label">合并方式</div><div class="val" style="font-size:13px;color:var(--accent3)">${mergeDesc}</div></div>
+            <div class="stat"><div class="label">SKU数</div><div class="val purple">${skus}</div></div>
         </div>
-        <div class="panel"><div class="panel-head"><h3>📋 输出核心字段</h3></div><div class="panel-body">${c?c.fields.map(f=>`<span class="chip chip-blue" style="margin:2px">${f}</span>`).join(''):'无'}</div></div>
+        <div class="panel"><div class="panel-head"><h3>📋 输出字段</h3></div><div class="panel-body"> ${c?c.fields.map(f=>`<span class="chip chip-blue">$ {f}</span>`).join(' '):'无'}</div></div>
         <div class="btn-group">
-            <button class="btn btn-success" onclick="exportOne('${fn}')">📥 下载清洗结果</button>
+            <button class="btn btn-success" onclick="exportOne('${fn}')">📥 下载Excel</button>
+            <button class="btn btn-outline" onclick="exportOneCSV('${fn}')">📥 下载CSV</button>
         </div>
-        <div class="panel"><div class="panel-head"><h3>数据预览 (前50行)</h3></div><div class="panel-body">${c?renderTbl(c.rows.slice(0,50),c.fields):'<div class="empty">无数据</div>'}</div></div>`;
+        <div class="panel"><div class="panel-head"><h3>数据预览 (前100行)</h3><span style="font-size:11px;color:var(--text3)">共 ${c?c.rows.length.toLocaleString():'0'}行</span></div><div class="panel-body">$ {c?renderTbl(c.rows.slice(0,100),c.fields):'无数据'}</div></div>`;
 }
 
 function showTab(tab){
@@ -432,244 +438,187 @@ function showTab(tab){
 function renderTbl(rows,fields){
     if(!rows.length)return'<div class="empty">无数据</div>';
     const fs=fields||Object.keys(rows[0]);
-    let h='<div class="tbl-wrap" style="max-height:420px;overflow:auto"><table class="dt"><thead><tr><th>#</th>';
-    fs.forEach(f=>{h+=`<th>${f}</th>`});
-    h+='</tr></thead><tbody>';
-    rows.forEach((r,i)=>{
-        h+=`<tr><td style="color:var(--text3)">${i+1}</td>`;
-        fs.forEach(f=>{let v=r[f]!=null?r[f]:'';if(f==='SKU')v=`<span class="sku">${v}</span>`;h+=`<td>${v}</td>`});
-        h+='</tr>';
-    });
-    h+='</tbody></table></div>';
-    h+=`<p style="margin-top:6px;font-size:11px;color:var(--text3)">前${Math.min(rows.length,50)}行 / 共${rows.length}行</p>`;
-    return h;
+    let h='<div class="tbl-wrap" style="max-height:500px;overflow:auto"><table class="dt"><thead><tr><th>#</th>';
+    fs.forEach(f=>{h+=`<th>${f}</th>`});h+='</tr></thead><tbody>';
+    rows.forEach((r,i)=>{h+=`<tr><td style="color:var(--text3)"> ${i+1}</td>`;fs.forEach(f=>{let v=r[f]!=null?r[f]:'';if(f==='SKU'&&v)v=`<span class="sku">$ {v}</span>`;h+=`<td>${v}</td>`});h+='</tr>'});
+    h+='</tbody></table></div>';return h;
 }
 
 function renderRules(el){
     const rules=[
-        {icon:'🛒',name:'待发货',fields:['SKU','Committed (not editable)'],output:'SKU, CommittedQty（按SKU汇总）',note:'其他字段不取值'},
-        {icon:'📦',name:'待分货',fields:['SKU','各日期周列'],output:'SKU, WeekStart, AllocationQty（宽→长表）',note:'日期列代表一周起始时间'},
-        {icon:'🏭',name:'仓库库存',fields:['SKU','可用量'],output:'SKU, AvailableQty（按SKU汇总）',note:'用于计算海外仓在库量'},
-        {icon:'🚢',name:'头程明细',fields:['发货单号','提货日期','到港时间ETA','货物类型','SKU','数量','上架日期','妥投日期'],output:'7个核心字段',note:'用以记录在途数据'},
-        {icon:'📈',name:'销量数据',fields:['SKU','天','净售出商品数'],output:'SKU, Date, NetUnitsSold',note:'用于计算日均销量，严格过滤空行'},
-        {icon:'🔮',name:'销量预测',fields:['SKU','各周列(W11~W35)'],output:'SKU, Week, ForecastQty（宽→长表）',note:'1901年日期自动修正为2026'}
+        {icon:'🛒',name:'待发货',input:'SKU, Committed',merge:'按SKU合并',output:'SKU, CommittedQty',note:'同SKU的Committed数量求和'},
+        {icon:'🏭',name:'仓库库存',input:'SKU, 可用量',merge:'按SKU合并',output:'SKU, AvailableQty',note:'如JP+JP1归一化后可用量求和(26+138=164)'},
+        {icon:'📈',name:'销量数据',input:'SKU, 天, 净售出商品数',merge:'按SKU+日期合并',output:'SKU, Date, NetUnitsSold',note:'同SKU同天的销量求和，保留每天明细'},
+        {icon:'🚢',name:'头程明细',input:'发货单号等8字段',merge:'不合并（逐行保留）',output:'8个核心字段',note:'每条物流记录独立，只做SKU归一化'},
+        {icon:'📦',name:'待分货',input:'SKU, 各周列',merge:'按SKU+周合并',output:'SKU, WeekStart, AllocationQty',note:'宽→长后同SKU同周的分货量求和'},
+        {icon:'🔮',name:'销量预测',input:'SKU, 各周列',merge:'按SKU+周合并',output:'SKU, Week, ForecastQty',note:'宽→长后同SKU同周的预测量求和，1901→2026'}
     ];
-    let h='<div class="section-title">⚙️ 清洗规则 v3.1</div>';
+    let h='<div class="section-title">⚙️ 清洗规则 v3.3</div>';
+    h+='<div class="panel"><div class="panel-head"><h3>🔑 核心原则</h3></div><div class="panel-body"><p style="font-size:13px;color:var(--success);font-weight:600">所有数据源均做SKU归一化，按业务维度合并数值（SKU / SKU+日期 / SKU+周）</p></div></div>';
     rules.forEach(r=>{
-        h+=`<div class="panel"><div class="panel-head"><h3>${r.icon} ${r.name}</h3></div><div class="panel-body">
-            <p style="font-size:12px;color:var(--text2);margin-bottom:8px"><strong>核心字段：</strong>${r.fields.map(f=>`<span class="chip chip-blue" style="margin:1px">${f}</span>`).join(' ')}</p>
-            <p style="font-size:12px;color:var(--text2);margin-bottom:8px"><strong>输出格式：</strong>${r.output}</p>
-            <p style="font-size:11px;color:var(--text3)">💡 ${r.note}</p></div></div>`;
+        h+=`<div class="panel"><div class="panel-head"><h3> ${r.icon} $ {r.name}</h3><span class="chip chip-purple">${r.merge}</span></div><div class="panel-body">
+            <p style="font-size:12px;color:var(--text2);margin-bottom:6px"><strong>提取：</strong>${r.input}</p>
+            <p style="font-size:12px;color:var(--text2);margin-bottom:6px"><strong>输出：</strong>${r.output}</p>
+            <p style="font-size:11px;color:var(--accent3)">💡 ${r.note}</p></div></div>`;
     });
-    h+=`<div class="panel"><div class="panel-head"><h3>🔗 SKU 归一化规则</h3></div><div class="panel-body">
-        <p style="font-size:12px;color:var(--text2);margin-bottom:8px">1. <strong>精确映射</strong>：${Object.keys(SKU_ALIAS).length} 条规则</p>
-        <p style="font-size:12px;color:var(--text2);margin-bottom:8px">2. <strong>正则兜底</strong>：<code style="color:var(--accent2)">/-JP\\d+$/</code> → <code style="color:var(--success)">-JP</code></p>
-        <p style="font-size:11px;color:var(--text3)">💡 统一以 -JP 为标准，自动覆盖未来新变体</p></div></div>`;
+    h+=`<div class="panel"><div class="panel-head"><h3>🔗 SKU归一化规则</h3></div><div class="panel-body">
+        <p style="font-size:12px;color:var(--text2);margin-bottom:6px">精确映射  ${Object.keys(SKU_ALIAS).length} 条 + 正则兜底 <code style="color:var(--accent2)">/-JP\\d+$ /</code> → <code style="color:var(--success)">-JP</code></p>
+        <table class="dt" style="margin-top:10px"><thead><tr><th>标准SKU</th><th>变体</th></tr></thead><tbody>
+         ${Object.entries(SKU_ALIAS).map(([std,als])=>`<tr><td><span class="sku">$ {std}</span></td><td> ${als.map(a=>`<span class="chip chip-yellow">$ {a}</span>`).join(' ')}</td></tr>`).join('')}
+        </tbody></table></div></div>`;
     el.innerHTML=h;
 }
 
 function renderAudit(el){
-    let h=`<div class="section-title">🔍 SKU 归一化审计 <span class="badge badge-green">${skuLog.length} 条转换</span></div>`;
-    if(!skuLog.length){h+='<div class="empty"><div class="icon">📋</div><h3>暂无归一化记录</h3></div>';el.innerHTML=h;return}
+    let h=`<div class="section-title">🔍 SKU归一化审计 <span class="badge badge-green">${skuLog.length} 条</span></div>`;
+    if(!skuLog.length){h+='<div class="empty"><div class="icon">📋</div><h3>暂无记录</h3></div>';el.innerHTML=h;return}
     const agg={};
     skuLog.forEach(l=>{const k=l.from+'→'+l.to;if(!agg[k])agg[k]={...l,count:0,sources:new Set()};agg[k].count++;agg[k].sources.add(l.src)});
     const list=Object.values(agg).sort((a,b)=>b.count-a.count);
-    h+='<div class="tbl-wrap"><table class="dt"><thead><tr><th>原始SKU</th><th></th><th>归一化后</th><th>方式</th><th>次数</th><th>来源</th></tr></thead><tbody>';
-    list.forEach(i=>{h+=`<tr><td><span class="chip chip-red">${i.from}</span></td><td style="color:var(--text3)">→</td><td><span class="sku">${i.to}</span></td><td><span class="chip ${i.method==='精确映射'?'chip-yellow':'chip-purple'}">${i.method}</span></td><td><strong>${i.count}</strong></td><td style="font-size:10px;color:var(--text3)">${[...i.sources].join(', ')}</td></tr>`});
-    h+='</tbody></table></div>';
-    el.innerHTML=h;
+    h+='<div class="tbl-wrap" style="max-height:500px;overflow:auto"><table class="dt"><thead><tr><th>原始</th><th></th><th>归一化后</th><th>方式</th><th>次数</th><th>来源</th></tr></thead><tbody>';
+    list.forEach(i=>{h+=`<tr><td><span class="chip chip-red"> ${i.from}</span></td><td style="color:var(--text3)">→</td><td><span class="sku">$ {i.to}</span></td><td><span class="chip  ${i.method==='精确映射'?'chip-yellow':'chip-purple'}">$ {i.method}</span></td><td><strong> ${i.count}</strong></td><td style="font-size:10px;color:var(--text3)">$ {[...i.sources].join(', ')}</td></tr>`});
+    h+='</tbody></table></div>';el.innerHTML=h;
 }
 
 function renderExport(el){
     const entries=Object.entries(cleanedData);
-    const totalRows=entries.reduce((s,[,d])=>s+d.rows.length,0);
-    let h=`<div class="section-title">📥 批量导出清洗结果</div>
+    const totalOut=entries.reduce((s,[,d])=>s+d.rows.length,0);
+    let h=`<div class="section-title">📥 批量导出</div>
         <div class="stats-row">
-            <div class="stat"><div class="label">数据源数</div><div class="val blue">${entries.length}</div></div>
-            <div class="stat"><div class="label">总行数</div><div class="val green">${totalRows}</div></div>
+            <div class="stat"><div class="label">文件数</div><div class="val blue">${entries.length}</div></div>
+            <div class="stat"><div class="label">输出总行数</div><div class="val green">${totalOut.toLocaleString()}</div></div>
         </div>
         <div class="btn-group">
-            <button class="btn btn-primary" id="btnExportAll" onclick="exportAll()">📦 一键导出所有（多Sheet Excel）</button>
+            <button class="btn btn-primary" id="btnAll" onclick="exportAll()">📦 一键导出所有（多Sheet Excel）</button>
             <button class="btn btn-outline" onclick="exportSeparate()">📁 分文件导出</button>
         </div>`;
+    const mergeLabels={'待发货':'按SKU','仓库库存':'按SKU','销量数据':'按SKU+日期','头程明细':'逐行','待分货':'按SKU+周','销量预测':'按SKU+周'};
     entries.forEach(([fn,d])=>{
-        h+=`<div class="panel"><div class="panel-head"><h3>${{'待发货':'🛒','待分货':'📦','仓库库存':'🏭','头程明细':'🚢','销量数据':'📈','销量预测':'🔮'}[d.type]||'📄'} ${d.type}</h3><button class="btn btn-success" onclick="exportOne('${fn}')" style="padding:5px 14px;font-size:11px">📥 下载</button></div>
-        <div class="panel-body"><p style="font-size:12px;color:var(--text2)">${d.rows.length} 行 × ${d.fields.length} 字段 — ${d.fields.map(f=>`<span class="chip chip-blue" style="margin:1px">${f}</span>`).join(' ')}</p></div></div>`;
+        h+=`<div class="panel"><div class="panel-head"><h3> ${{'待发货':'🛒','待分货':'📦','仓库库存':'🏭','头程明细':'🚢','销量数据':'📈','销量预测':'🔮'}[d.type]||'📄'} $ {d.type} <span class="chip chip-purple"> ${mergeLabels[d.type]||''}</span> <span style="font-size:11px;color:var(--text3)">$ {dataSources[fn]?dataSources[fn].rows.length:'?'}→ ${d.rows.length}</span></h3><button class="btn btn-success" onclick="exportOne('$ {fn}')" style="padding:5px 14px;font-size:11px">📥</button></div>
+        <div class="panel-body"><p style="font-size:12px;color:var(--text2)"> ${d.rows.length.toLocaleString()}行 × $ {d.fields.length}字段 —  ${d.fields.map(f=>`<span class="chip chip-blue">$ {f}</span>`).join(' ')}</p></div></div>`;
     });
-    if(!entries.length)h+='<div class="empty"><div class="icon">📭</div><h3>暂无清洗数据</h3><p style="margin-top:6px">请先上传文件或加载示例数据</p></div>';
+    if(!entries.length)h+='<div class="empty"><div class="icon">📭</div><h3>暂无数据</h3></div>';
     el.innerHTML=h;
 }
 
-/* ============================================================
-   ★ 修复后的导出功能
-   ============================================================ */
+/* 导出 */
 function exportOne(fn){
-    const d=cleanedData[fn];
-    if(!d||!d.rows.length){showToast('无数据可导出','error');return}
-    try{
-        showToast(`正在导出 ${d.type}...`,'info');
-        const ws=XLSX.utils.json_to_sheet(d.rows);
-        const wb=XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb,ws,d.type.substring(0,31));
-        XLSX.writeFile(wb,`cleaned_${d.type}_${Date.now()}.xlsx`);
-        showToast(`✅ ${d.type} 导出成功！${d.rows.length} 行`,'success');
-        addLog(`📥 已导出: ${d.type} (${d.rows.length}行)`,'ok');
-    }catch(err){
-        showToast(`❌ 导出失败: ${err.message}`,'error');
-        addLog(`❌ 导出 ${fn} 失败: ${err.message}`,'err');
-    }
+    const d=cleanedData[fn];if(!d||!d.rows.length){showToast('无数据','error');return}
+    showToast(`⏳ 导出 ${d.type}...`,'info');
+    setTimeout(()=>{try{const ws=XLSX.utils.json_to_sheet(d.rows);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,d.type.substring(0,31));XLSX.writeFile(wb,`cleaned_ ${d.type}_$ {Date.now()}.xlsx`);showToast(`✅  ${d.type} $ {d.rows.length}行`,'success')}catch(e){showToast(`❌ ${e.message}`,'error',5000)}},50);
 }
-
+function exportOneCSV(fn){
+    const d=cleanedData[fn];if(!d||!d.rows.length){showToast('无数据','error');return}
+    try{const ws=XLSX.utils.json_to_sheet(d.rows);const csv=XLSX.utils.sheet_to_csv(ws);const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));a.download=`cleaned_ ${d.type}_$ {Date.now()}.csv`;a.click();showToast('✅ CSV导出成功','success')}catch(e){showToast(`❌ ${e.message}`,'error')}
+}
 function exportAll(){
     const entries=Object.entries(cleanedData).filter(([,d])=>d.rows.length>0);
-    if(!entries.length){showToast('无数据可导出','error');return}
-
-    const btn=document.getElementById('btnExportAll');
-    if(btn){btn.disabled=true;btn.textContent='⏳ 导出中...';}
-
-    // 使用 setTimeout 让 UI 先更新
+    if(!entries.length){showToast('无数据','error');return}
+    const btn=document.getElementById('btnAll');if(btn){btn.disabled=true;btn.textContent='⏳ 生成中...'}
+    const total=entries.reduce((s,[,d])=>s+d.rows.length,0);
+    showToast(`⏳ 生成 ${entries.length}个Sheet ($ {total.toLocaleString()}行)...`,'info',10000);
     setTimeout(()=>{
         try{
-            showToast(`正在生成 ${entries.length} 个Sheet...`,'info');
-            const wb=XLSX.utils.book_new();
-            let totalRows=0;
-            const usedNames=new Set();
-
-            entries.forEach(([fn,d])=>{
-                // 确保 sheet 名不重复且不超过 31 字符
-                let name=d.type.substring(0,31);
-                let suffix=1;
-                while(usedNames.has(name)){
-                    name=d.type.substring(0,28)+'_'+suffix;
-                    suffix++;
-                }
-                usedNames.add(name);
-
-                const ws=XLSX.utils.json_to_sheet(d.rows);
-                XLSX.utils.book_append_sheet(wb,ws,name);
-                totalRows+=d.rows.length;
-            });
-
+            const wb=XLSX.utils.book_new();const used=new Set();
+            entries.forEach(([,d])=>{let n=d.type.substring(0,31);let i=1;while(used.has(n)){n=d.type.substring(0,28)+'_'+i;i++}used.add(n);XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(d.rows),n)});
             XLSX.writeFile(wb,`all_cleaned_${Date.now()}.xlsx`);
-            showToast(`✅ 导出成功！${entries.length} 个表 / ${totalRows} 行`,'success',4000);
-            addLog(`📦 已导出全部 ${entries.length} 个数据源 (${totalRows}行)`,'ok');
-        }catch(err){
-            showToast(`❌ 导出失败: ${err.message}`,'error',5000);
-            addLog(`❌ 批量导出失败: ${err.message}`,'err');
-            console.error('Export error:',err);
-        }finally{
-            if(btn){btn.disabled=false;btn.textContent='📦 一键导出所有（多Sheet Excel）';}
-        }
-    }, 100);
+            showToast(`✅  ${entries.length}表 / $ {total.toLocaleString()}行`,'success',4000);
+        }catch(e){showToast(`❌ ${e.message}`,'error',5000);console.error(e)}
+        finally{if(btn){btn.disabled=false;btn.textContent='📦 一键导出所有（多Sheet Excel）'}}
+    },100);
 }
-
 function exportSeparate(){
     const entries=Object.entries(cleanedData).filter(([,d])=>d.rows.length>0);
-    if(!entries.length){showToast('无数据可导出','error');return}
-    let count=0;
-    entries.forEach(([fn,d])=>{
-        try{
-            const ws=XLSX.utils.json_to_sheet(d.rows);
-            const wb=XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb,ws,d.type.substring(0,31));
-            XLSX.writeFile(wb,`cleaned_${d.type}_${Date.now()}.xlsx`);
-            count++;
-        }catch(e){addLog(`❌ 导出 ${d.type} 失败: ${e.message}`,'err')}
-    });
-    showToast(`✅ 分文件导出完成：${count} 个文件`,'success');
+    if(!entries.length){showToast('无数据','error');return}
+    entries.forEach(([fn,d],idx)=>{setTimeout(()=>{try{const ws=XLSX.utils.json_to_sheet(d.rows);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,d.type.substring(0,31));XLSX.writeFile(wb,`cleaned_ ${d.type}_$ {Date.now()}.xlsx`)}catch(e){}},idx*200)});
+    showToast(`✅ ${entries.length}个文件导出中`,'success');
 }
 
-/* ============================================================
-   示例数据
-   ============================================================ */
+/* 示例数据 */
 function loadDemo(){
     addLog('📂 加载示例数据...');skuLog=[];
 
     dataSources['待发货.csv']={name:'待发货.csv',type:'待发货',
         headers:['Handle','Title','Option1 Value','SKU','Location','Incoming (not editable)','Unavailable (not editable)','Committed (not editable)','Available (not editable)','On hand (current)'],
         rows:[
-            {Handle:'p1s',Title:'Bambu Lab P1S',SKU:'PF001-U+SA001-JP','Option1 Value':'P1S Combo',Location:'4PX大阪仓','Incoming (not editable)':0,'Unavailable (not editable)':0,'Committed (not editable)':4,'Available (not editable)':269,'On hand (current)':273},
-            {Handle:'p1p',Title:'Bambu Lab P1P',SKU:'PF001-S-JP1','Option1 Value':'P1P',Location:'4PX大阪仓','Incoming (not editable)':0,'Unavailable (not editable)':0,'Committed (not editable)':0,'Available (not editable)':0,'On hand (current)':0},
-            {Handle:'x1c',Title:'X1 Carbon',SKU:'PF001-P-JP','Option1 Value':'X1-Carbon',Location:'4PX大阪仓','Incoming (not editable)':0,'Unavailable (not editable)':0,'Committed (not editable)':2,'Available (not editable)':10,'On hand (current)':12},
-            {Handle:'a1m',Title:'A1 mini',SKU:'PF002-M-JP','Option1 Value':'A1 mini',Location:'4PX大阪仓','Incoming (not editable)':0,'Unavailable (not editable)':0,'Committed (not editable)':12,'Available (not editable)':100,'On hand (current)':112},
-            {Handle:'p1s',Title:'P1S',SKU:'PF001-U-JP','Option1 Value':'P1S単体',Location:'4PX大阪仓','Incoming (not editable)':0,'Unavailable (not editable)':0,'Committed (not editable)':0,'Available (not editable)':0,'On hand (current)':0}
-        ]
-    };
-
-    dataSources['待分货.xlsx']={name:'待分货.xlsx',type:'待分货',
-        headers:['SKU','2026-03-16 00:00:00','2026-03-23 00:00:00','2026-03-30 00:00:00','2026-04-06 00:00:00','2026-04-13 00:00:00','2026-04-20 00:00:00','2026-04-27 00:00:00'],
-        rows:[
-            {SKU:'PF002-M-JP','2026-03-16 00:00:00':0,'2026-03-23 00:00:00':0,'2026-03-30 00:00:00':0,'2026-04-06 00:00:00':60,'2026-04-13 00:00:00':180,'2026-04-20 00:00:00':180,'2026-04-27 00:00:00':2290},
-            {SKU:'PF002-M+SA005-JP','2026-03-16 00:00:00':70,'2026-03-23 00:00:00':0,'2026-03-30 00:00:00':0,'2026-04-06 00:00:00':0,'2026-04-13 00:00:00':0,'2026-04-20 00:00:00':0,'2026-04-27 00:00:00':0},
-            {SKU:'PF002-A-JP','2026-03-16 00:00:00':0,'2026-03-23 00:00:00':0,'2026-03-30 00:00:00':260,'2026-04-06 00:00:00':0,'2026-04-13 00:00:00':110,'2026-04-20 00:00:00':40,'2026-04-27 00:00:00':260},
-            {SKU:'PF002-A+SA005-JP','2026-03-16 00:00:00':0,'2026-03-23 00:00:00':0,'2026-03-30 00:00:00':0,'2026-04-06 00:00:00':0,'2026-04-13 00:00:00':0,'2026-04-20 00:00:00':0,'2026-04-27 00:00:00':690},
-            {SKU:'PF003-D+SA007-JP','2026-03-16 00:00:00':0,'2026-03-23 00:00:00':0,'2026-03-30 00:00:00':0,'2026-04-06 00:00:00':0,'2026-04-13 00:00:00':0,'2026-04-20 00:00:00':10,'2026-04-27 00:00:00':40}
-        ]
-    };
+            {Handle:'p1s',Title:'P1S',SKU:'PF001-U+SA001-JP','Option1 Value':'P1S Combo',Location:'4PX',
+             'Incoming (not editable)':'0','Unavailable (not editable)':'0','Committed (not editable)':'4','Available (not editable)':'269','On hand (current)':'273'},
+            {Handle:'p1p',Title:'P1P',SKU:'PF001-S-JP1','Option1 Value':'P1P',Location:'4PX',
+             'Incoming (not editable)':'0','Unavailable (not editable)':'0','Committed (not editable)':'0','Available (not editable)':'0','On hand (current)':'0'},
+            {Handle:'x1c',Title:'X1',SKU:'PF001-P-JP','Option1 Value':'X1C',Location:'4PX',
+             'Incoming (not editable)':'0','Unavailable (not editable)':'0','Committed (not editable)':'2','Available (not editable)':'10','On hand (current)':'12'},
+            {Handle:'a1m',Title:'A1mini',SKU:'PF002-M-JP','Option1 Value':'A1mini',Location:'4PX',
+             'Incoming (not editable)':'0','Unavailable (not editable)':'0','Committed (not editable)':'12','Available (not editable)':'100','On hand (current)':'112'},
+        ]};
 
     dataSources['逻辑仓库存.xlsx']={name:'逻辑仓库存.xlsx',type:'仓库库存',
         headers:['逻辑仓编码','逻辑仓名称','SKU','商品名称','可用量','在库量','在途量','冻结量'],
         rows:[
-            {逻辑仓编码:'109CK001',逻辑仓名称:'递四方大阪1仓',SKU:'PF001-E+SA001-JP',商品名称:'X1E套装JP',可用量:31,在库量:34,在途量:0,冻结量:3},
-            {逻辑仓编码:'109CK001',逻辑仓名称:'递四方大阪1仓',SKU:'PF001-U+SA001-JP',商品名称:'P1S套装',可用量:285,在库量:305,在途量:0,冻结量:20},
-            {逻辑仓编码:'109CK001',逻辑仓名称:'递四方大阪1仓',SKU:'PF002-A+SA005-JP2',商品名称:'A1套装日',可用量:437,在库量:477,在途量:0,冻结量:40},
-            {逻辑仓编码:'109CK001',逻辑仓名称:'递四方大阪1仓',SKU:'PF002-A-JP2',商品名称:'A1单机日',可用量:111,在库量:166,在途量:0,冻结量:55},
-            {逻辑仓编码:'109CK001',逻辑仓名称:'递四方大阪1仓',SKU:'PF002-M-JP',商品名称:'A1mini',可用量:0,在库量:57,在途量:0,冻结量:57},
-            {逻辑仓编码:'109CK001',逻辑仓名称:'递四方大阪1仓',SKU:'PF003-D+SA007-JP',商品名称:'H2D套装1',可用量:26,在库量:28,在途量:0,冻结量:2},
-            {逻辑仓编码:'109CK001',逻辑仓名称:'递四方大阪1仓',SKU:'PF003-D+SA007-JP1',商品名称:'H2D多色套装',可用量:138,在库量:140,在途量:0,冻结量:2},
-            {逻辑仓编码:'109CK001',逻辑仓名称:'递四方大阪1仓',SKU:'PF003-C+SA007-JP',商品名称:'H2C多色套装',可用量:168,在库量:178,在途量:0,冻结量:10},
-            {逻辑仓编码:'109CK001',逻辑仓名称:'递四方大阪1仓',SKU:'PF003-D-JP',商品名称:'H2D单机',可用量:61,在库量:62,在途量:0,冻结量:1}
-        ]
-    };
-
-    dataSources['头程明细.xlsx']={name:'头程明细.xlsx',type:'头程明细',
-        headers:['发货单号','提货日期','开船时间ETD','到港时间ETA','货代','运输方式','国家','海外仓','货物类型','SKU','数量','出货仓库','上架日期','妥投日期'],
-        rows:[
-            {发货单号:'TZ-20250929-17',提货日期:'2025-10-05',开船时间ETD:'2025-10-13',到港时间ETA:'2025-10-17',货代:'昊宏',运输方式:'整柜',国家:'日本',海外仓:'递四方大阪仓',货物类型:'3D打印机',SKU:'PF002-A+SA005-JP2',数量:550,出货仓库:'深技',上架日期:'2025-10-28',妥投日期:'2025-10-24'},
-            {发货单号:'TZ-20250929-62',提货日期:'2025-10-12',开船时间ETD:'2025-10-17',到港时间ETA:'2025-10-22',货代:'昊宏',运输方式:'整柜',国家:'日本',海外仓:'递四方大阪仓',货物类型:'3D打印机',SKU:'PF002-M-JP',数量:165,出货仓库:'深技',上架日期:'2025-10-28',妥投日期:'2025-10-28'},
-            {发货单号:'TZ-20250929-62',提货日期:'2025-10-12',开船时间ETD:'2025-10-17',到港时间ETA:'2025-10-22',货代:'昊宏',运输方式:'整柜',国家:'日本',海外仓:'递四方大阪仓',货物类型:'3D打印机',SKU:'PF001-U+SA001-JP',数量:100,出货仓库:'深技',上架日期:'2025-10-28',妥投日期:'2025-10-28'},
-            {发货单号:'TZ-20250929-63',提货日期:'2025-10-13',开船时间ETD:'2025-10-17',到港时间ETA:'2025-10-22',货代:'昊宏',运输方式:'整柜',国家:'日本',海外仓:'递四方大阪仓',货物类型:'3D打印机',SKU:'PF003-D+SA007-JP',数量:88,出货仓库:'东莞CP',上架日期:'2025-10-31',妥投日期:'2025-10-29'},
-            {发货单号:'TZ-20250929-63',提货日期:'2025-10-13',开船时间ETD:'2025-10-17',到港时间ETA:'2025-10-22',货代:'昊宏',运输方式:'整柜',国家:'日本',海外仓:'递四方大阪仓',货物类型:'3D打印机',SKU:'PF003-M+SA007-JP',数量:50,出货仓库:'东莞CP',上架日期:'2025-10-31',妥投日期:'2025-10-29'},
-            {发货单号:'TZ-20250929-64',提货日期:'2025-10-13',开船时间ETD:'2025-10-17',到港时间ETA:'2025-10-22',货代:'昊宏',运输方式:'整柜',国家:'日本',海外仓:'递四方大阪仓',货物类型:'3D打印机',SKU:'PF002-M-JP',数量:910,出货仓库:'深技',上架日期:'2025-10-28',妥投日期:'2025-10-27'},
-            {发货单号:'TZ-20251013-34',提货日期:'2025-10-15',开船时间ETD:'2025-10-20',到港时间ETA:'2025-10-27',货代:'昊宏',运输方式:'整柜',国家:'日本',海外仓:'递四方大阪仓',货物类型:'3D打印机',SKU:'PF004-U+SA007-JP1',数量:100,出货仓库:'东莞CP',上架日期:'2025-11-05',妥投日期:'2025-10-31'}
-        ]
-    };
+            {逻辑仓编码:'109CK001',逻辑仓名称:'递四方大阪1仓',SKU:'PF001-E+SA001-JP',商品名称:'X1E套装',可用量:'31',在库量:'34',在途量:'0',冻结量:'3'},
+            {逻辑仓编码:'109CK001',逻辑仓名称:'递四方大阪1仓',SKU:'PF001-U+SA001-JP',商品名称:'P1S套装',可用量:'285',在库量:'305',在途量:'0',冻结量:'20'},
+            {逻辑仓编码:'109CK001',逻辑仓名称:'递四方大阪1仓',SKU:'PF002-A+SA005-JP2',商品名称:'A1套装',可用量:'437',在库量:'477',在途量:'0',冻结量:'40'},
+            {逻辑仓编码:'109CK001',逻辑仓名称:'递四方大阪1仓',SKU:'PF002-A-JP2',商品名称:'A1单机',可用量:'111',在库量:'166',在途量:'0',冻结量:'55'},
+            {逻辑仓编码:'109CK001',逻辑仓名称:'递四方大阪1仓',SKU:'PF002-M-JP',商品名称:'A1mini',可用量:'0',在库量:'57',在途量:'0',冻结量:'57'},
+            {逻辑仓编码:'109CK001',逻辑仓名称:'递四方大阪1仓',SKU:'PF003-D+SA007-JP',商品名称:'H2D套装1',可用量:'26',在库量:'28',在途量:'0',冻结量:'2'},
+            {逻辑仓编码:'109CK001',逻辑仓名称:'递四方大阪1仓',SKU:'PF003-D+SA007-JP1',商品名称:'H2D多色套装',可用量:'138',在库量:'140',在途量:'0',冻结量:'2'},
+            {逻辑仓编码:'109CK001',逻辑仓名称:'递四方大阪1仓',SKU:'PF003-D-JP',商品名称:'H2D单机',可用量:'61',在库量:'62',在途量:'0',冻结量:'1'},
+        ]};
 
     dataSources['销量数据.csv']={name:'销量数据.csv',type:'销量数据',
         headers:['产品标题','多属性标题','SKU','天','净售出商品数','净销售额'],
         rows:[
-            {产品标题:'P1S',多属性标题:'P1S Combo',SKU:'PF001-U+SA001-JP',天:'2026/1/1',净售出商品数:4,净销售额:360000},
-            {产品标题:'A1 mini',多属性标题:'A1 mini',SKU:'PF002-M-JP',天:'2026/1/1',净售出商品数:78,净销售额:1885664},
-            {产品标题:'A1 mini',多属性标题:'A1 mini Combo',SKU:'PF002-M+SA005-JP',天:'2026/1/1',净售出商品数:11,净销售额:476348},
-            {产品标题:'A1',多属性标题:'A1単体',SKU:'PF002-A-JP2',天:'2026/1/1',净售出商品数:12,净销售额:548297},
-            {产品标题:'A1',多属性标题:'A1 Combo',SKU:'PF002-A+SA005-JP2',天:'2026/1/1',净售出商品数:24,净销售额:1438890},
-            {产品标题:'H2S',多属性标题:'H2S AMS Combo',SKU:'PF003-S+SA007-JP1',天:'2026/1/1',净售出商品数:1,净销售额:227091},
-            {产品标题:'P2S',多属性标题:'P2S Combo',SKU:'PF004-U+SA007-JP1',天:'2026/1/1',净售出商品数:10,净销售额:1345450},
-            {产品标题:'P2S',多属性标题:'P2S 単体',SKU:'PF004-U-JP',天:'2026/1/1',净售出商品数:1,净销售额:99091},
-            {产品标题:'A1',多属性标题:'A1 Combo',SKU:'PF002-A+SA005-JP2',天:'2026/1/2',净售出商品数:20,净销售额:1196832},
-            {产品标题:'P2S',多属性标题:'P2S Combo',SKU:'PF004-U+SA007-JP1',天:'2026/1/2',净售出商品数:4,净销售额:538180},
-            {产品标题:'P2S',多属性标题:'P2S 単体',SKU:'PF004-U-JP',天:'2026/1/2',净售出商品数:2,净销售额:198182}
-        ]
-    };
+            {产品标题:'P1S',多属性标题:'P1S Combo',SKU:'PF001-U+SA001-JP',天:'2026/1/1',净售出商品数:'4',净销售额:'360000'},
+            {产品标题:'A1mini',多属性标题:'A1mini',SKU:'PF002-M-JP',天:'2026/1/1',净售出商品数:'78',净销售额:'1885664'},
+            {产品标题:'A1',多属性标题:'A1単体',SKU:'PF002-A-JP2',天:'2026/1/1',净售出商品数:'12',净销售额:'548297'},
+            {产品标题:'A1',多属性标题:'A1 Combo',SKU:'PF002-A+SA005-JP2',天:'2026/1/1',净售出商品数:'24',净销售额:'1438890'},
+            {产品标题:'H2S',多属性标题:'H2S Combo',SKU:'PF003-S+SA007-JP1',天:'2026/1/1',净售出商品数:'1',净销售额:'227091'},
+            {产品标题:'P2S',多属性标题:'P2S Combo',SKU:'PF004-U+SA007-JP1',天:'2026/1/1',净售出商品数:'10',净销售额:'1345450'},
+            {产品标题:'P2S',多属性标题:'P2S 単体',SKU:'PF004-U-JP',天:'2026/1/1',净售出商品数:'1',净销售额:'99091'},
+            // 同SKU不同天
+            {产品标题:'A1',多属性标题:'A1 Combo',SKU:'PF002-A+SA005-JP2',天:'2026/1/2',净售出商品数:'20',净销售额:'1196832'},
+            {产品标题:'P2S',多属性标题:'P2S Combo',SKU:'PF004-U+SA007-JP1',天:'2026/1/2',净售出商品数:'4',净销售额:'538180'},
+            // ★ 测试同SKU同天合并：PF002-A-JP 和 PF002-A-JP2 同天
+            {产品标题:'A1',多属性标题:'A1 JP版',SKU:'PF002-A-JP',天:'2026/1/1',净售出商品数:'3',净销售额:'130000'},
+            // 空行（会被跳过）
+            {产品标题:'',多属性标题:'',SKU:'',天:'',净售出商品数:'',净销售额:''},
+            {产品标题:'',多属性标题:'',SKU:'',天:'',净售出商品数:'',净销售额:''},
+        ]};
+
+    dataSources['头程明细.xlsx']={name:'头程明细.xlsx',type:'头程明细',
+        headers:['发货单号','提货日期','开船时间ETD','到港时间ETA','货代','运输方式','国家','海外仓','货物类型','SKU','数量','出货仓库','上架日期','妥投日期'],
+        rows:[
+            {发货单号:'TZ-17',提货日期:'2025-10-05',开船时间ETD:'2025-10-13',到港时间ETA:'2025-10-17',货代:'昊宏',运输方式:'整柜',国家:'日本',海外仓:'递四方大阪仓',货物类型:'3D打印机',SKU:'PF002-A+SA005-JP2',数量:'550',出货仓库:'深技',上架日期:'2025-10-28',妥投日期:'2025-10-24'},
+            {发货单号:'TZ-62',提货日期:'2025-10-12',开船时间ETD:'2025-10-17',到港时间ETA:'2025-10-22',货代:'昊宏',运输方式:'整柜',国家:'日本',海外仓:'递四方大阪仓',货物类型:'3D打印机',SKU:'PF002-M-JP',数量:'165',出货仓库:'深技',上架日期:'2025-10-28',妥投日期:'2025-10-28'},
+            {发货单号:'TZ-62',提货日期:'2025-10-12',开船时间ETD:'2025-10-17',到港时间ETA:'2025-10-22',货代:'昊宏',运输方式:'整柜',国家:'日本',海外仓:'递四方大阪仓',货物类型:'3D打印机',SKU:'PF001-U+SA001-JP',数量:'100',出货仓库:'深技',上架日期:'2025-10-28',妥投日期:'2025-10-28'},
+            {发货单号:'TZ-63',提货日期:'2025-10-13',开船时间ETD:'2025-10-17',到港时间ETA:'2025-10-22',货代:'昊宏',运输方式:'整柜',国家:'日本',海外仓:'递四方大阪仓',货物类型:'3D打印机',SKU:'PF003-D+SA007-JP',数量:'88',出货仓库:'东莞CP',上架日期:'2025-10-31',妥投日期:'2025-10-29'},
+            {发货单号:'TZ-34',提货日期:'2025-10-15',开船时间ETD:'2025-10-20',到港时间ETA:'2025-10-27',货代:'昊宏',运输方式:'整柜',国家:'日本',海外仓:'递四方大阪仓',货物类型:'3D打印机',SKU:'PF004-U+SA007-JP1',数量:'100',出货仓库:'东莞CP',上架日期:'2025-11-05',妥投日期:'2025-10-31'},
+        ]};
+
+    dataSources['待分货.xlsx']={name:'待分货.xlsx',type:'待分货',
+        headers:['SKU','2026-03-16 00:00:00','2026-03-23 00:00:00','2026-03-30 00:00:00','2026-04-06 00:00:00'],
+        rows:[
+            {SKU:'PF002-M-JP','2026-03-16 00:00:00':'0','2026-03-23 00:00:00':'0','2026-03-30 00:00:00':'0','2026-04-06 00:00:00':'60'},
+            {SKU:'PF002-A-JP','2026-03-16 00:00:00':'0','2026-03-23 00:00:00':'0','2026-03-30 00:00:00':'260','2026-04-06 00:00:00':'0'},
+            {SKU:'PF002-A+SA005-JP','2026-03-16 00:00:00':'0','2026-03-23 00:00:00':'0','2026-03-30 00:00:00':'0','2026-04-06 00:00:00':'0'},
+            {SKU:'PF003-D+SA007-JP','2026-03-16 00:00:00':'0','2026-03-23 00:00:00':'0','2026-03-30 00:00:00':'0','2026-04-06 00:00:00':'0'},
+        ]};
 
     dataSources['销量预测2.xlsx']={name:'销量预测2.xlsx',type:'销量预测',
-        headers:['SKU','W11','W12','W13','W14','W15','W16','W17','W18','W19','W20','W21','W22','W23','W24','W25','W26','W27','W28','W29','W30','W31','W32','W33','W34','W35'],
+        headers:['SKU','W11','W12','W13','W14','W15'],
         rows:[
-            {SKU:'PF002-M-JP',W11:400,W12:200,W13:200,W14:180,W15:180,W16:180,W17:200,W18:400,W19:180,W20:180,W21:180,W22:180,W23:180,W24:180,W25:1200,W26:360,W27:360,W28:1800,W29:150,W30:150,W31:180,W32:180,W33:180,W34:180,W35:180},
-            {SKU:'PF002-M+SA005-JP',W11:40,W12:40,W13:40,W14:40,W15:30,W16:30,W17:60,W18:80,W19:30,W20:30,W21:30,W22:31,W23:31,W24:31,W25:200,W26:60,W27:60,W28:300,W29:50,W30:50,W31:50,W32:50,W33:50,W34:50,W35:50},
-            {SKU:'PF002-A-JP2',W11:40,W12:40,W13:40,W14:40,W15:31,W16:31,W17:60,W18:80,W19:35,W20:40,W21:40,W22:41,W23:41,W24:41,W25:200,W26:80,W27:80,W28:300,W29:35,W30:35,W31:40,W32:40,W33:40,W34:40,W35:40},
-            {SKU:'PF002-A+SA005-JP2',W11:85,W12:85,W13:65,W14:65,W15:65,W16:65,W17:140,W18:350,W19:65,W20:65,W21:65,W22:70,W23:70,W24:70,W25:250,W26:150,W27:150,W28:400,W29:80,W30:80,W31:70,W32:70,W33:70,W34:70,W35:70},
-            {SKU:'PF001-U+SA001-JP',W11:20,W12:20,W13:20,W14:20,W15:15,W16:15,W17:30,W18:40,W19:20,W20:20,W21:20,W22:20,W23:20,W24:20,W25:60,W26:30,W27:30,W28:60,W29:15,W30:15,W31:15,W32:15,W33:15,W34:15,W35:15}
-        ]
-    };
+            {SKU:'PF002-M-JP',W11:'400',W12:'200',W13:'200',W14:'180',W15:'180'},
+            {SKU:'PF002-A-JP2',W11:'40',W12:'40',W13:'40',W14:'40',W15:'31'},
+            {SKU:'PF002-A+SA005-JP2',W11:'85',W12:'85',W13:'65',W14:'65',W15:'65'},
+            {SKU:'PF001-U+SA001-JP',W11:'20',W12:'20',W13:'20',W14:'20',W15:'15'},
+        ]};
 
     Object.keys(dataSources).forEach(fn=>cleanSource(fn));
     refreshUI();
     showTab('export');
-    showToast('✅ 示例数据加载完成！','success');
+    showToast('✅ 示例数据已加载','success');
 }
 
-addLog('🚀 清洗工具 v3.1 就绪','ok');
+addLog('🚀 v3.3就绪 — 所有数据源SKU归一化+按维度合并','ok');
 </script>
 </body>
 </html>
