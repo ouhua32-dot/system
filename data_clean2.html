@@ -1,0 +1,688 @@
+
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+							<style>
+								body {
+									background-color: white; /* Ensure the iframe has a white background */
+								}
+
+								
+							</style>
+                        </head>
+                        <body>
+                            <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>运营数据清洗工具 v3.4</title>
+<style>
+:root{--bg:#0a0e17;--card:#111827;--border:#1e293b;--accent:#3b82f6;--accent2:#8b5cf6;--accent3:#06b6d4;--success:#10b981;--warning:#f59e0b;--danger:#ef4444;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.header{background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(139,92,246,.1));border-bottom:1px solid var(--border);padding:16px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(20px)}
+.header h1{font-size:20px;font-weight:700;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hbadges{display:flex;gap:12px}
+.badge{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600}
+.b-blue{background:rgba(59,130,246,.15);color:var(--accent)}
+.b-green{background:rgba(16,185,129,.15);color:var(--success)}
+.b-purple{background:rgba(139,92,246,.15);color:var(--accent2)}
+.container{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 57px)}
+.sidebar{background:var(--card);border-right:1px solid var(--border);padding:16px;overflow-y:auto}
+.stitle{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin:16px 0 8px 4px}
+.stitle:first-child{margin-top:0}
+.nav{padding:10px 12px;border-radius:8px;cursor:pointer;transition:all .15s;margin-bottom:4px;border:1px solid transparent}
+.nav:hover{background:rgba(255,255,255,.03)}
+.nav.active{background:rgba(59,130,246,.08);border-color:var(--accent)}
+.nav .nm{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+.nav .ds{font-size:11px;color:var(--text3);margin-top:2px}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-left:auto}
+.dot.on{background:var(--success)}.dot.off{background:var(--text3)}
+.main{padding:24px 32px;overflow-y:auto}
+.uz{border:2px dashed var(--border);border-radius:16px;padding:40px;text-align:center;transition:all .3s;background:rgba(255,255,255,.01);margin-bottom:24px}
+.uz:hover,.uz.dragover{border-color:var(--accent);background:rgba(59,130,246,.05)}
+.uz .ic{font-size:40px;margin-bottom:12px}
+.uz h3{font-size:15px;margin-bottom:6px}
+.uz p{font-size:12px;color:var(--text3)}
+.uz input{display:none}
+.btn{padding:9px 20px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.bp{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.bp:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(59,130,246,.3)}
+.bp:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.bs{background:var(--success);color:#fff}
+.bo{background:transparent;border:1px solid var(--border);color:var(--text)}
+.bo:hover{border-color:var(--accent)}
+.bg{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.pnl{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:16px;overflow:hidden}
+.ph{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.02)}
+.ph h3{font-size:14px;font-weight:600}
+.pb{padding:16px 18px}
+.sr{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px}
+.st{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px}
+.st .lb{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px}
+.st .vl{font-size:24px;font-weight:700;margin-top:2px}
+.vblue{color:var(--accent)}.vgreen{color:var(--success)}.vpurple{color:var(--accent2)}.vcyan{color:var(--accent3)}
+.tw{overflow-x:auto;border:1px solid var(--border);border-radius:8px}
+table.dt{width:100%;border-collapse:collapse;font-size:12px}
+table.dt th{padding:9px 10px;background:rgba(59,130,246,.08);text-align:left;font-weight:600;white-space:nowrap;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:1}
+table.dt td{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.03);white-space:nowrap;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+table.dt tr:hover td{background:rgba(255,255,255,.03)}
+.sku{font-family:'SF Mono',monospace;color:var(--accent3);font-size:12px}
+.chip{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;margin:1px}
+.cb{background:rgba(59,130,246,.12);color:var(--accent)}
+.cg{background:rgba(16,185,129,.12);color:var(--success)}
+.cy{background:rgba(245,158,11,.12);color:var(--warning)}
+.cr{background:rgba(239,68,68,.12);color:var(--danger)}
+.cp{background:rgba(139,92,246,.12);color:var(--accent2)}
+.empty{text-align:center;padding:50px 20px;color:var(--text3)}
+.empty .ic{font-size:56px;margin-bottom:12px;opacity:.3}
+.sectitle{font-size:17px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.toast{position:fixed;top:80px;right:32px;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;display:none;max-width:400px}
+.toast.show{display:block;animation:fadeIn .3s}
+.t-ok{background:rgba(16,185,129,.95);color:#fff}
+.t-err{background:rgba(239,68,68,.95);color:#fff}
+.t-info{background:rgba(59,130,246,.95);color:#fff}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+@media(max-width:860px){.container{grid-template-columns:1fr}.sidebar{display:none}}
+</style>
+</head>
+<body>
+<div id="toast" class="toast"></div>
+<div class="header">
+<h1>📊 运营数据清洗工具 v3.4</h1>
+<div class="hbadges">
+<span class="badge b-blue" id="hF">0 文件</span>
+<span class="badge b-green" id="hR">0 行</span>
+<span class="badge b-purple" id="hS">0 SKU</span>
+</div>
+</div>
+<div class="container">
+<div class="sidebar">
+<div class="stitle">数据源</div>
+<div id="navS"></div>
+<div class="stitle">工具</div>
+<div class="nav" onclick="showTab('rules')"><div class="nm">⚙️ 清洗规则</div><div class="ds">6个数据源清洗配置</div></div>
+<div class="nav" onclick="showTab('skuaudit')"><div class="nm">🔍 SKU归一化审计</div><div class="ds">查看所有转换记录</div></div>
+<div class="stitle">输出</div>
+<div class="nav" onclick="showTab('export')"><div class="nm">📥 批量导出</div><div class="ds">下载清洗后数据</div></div>
+</div>
+<div class="main">
+<div class="uz" id="uploadZone">
+<div class="ic">📁</div>
+<h3>拖放文件或点击上传</h3>
+<p>支持 .xlsx .xls .csv — 完整读取所有数据行</p>
+<input type="file" id="fileInput" multiple accept=".xlsx,.xls,.csv">
+<br><br>
+<button class="btn bp" onclick="document.getElementById('fileInput').click()">选择文件</button>
+</div>
+<div id="tabContent">
+<div class="empty"><div class="ic">📊</div><h3>上传数据文件开始清洗</h3><p style="margin-top:6px">工具会完整读取CSV/Excel中的所有行</p></div>
+</div>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+var SOURCE_DETECT = {
+  '待发货':{kw:['待发货'],cols:['Committed (not editable)']},
+  '待分货':{kw:['待分货'],cols:[]},
+  '仓库库存':{kw:['逻辑仓','库存'],cols:['可用量']},
+  '头程明细':{kw:['头程'],cols:['发货单号']},
+  '销量数据':{kw:['销量数据'],cols:['净售出商品数']},
+  '销量预测':{kw:['销量预测','预测'],cols:[]}
+};
+var SKU_ALIAS = {
+  'PF002-A-JP':['PF002-A-JP2'],'PF002-A+SA005-JP':['PF002-A+SA005-JP2'],
+  'PF002-M+SA005-JP':['PF002-M+SA005-JP2'],'PF003-D+SA007-JP':['PF003-D+SA007-JP1'],
+  'PF003-D-JP':['PF003-D-JP1'],'PF003-S+SA007-JP':['PF003-S+SA007-JP1'],
+  'PF003-S-JP':['PF003-S-JP1'],'PF003-M+SA007-JP':['PF003-M+SA007-JP1'],
+  'PF003-M-JP':['PF003-M-JP1'],'PF003-C+SA007-JP':['PF003-C+SA007-JP1'],
+  'PF003-C-JP':['PF003-C-JP1'],'PF003-E+SA007-JP':['PF003-E+SA007-JP1'],
+  'PF003-E-JP':['PF003-E-JP1'],'PF004-U+SA007-JP':['PF004-U+SA007-JP1'],
+  'PF004-U-JP':['PF004-U-JP1'],'PF001-S-JP':['PF001-S-JP1'],
+  'PF001-U-JP':['PF001-U-JP1'],'PF001-U+SA001-JP':['PF001-U+SA001-JP1'],
+  'PF001-P-JP':['PF001-P-JP1'],'PF001-P+SA001-JP':['PF001-P+SA001-JP1'],
+  'PF001-E+SA001-JP':['PF001-E+SA001-JP1']
+};
+var ICONS = {'待发货':'🛒','待分货':'📦','仓库库存':'🏭','头程明细':'🚢','销量数据':'📈','销量预测':'🔮'};
+var MERGE_DESC = {'待发货':'按SKU合并','仓库库存':'按SKU合并','销量数据':'按SKU+日期合并','头程明细':'逐行保留','待分货':'按SKU+周合并','销量预测':'按SKU+周合并'};
+
+var dataSources = {};
+var cleanedData = {};
+var logs = [];
+var skuLog = [];
+var activeTab = '';
+
+function toast(msg, type, dur) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show t-' + (type || 'info');
+  clearTimeout(t._t);
+  t._t = setTimeout(function(){ t.className = 'toast'; }, dur || 3000);
+}
+
+function normSKU(sku, src) {
+  if (!sku) return '';
+  var s = String(sku).trim();
+  if (!s) return '';
+  var u = s.toUpperCase();
+  var keys = Object.keys(SKU_ALIAS);
+  for (var i = 0; i < keys.length; i++) {
+    var std = keys[i];
+    var aliases = SKU_ALIAS[std];
+    for (var j = 0; j < aliases.length; j++) {
+      if (aliases[j].toUpperCase() === u) {
+        skuLog.push({from:s, to:std.toUpperCase(), method:'精确映射', src:src});
+        return std.toUpperCase();
+      }
+    }
+    if (u === std.toUpperCase()) return u;
+  }
+  if (/-JP\d+$/i.test(u)) {
+    var n = u.replace(/-JP\d+$/i, '-JP');
+    skuLog.push({from:s, to:n, method:'正则兜底', src:src});
+    return n;
+  }
+  return u;
+}
+
+function toNum(v) {
+  if (v == null || v === '') return 0;
+  if (typeof v === 'number') return v;
+  var n = Number(String(v).replace(/[¥$€,，\s]/g, ''));
+  return isNaN(n) ? 0 : n;
+}
+
+function toDate(v) {
+  if (!v || v === '') return '';
+  var s = String(v).trim();
+  if (s.indexOf('1901') >= 0) s = s.replace(/1901/g, '2026');
+  s = s.replace(/\s+\d{2}:\d{2}:\d{2}.*$/, '');
+  if (/^\d{5}$/.test(s)) {
+    var d = new Date((Number(s) - 25569) * 86400000);
+    return fmtD(d);
+  }
+  var d2 = new Date(s);
+  if (!isNaN(d2) && d2.getFullYear() > 1950) return fmtD(d2);
+  return s;
+}
+
+function fmtD(d) {
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function addLog(msg, lv) { logs.push({t: new Date().toLocaleTimeString(), msg: msg, lv: lv || 'info'}); }
+
+// File upload
+var uz = document.getElementById('uploadZone');
+var fi = document.getElementById('fileInput');
+uz.addEventListener('dragover', function(e){ e.preventDefault(); uz.classList.add('dragover'); });
+uz.addEventListener('dragleave', function(){ uz.classList.remove('dragover'); });
+uz.addEventListener('drop', function(e){ e.preventDefault(); uz.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+fi.addEventListener('change', function(e){ handleFiles(e.target.files); });
+
+function handleFiles(files) {
+  var promises = [];
+  for (var i = 0; i < files.length; i++) {
+    promises.push(processFile(files[i]));
+  }
+  Promise.all(promises).then(function(){
+    refreshUI();
+    toast('✅ ' + Object.keys(dataSources).length + '个文件处理完成', 'ok');
+  });
+}
+
+function processFile(file) {
+  return new Promise(function(resolve) {
+    toast('📂 读取 ' + file.name + '...', 'info');
+    addLog('📂 读取: ' + file.name + ' (' + (file.size/1024).toFixed(1) + 'KB)');
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        var ext = file.name.split('.').pop().toLowerCase();
+        var wb;
+        if (ext === 'csv') {
+          wb = XLSX.read(e.target.result, {type:'binary', codepage:65001});
+        } else {
+          wb = XLSX.read(e.target.result, {type:'array'});
+        }
+        var rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval:'', raw:false});
+        var headers = rows.length > 0 ? Object.keys(rows[0]) : [];
+        var type = detectType(file.name, headers);
+        dataSources[file.name] = {name:file.name, type:type, headers:headers, rows:rows};
+        addLog('✅ ' + file.name + ' → [' + type + '] ' + rows.length + '行', 'ok');
+        cleanSource(file.name);
+      } catch(err) {
+        addLog('❌ ' + file.name + ': ' + err.message, 'err');
+        toast('❌ ' + file.name, 'err');
+      }
+      resolve();
+    };
+    reader.onerror = function(){ addLog('❌ 读取失败: ' + file.name, 'err'); resolve(); };
+    if (file.name.toLowerCase().endsWith('.csv')) {
+      reader.readAsBinaryString(file);
+    } else {
+      reader.readAsArrayBuffer(file);
+    }
+  });
+}
+
+function detectType(name, headers) {
+  var types = Object.keys(SOURCE_DETECT);
+  for (var i = 0; i < types.length; i++) {
+    var t = types[i];
+    var rule = SOURCE_DETECT[t];
+    for (var j = 0; j < rule.kw.length; j++) {
+      if (name.indexOf(rule.kw[j]) >= 0) return t;
+    }
+    if (rule.cols.length > 0) {
+      var allFound = true;
+      for (var k = 0; k < rule.cols.length; k++) {
+        if (headers.indexOf(rule.cols[k]) < 0) { allFound = false; break; }
+      }
+      if (allFound) return t;
+    }
+  }
+  return '未识别';
+}
+
+// Core cleaning
+function cleanSource(fn) {
+  var src = dataSources[fn];
+  if (!src) return;
+  var result = [];
+  var t = src.type;
+  var inputRows = src.rows.length;
+
+  try {
+    if (t === '待发货') {
+      var map = {};
+      src.rows.forEach(function(r) {
+        var sku = normSKU(r['SKU'], fn);
+        if (!sku) return;
+        map[sku] = (map[sku] || 0) + toNum(r['Committed (not editable)']);
+      });
+      Object.keys(map).forEach(function(sku) {
+        result.push({SKU: sku, CommittedQty: map[sku]});
+      });
+      addLog('🛒 ' + fn + ': ' + inputRows + '行 → ' + result.length + ' SKU(按SKU合并)', 'ok');
+
+    } else if (t === '仓库库存') {
+      var map2 = {};
+      src.rows.forEach(function(r) {
+        var sku = normSKU(r['SKU'], fn);
+        if (!sku) return;
+        map2[sku] = (map2[sku] || 0) + toNum(r['可用量']);
+      });
+      Object.keys(map2).forEach(function(sku) {
+        result.push({SKU: sku, AvailableQty: map2[sku]});
+      });
+      addLog('🏭 ' + fn + ': ' + inputRows + '行 → ' + result.length + ' SKU(按SKU合并)', 'ok');
+
+    } else if (t === '销量数据') {
+      var map3 = {};
+      src.rows.forEach(function(r) {
+        var sku = normSKU(r['SKU'], fn);
+        var date = toDate(r['天']);
+        if (!sku || !date) return;
+        var key = sku + '|' + date;
+        if (!map3[key]) map3[key] = {SKU: sku, Date: date, NetUnitsSold: 0};
+        map3[key].NetUnitsSold += toNum(r['净售出商品数']);
+      });
+      result = Object.keys(map3).map(function(k){ return map3[k]; });
+      result.sort(function(a, b) {
+        if (a.Date !== b.Date) return a.Date < b.Date ? -1 : 1;
+        return a.SKU < b.SKU ? -1 : 1;
+      });
+      addLog('📈 ' + fn + ': ' + inputRows + '行 → ' + result.length + '行(按SKU+日期合并)', 'ok');
+
+    } else if (t === '头程明细') {
+      src.rows.forEach(function(r) {
+        var sku = normSKU(r['SKU'], fn);
+        if (!sku) return;
+        result.push({
+          ShipmentID: String(r['发货单号'] || ''),
+          PickupDate: toDate(r['提货日期']),
+          ETA: toDate(r['到港时间ETA']),
+          CargoType: String(r['货物类型'] || ''),
+          SKU: sku,
+          Quantity: toNum(r['数量']),
+          ShelvingDate: toDate(r['上架日期']),
+          DeliveryDate: toDate(r['妥投日期'])
+        });
+      });
+      addLog('🚢 ' + fn + ': ' + inputRows + '行 → ' + result.length + '行(逐行)', 'ok');
+
+    } else if (t === '待分货') {
+      var skuCol = null;
+      for (var i = 0; i < src.headers.length; i++) {
+        if (src.headers[i].toUpperCase() === 'SKU') { skuCol = src.headers[i]; break; }
+      }
+      if (!skuCol) skuCol = src.headers[0];
+      var weekCols = src.headers.filter(function(h){ return h !== skuCol; });
+      var map4 = {};
+      src.rows.forEach(function(r) {
+        var sku = normSKU(r[skuCol], fn);
+        if (!sku) return;
+        weekCols.forEach(function(w) {
+          var week = toDate(w) || w;
+          var key = sku + '|' + week;
+          if (!map4[key]) map4[key] = {SKU: sku, WeekStart: week, AllocationQty: 0};
+          map4[key].AllocationQty += toNum(r[w]);
+        });
+      });
+      result = Object.keys(map4).map(function(k){ return map4[k]; });
+      result.sort(function(a,b){ return a.WeekStart < b.WeekStart ? -1 : a.WeekStart > b.WeekStart ? 1 : a.SKU < b.SKU ? -1 : 1; });
+      addLog('📦 ' + fn + ': ' + inputRows + ' SKU × ' + weekCols.length + '周 → ' + result.length + '行', 'ok');
+
+    } else if (t === '销量预测') {
+      var skuCol2 = null;
+      for (var i2 = 0; i2 < src.headers.length; i2++) {
+        if (src.headers[i2].toUpperCase() === 'SKU') { skuCol2 = src.headers[i2]; break; }
+      }
+      if (!skuCol2) skuCol2 = src.headers[0];
+      var dataCols = src.headers.filter(function(h){ return h !== skuCol2; });
+      var map5 = {};
+      src.rows.forEach(function(r) {
+        var sku = normSKU(r[skuCol2], fn);
+        if (!sku) return;
+        dataCols.forEach(function(w) {
+          var week = toDate(w) || w;
+          var key = sku + '|' + week;
+          if (!map5[key]) map5[key] = {SKU: sku, Week: week, ForecastQty: 0};
+          map5[key].ForecastQty += toNum(r[w]);
+        });
+      });
+      result = Object.keys(map5).map(function(k){ return map5[k]; });
+      result.sort(function(a,b){ return String(a.Week) < String(b.Week) ? -1 : String(a.Week) > String(b.Week) ? 1 : a.SKU < b.SKU ? -1 : 1; });
+      addLog('🔮 ' + fn + ': ' + inputRows + ' SKU × ' + dataCols.length + '周 → ' + result.length + '行', 'ok');
+
+    } else {
+      result = src.rows;
+      addLog('⚠️ ' + fn + ': 未识别类型', 'warn');
+    }
+  } catch(err) {
+    addLog('❌ 清洗 ' + fn + ' 出错: ' + err.message, 'err');
+    result = src.rows;
+  }
+
+  var fields = result.length > 0 ? Object.keys(result[0]) : [];
+  cleanedData[fn] = {type: t, rows: result, fields: fields, inputRows: inputRows};
+  addLog('✅ ' + fn + ': 输出 ' + result.length + ' 行 × ' + fields.length + ' 字段', 'ok');
+}
+
+// UI
+function refreshUI() {
+  var nav = document.getElementById('navS');
+  nav.innerHTML = '';
+  var fns = Object.keys(dataSources);
+  for (var i = 0; i < fns.length; i++) {
+    var fn = fns[i];
+    var s = dataSources[fn];
+    var c = cleanedData[fn];
+    var icon = ICONS[s.type] || '📄';
+    var div = document.createElement('div');
+    div.className = 'nav' + (activeTab === fn ? ' active' : '');
+    div.setAttribute('data-fn', fn);
+    div.onclick = (function(f){ return function(){ showSource(f); }; })(fn);
+    div.innerHTML = '<div class="nm">' + icon + ' ' + s.type + ' <span class="dot ' + (c ? 'on' : 'off') + '"></span></div>' +
+      '<div class="ds">' + fn + '</div>' +
+      '<div class="ds">' + s.rows.length + '行→' + (c ? c.rows.length + '行' : '-') + '</div>';
+    nav.appendChild(div);
+  }
+  var nf = Object.keys(dataSources).length;
+  var nr = 0;
+  var skus = {};
+  var ckeys = Object.keys(cleanedData);
+  for (var j = 0; j < ckeys.length; j++) {
+    var d = cleanedData[ckeys[j]];
+    nr += d.rows.length;
+    for (var k = 0; k < d.rows.length; k++) {
+      if (d.rows[k].SKU) skus[d.rows[k].SKU] = 1;
+    }
+  }
+  document.getElementById('hF').textContent = nf + ' 文件';
+  document.getElementById('hR').textContent = nr.toLocaleString() + ' 行';
+  document.getElementById('hS').textContent = Object.keys(skus).length + ' SKU';
+}
+
+function showSource(fn) {
+  activeTab = fn;
+  refreshUI();
+  var s = dataSources[fn];
+  var c = cleanedData[fn];
+  if (!s) return;
+  var icon = ICONS[s.type] || '📄';
+  var merge = MERGE_DESC[s.type] || '—';
+  var skuSet = {};
+  if (c) { for (var i = 0; i < c.rows.length; i++) { if (c.rows[i].SKU) skuSet[c.rows[i].SKU] = 1; } }
+  var skuCount = Object.keys(skuSet).length;
+  var fieldsHtml = '';
+  if (c) { for (var j = 0; j < c.fields.length; j++) { fieldsHtml += '<span class="chip cb">' + c.fields[j] + '</span>'; } }
+
+  var html = '<div class="sectitle">' + icon + ' ' + s.type + ' <span class="badge b-blue">' + fn + '</span></div>' +
+    '<div class="sr">' +
+    '<div class="st"><div class="lb">输入行数</div><div class="vl vblue">' + s.rows.length.toLocaleString() + '</div></div>' +
+    '<div class="st"><div class="lb">输出行数</div><div class="vl vgreen">' + (c ? c.rows.length.toLocaleString() : '-') + '</div></div>' +
+    '<div class="st"><div class="lb">合并方式</div><div class="vl vcyan" style="font-size:13px">' + merge + '</div></div>' +
+    '<div class="st"><div class="lb">SKU数</div><div class="vl vpurple">' + skuCount + '</div></div>' +
+    '</div>' +
+    '<div class="pnl"><div class="ph"><h3>📋 输出字段</h3></div><div class="pb">' + (fieldsHtml || '无') + '</div></div>' +
+    '<div class="bg">' +
+    '<button class="btn bs" onclick="exportOne(\'' + fn + '\')">📥 下载Excel</button>' +
+    '<button class="btn bo" onclick="exportOneCSV(\'' + fn + '\')">📥 下载CSV</button>' +
+    '</div>' +
+    '<div class="pnl"><div class="ph"><h3>数据预览 (前100行)</h3><span style="font-size:11px;color:var(--text3)">共' + (c ? c.rows.length.toLocaleString() : '0') + '行</span></div>' +
+    '<div class="pb">' + (c ? renderTbl(c.rows.slice(0, 100), c.fields) : '无数据') + '</div></div>';
+
+  document.getElementById('tabContent').innerHTML = html;
+}
+
+function showTab(tab) {
+  activeTab = tab;
+  refreshUI();
+  var el = document.getElementById('tabContent');
+  if (tab === 'rules') renderRules(el);
+  else if (tab === 'skuaudit') renderAudit(el);
+  else if (tab === 'export') renderExport(el);
+}
+
+function renderTbl(rows, fields) {
+  if (!rows || rows.length === 0) return '<div class="empty">无数据</div>';
+  var fs = fields || Object.keys(rows[0]);
+  var h = '<div class="tw" style="max-height:500px;overflow:auto"><table class="dt"><thead><tr><th>#</th>';
+  for (var i = 0; i < fs.length; i++) h += '<th>' + fs[i] + '</th>';
+  h += '</tr></thead><tbody>';
+  for (var j = 0; j < rows.length; j++) {
+    h += '<tr><td style="color:var(--text3)">' + (j+1) + '</td>';
+    for (var k = 0; k < fs.length; k++) {
+      var v = rows[j][fs[k]];
+      if (v == null) v = '';
+      if (fs[k] === 'SKU' && v) v = '<span class="sku">' + v + '</span>';
+      h += '<td>' + v + '</td>';
+    }
+    h += '</tr>';
+  }
+  h += '</tbody></table></div>';
+  return h;
+}
+
+function renderRules(el) {
+  var rules = [
+    {icon:'🛒',name:'待发货',merge:'按SKU合并',output:'SKU, CommittedQty',note:'同SKU的Committed数量求和'},
+    {icon:'🏭',name:'仓库库存',merge:'按SKU合并',output:'SKU, AvailableQty',note:'JP+JP1归一化后可用量求和'},
+    {icon:'📈',name:'销量数据',merge:'按SKU+日期合并',output:'SKU, Date, NetUnitsSold',note:'同SKU同天的销量求和，保留每天明细'},
+    {icon:'🚢',name:'头程明细',merge:'逐行保留',output:'8个核心字段',note:'每条物流记录独立，只做SKU归一化'},
+    {icon:'📦',name:'待分货',merge:'按SKU+周合并',output:'SKU, WeekStart, AllocationQty',note:'宽→长后同SKU同周求和'},
+    {icon:'🔮',name:'销量预测',merge:'按SKU+周合并',output:'SKU, Week, ForecastQty',note:'宽→长后同SKU同周求和，1901→2026'}
+  ];
+  var h = '<div class="sectitle">⚙️ 清洗规则 v3.4</div>';
+  for (var i = 0; i < rules.length; i++) {
+    var r = rules[i];
+    h += '<div class="pnl"><div class="ph"><h3>' + r.icon + ' ' + r.name + '</h3><span class="chip cp">' + r.merge + '</span></div>' +
+      '<div class="pb"><p style="font-size:12px;color:var(--text2);margin-bottom:6px"><strong>输出：</strong>' + r.output + '</p>' +
+      '<p style="font-size:11px;color:var(--accent3)">💡 ' + r.note + '</p></div></div>';
+  }
+  h += '<div class="pnl"><div class="ph"><h3>🔗 SKU归一化</h3></div><div class="pb">' +
+    '<p style="font-size:12px;color:var(--text2)">精确映射 ' + Object.keys(SKU_ALIAS).length + ' 条 + 正则兜底 /-JP\\d+$/ → -JP</p></div></div>';
+  el.innerHTML = h;
+}
+
+function renderAudit(el) {
+  var h = '<div class="sectitle">🔍 SKU归一化审计 <span class="badge b-green">' + skuLog.length + ' 条</span></div>';
+  if (skuLog.length === 0) {
+    h += '<div class="empty"><div class="ic">📋</div><h3>暂无记录</h3></div>';
+    el.innerHTML = h; return;
+  }
+  var agg = {};
+  for (var i = 0; i < skuLog.length; i++) {
+    var l = skuLog[i];
+    var key = l.from + '→' + l.to;
+    if (!agg[key]) agg[key] = {from:l.from, to:l.to, method:l.method, count:0, sources:{}};
+    agg[key].count++;
+    agg[key].sources[l.src] = 1;
+  }
+  var list = Object.keys(agg).map(function(k){ return agg[k]; }).sort(function(a,b){ return b.count - a.count; });
+  h += '<div class="tw" style="max-height:500px;overflow:auto"><table class="dt"><thead><tr><th>原始</th><th></th><th>归一化</th><th>方式</th><th>次数</th><th>来源</th></tr></thead><tbody>';
+  for (var j = 0; j < list.length; j++) {
+    var item = list[j];
+    var mc = item.method === '精确映射' ? 'cy' : 'cp';
+    h += '<tr><td><span class="chip cr">' + item.from + '</span></td><td style="color:var(--text3)">→</td>' +
+      '<td><span class="sku">' + item.to + '</span></td><td><span class="chip ' + mc + '">' + item.method + '</span></td>' +
+      '<td><strong>' + item.count + '</strong></td><td style="font-size:10px;color:var(--text3)">' + Object.keys(item.sources).join(', ') + '</td></tr>';
+  }
+  h += '</tbody></table></div>';
+  el.innerHTML = h;
+}
+
+function renderExport(el) {
+  var entries = [];
+  var fns = Object.keys(cleanedData);
+  for (var i = 0; i < fns.length; i++) entries.push([fns[i], cleanedData[fns[i]]]);
+  var totalOut = 0;
+  for (var j = 0; j < entries.length; j++) totalOut += entries[j][1].rows.length;
+
+  var h = '<div class="sectitle">📥 批量导出</div>' +
+    '<div class="sr"><div class="st"><div class="lb">文件数</div><div class="vl vblue">' + entries.length + '</div></div>' +
+    '<div class="st"><div class="lb">输出总行数</div><div class="vl vgreen">' + totalOut.toLocaleString() + '</div></div></div>' +
+    '<div class="bg"><button class="btn bp" id="btnAll" onclick="exportAll()">📦 一键导出所有（多Sheet Excel）</button>' +
+    '<button class="btn bo" onclick="exportSeparate()">📁 分文件导出</button></div>';
+
+  for (var k = 0; k < entries.length; k++) {
+    var fn = entries[k][0];
+    var d = entries[k][1];
+    var icon = ICONS[d.type] || '📄';
+    var merge = MERGE_DESC[d.type] || '';
+    var srcRows = dataSources[fn] ? dataSources[fn].rows.length : '?';
+    var fieldsHtml = '';
+    for (var f = 0; f < d.fields.length; f++) fieldsHtml += '<span class="chip cb">' + d.fields[f] + '</span>';
+    h += '<div class="pnl"><div class="ph"><h3>' + icon + ' ' + d.type + ' <span class="chip cp">' + merge + '</span> <span style="font-size:11px;color:var(--text3)">' + srcRows + '→' + d.rows.length + '</span></h3>' +
+      '<button class="btn bs" onclick="exportOne(\'' + fn + '\')" style="padding:5px 14px;font-size:11px">📥</button></div>' +
+      '<div class="pb"><p style="font-size:12px;color:var(--text2)">' + d.rows.length.toLocaleString() + '行 × ' + d.fields.length + '字段 — ' + fieldsHtml + '</p></div></div>';
+  }
+  if (entries.length === 0) h += '<div class="empty"><div class="ic">📭</div><h3>暂无数据</h3></div>';
+  el.innerHTML = h;
+}
+
+// Export functions
+function exportOne(fn) {
+  var d = cleanedData[fn];
+  if (!d || !d.rows.length) { toast('无数据', 'err'); return; }
+  toast('⏳ 导出 ' + d.type + '...', 'info');
+  setTimeout(function(){
+    try {
+      var ws = XLSX.utils.json_to_sheet(d.rows);
+      var wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, d.type.substring(0,31));
+      XLSX.writeFile(wb, 'cleaned_' + d.type + '_' + Date.now() + '.xlsx');
+      toast('✅ ' + d.type + ' ' + d.rows.length + '行', 'ok');
+    } catch(e) { toast('❌ ' + e.message, 'err', 5000); }
+  }, 50);
+}
+
+function exportOneCSV(fn) {
+  var d = cleanedData[fn];
+  if (!d || !d.rows.length) { toast('无数据', 'err'); return; }
+  try {
+    var ws = XLSX.utils.json_to_sheet(d.rows);
+    var csv = XLSX.utils.sheet_to_csv(ws);
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob(['\ufeff' + csv], {type:'text/csv;charset=utf-8'}));
+    a.download = 'cleaned_' + d.type + '_' + Date.now() + '.csv';
+    a.click();
+    toast('✅ CSV导出成功', 'ok');
+  } catch(e) { toast('❌ ' + e.message, 'err'); }
+}
+
+function exportAll() {
+  var entries = [];
+  var fns = Object.keys(cleanedData);
+  for (var i = 0; i < fns.length; i++) {
+    if (cleanedData[fns[i]].rows.length > 0) entries.push([fns[i], cleanedData[fns[i]]]);
+  }
+  if (entries.length === 0) { toast('无数据', 'err'); return; }
+  var btn = document.getElementById('btnAll');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ 生成中...'; }
+  var total = 0;
+  for (var j = 0; j < entries.length; j++) total += entries[j][1].rows.length;
+  toast('⏳ 生成' + entries.length + '个Sheet (' + total.toLocaleString() + '行)...', 'info', 10000);
+
+  setTimeout(function(){
+    try {
+      var wb = XLSX.utils.book_new();
+      var used = {};
+      for (var k = 0; k < entries.length; k++) {
+        var d = entries[k][1];
+        var name = d.type.substring(0, 31);
+        var suffix = 1;
+        while (used[name]) { name = d.type.substring(0, 28) + '_' + suffix; suffix++; }
+        used[name] = true;
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(d.rows), name);
+      }
+      XLSX.writeFile(wb, 'all_cleaned_' + Date.now() + '.xlsx');
+      toast('✅ ' + entries.length + '表 / ' + total.toLocaleString() + '行', 'ok', 4000);
+    } catch(e) {
+      toast('❌ ' + e.message, 'err', 5000);
+      console.error(e);
+    }
+    if (btn) { btn.disabled = false; btn.textContent = '📦 一键导出所有（多Sheet Excel）'; }
+  }, 100);
+}
+
+function exportSeparate() {
+  var fns = Object.keys(cleanedData);
+  var entries = [];
+  for (var i = 0; i < fns.length; i++) {
+    if (cleanedData[fns[i]].rows.length > 0) entries.push([fns[i], cleanedData[fns[i]]]);
+  }
+  if (entries.length === 0) { toast('无数据', 'err'); return; }
+  for (var j = 0; j < entries.length; j++) {
+    (function(idx){
+      setTimeout(function(){
+        try {
+          var d = entries[idx][1];
+          var ws = XLSX.utils.json_to_sheet(d.rows);
+          var wb = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(wb, ws, d.type.substring(0,31));
+          XLSX.writeFile(wb, 'cleaned_' + d.type + '_' + Date.now() + '.xlsx');
+        } catch(e) {}
+      }, idx * 200);
+    })(j);
+  }
+  toast('✅ ' + entries.length + '个文件导出中', 'ok');
+}
+
+addLog('🚀 v3.4就绪', 'ok');
+</script>
+</body>
+</html>
+
+							<script>
+                            	
+							</script>
+                        </body>
+                        </html>
+                    
