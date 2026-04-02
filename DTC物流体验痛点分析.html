@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTC物流体验痛点分析</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: #f5f7fa; color: #333; padding: 20px; }
+  h1 { text-align: center; color: #1a1a2e; margin-bottom: 8px; font-size: 22px; }
+  .subtitle { text-align: center; color: #666; margin-bottom: 20px; font-size: 13px; }
+  
+  .stats-bar {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: #fff; border-radius: 10px; padding: 12px 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center; min-width: 120px;
+  }
+  .stat-card .num { font-size: 28px; font-weight: bold; color: #e74c3c; }
+  .stat-card .label { font-size: 12px; color: #888; margin-top: 2px; }
+
+  .controls {
+    background: #fff; border-radius: 10px; padding: 16px 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 16px;
+    display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+  }
+  .controls label { font-size: 13px; color: #555; font-weight: bold; }
+  select, input[type="text"] {
+    padding: 6px 10px; border: 1px solid #ddd; border-radius: 6px;
+    font-size: 13px; outline: none; min-width: 150px;
+  }
+  select:focus, input:focus { border-color: #4a90d9; }
+  
+  .btn {
+    padding: 7px 16px; border: none; border-radius: 6px;
+    cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.2s;
+  }
+  .btn-primary { background: #4a90d9; color: #fff; }
+  .btn-primary:hover { background: #357abd; }
+  .btn-success { background: #27ae60; color: #fff; }
+  .btn-success:hover { background: #1e8449; }
+  .btn-reset { background: #95a5a6; color: #fff; }
+  .btn-reset:hover { background: #7f8c8d; }
+
+  .table-wrap {
+    background: #fff; border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden;
+  }
+  .table-info {
+    padding: 10px 16px; background: #f8f9fa;
+    border-bottom: 1px solid #eee; font-size: 13px; color: #666;
+  }
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    background: #1a1a2e; color: #fff; padding: 10px 10px;
+    text-align: left; white-space: nowrap; position: sticky; top: 0;
+    cursor: pointer; user-select: none;
+  }
+  thead th:hover { background: #2d2d5e; }
+  thead th .sort-icon { margin-left: 4px; opacity: 0.5; }
+  tbody tr:nth-child(even) { background: #f8f9ff; }
+  tbody tr:hover { background: #e8f0fe; }
+  td { padding: 8px 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+  
+  .severity-high { background: #ffe0e0; color: #c0392b; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; white-space: nowrap; }
+  .severity-mid  { background: #fff3cd; color: #856404; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; white-space: nowrap; }
+  .severity-low  { background: #d4edda; color: #155724; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; white-space: nowrap; }
+  .severity-sys  { background: #e2d9f3; color: #5a1f9e; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; white-space: nowrap; }
+
+  .status-unresolved { color: #c0392b; font-weight: bold; }
+  .status-resolved   { color: #27ae60; font-weight: bold; }
+  .status-pending    { color: #d68910; font-weight: bold; }
+  .status-chargeback { color: #8e44ad; font-weight: bold; }
+
+  .desc-cell { max-width: 320px; line-height: 1.5; }
+  .link-cell a { color: #4a90d9; text-decoration: none; font-size: 11px; }
+  .link-cell a:hover { text-decoration: underline; }
+  .country-tag {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: bold; white-space: nowrap;
+  }
+  .tag-us  { background: #dbeafe; color: #1e40af; }
+  .tag-eu  { background: #dcfce7; color: #15803d; }
+  .tag-uk  { background: #fce7f3; color: #9d174d; }
+  .tag-ca  { background: #ffedd5; color: #9a3412; }
+  .tag-other { background: #f3f4f6; color: #374151; }
+
+  .problem-tag {
+    display: inline-block; padding: 2px 7px; border-radius: 4px;
+    font-size: 11px; background: #e0e7ff; color: #3730a3; white-space: nowrap;
+  }
+
+  .no-data { text-align: center; padding: 40px; color: #aaa; font-size: 15px; }
+
+  @media print {
+    .controls, .btn { display: none; }
+    body { background: #fff; padding: 0; }
+    .table-wrap { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<h1>DTC 物流体验痛点分析报告</h1>
+<p class="subtitle">数据来源：Bambu Forum / Reddit / Trustpilot｜时间范围：2025-11 ~ 2026-04</p>
+
+<div class="stats-bar" id="statsBar"></div>
+
+<div class="controls">
+  <label>搜索：</label>
+  <input type="text" id="searchInput" placeholder="关键词搜索..." oninput="filterTable()">
+  <label>国家/地区：</label>
+  <select id="filterCountry" onchange="filterTable()">
+    <option value="">全部</option>
+    <option value="美国">美国</option>
+    <option value="欧盟">欧盟</option>
+    <option value="英国">英国</option>
+    <option value="加拿大">加拿大</option>
+    <option value="未知">地区未明</option>
+  </select>
+  <label>问题类型：</label>
+  <select id="filterProblem" onchange="filterTable()">
+    <option value="">全部</option>
+    <option value="假签收">假签收/包裹丢失</option>
+    <option value="退款">退款拒绝/扣押</option>
+    <option value="客服">客服拖延/AI客服</option>
+    <option value="DOA">DOA/产品故障</option>
+    <option value="延迟">发货延迟/ETD</option>
+    <option value="承运商">承运商问题</option>
+    <option value="退货">退货障碍</option>
+    <option value="系统性">系统性问题</option>
+  </select>
+  <label>严重度：</label>
+  <select id="filterSeverity" onchange="filterTable()">
+    <option value="">全部</option>
+    <option value="高">高</option>
+    <option value="中">中</option>
+    <option value="低">低</option>
+  </select>
+  <button class="btn btn-reset" onclick="resetFilters()">重置</button>
+  <button class="btn btn-success" onclick="downloadCSV()">⬇ 下载 CSV</button>
+  <button class="btn btn-primary" onclick="downloadFilteredCSV()">⬇ 下载筛选结果 CSV</button>
+</div>
+
+<div class="table-wrap">
+  <div class="table-info" id="tableInfo">共 40 条记录</div>
+  <div class="table-scroll">
+    <table id="mainTable">
+      <thead>
+        <tr>
+          <th onclick="sortTable(0)">序号<span class="sort-icon">↕</span></th>
+          <th onclick="sortTable(1)">日期<span class="sort-icon">↕</span></th>
+          <th onclick="sortTable(2)">平台<span class="sort-icon">↕</span></th>
+          <th onclick="sortTable(3)">国家/地区<span class="sort-icon">↕</span></th>
+          <th onclick="sortTable(4)">承运商<span class="sort-icon">↕</span></th>
+          <th onclick="sortTable(5)">物流问题类型<span class="sort-icon">↕</span></th>
+          <th onclick="sortTable(6)">问题大类<span class="sort-icon">↕</span></th>
+          <th onclick="sortTable(7)">严重度<span class="sort-icon">↕</span></th>
+          <th onclick="sortTable(8)">解决结果<span class="sort-icon">↕</span></th>
+          <th>原始描述摘要</th>
+          <th>链接</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div class="no-data" id="noData" style="display:none">没有符合条件的记录</div>
+  </div>
+</div>
+
+<script>
+const rawData = [
+  [1,"4/1/2026","Bambu Forum","欧盟（西班牙）","SEUR","假签收（连续两次）","假签收/包裹丢失","高","未解决","两台打印机连续丢失（P2S 和 A1），SEUR 无需签名即投递，4次投诉均获空洞回复，政策未变。8周后仍无解决方案。","https://forum.bambulab.com/t/printers-not-delivered-no-solution-from-support/246144"],
+  [2,"3/21/2026","Bambu Forum","欧盟（德国）","DHL","假签收 + 退款承诺后反悔","退款拒绝/扣押","高","未解决","Bambu 2025-12-30书面确认全额退款，后无故撤回。DHL官方调查文件与投递证明矛盾，Bambu拒绝给出最终结论。","https://forum.bambulab.com/t/ongoing-unresolved-refund-case-and-lack-of-response-eu-order/243390"],
+  [3,"2/1/2026","Reddit","加拿大","UPS","退货包裹被投递至错误地址 + 退款拒绝","退款拒绝/扣押","高","未解决","Bambu生成UPS退货标签，UPS投递至错误地址。Bambu以'未收到包裹'拒绝退款，但UPS说需要Bambu联系。","https://www.reddit.com/r/BambuLab/comments/1qsvljo/bambulab_refund_nightmare/"],
+  [4,"3/14/2026","Bambu Forum","欧盟（德国）","未知","发货延迟 + 退款被€2800全款扣押","退款拒绝/扣押","高","用户放弃转购Prusa XL","Bambu单独发出激光模块（用户未要求），以此为由扣押€2800全款退款，直到模块退回仓库。","https://forum.bambulab.com/t/bambu-support-holding-2-800-refund-because-of-a-laser-they-shipped-themselves/241427"],
+  [5,"3/19/2026","Bambu Forum","美国","DHL（退货）","退货后退款拒绝（DHL已确认投递）","退款拒绝/扣押","高","未解决","退回产品有DHL投递确认，Bambu声称未收到并拒绝退款。升级按钮无效，自2025年11月起无解决方案。","https://forum.bambulab.com/t/escalate-your-case-does-not-garner-a-response/242828"],
+  [6,"3/24/2026","Bambu Forum","美国","N/A","AI客服无法处理物流/退款问题","客服拖延/AI客服","高","未解决","工单被AI处理，不断重复已尝试的步骤，无法处理包裹追踪问题。响应间隔24-72小时。","https://forum.bambulab.com/t/is-it-possible-to-get-non-ai-support-with-bambu-labs/244041"],
+  [7,"3/9/2026","Bambu Forum","美国","N/A","支持拖延至超出退货期","客服拖延/AI客服","高","用户自行修复","支持不读工单，重复建议已完成的步骤，拖延4周后用户超出30天退货窗口，被迫自行修复。","https://forum.bambulab.com/t/bad-support-assistance/240149"],
+  [8,"4/1/2026","Trustpilot","英国","未知","产品故障 + 拒绝合理维修/更换","DOA/产品故障","高","未解决","P1S购于2025年12月，热端故障导致导线熔化。Bambu拒绝退换，要求12岁儿童自行更换X轴组件，被指违反英国消费者权益法。","https://www.trustpilot.com/reviews/69cc7eaab0f608690f496f88"],
+  [9,"2026-03","Trustpilot","英国","未知快递员","假签收 + 支持忽视物证","假签收/包裹丢失","高","未解决","快递员伪造签名'ALEX'并上传错误地板照片。用户提供对比照片证据，Bambu完全无视，被描述为'scam-friendly service'。","https://www.trustpilot.com/reviews/69c6b88663abdc7f86ff0924"],
+  [10,"3/5/2026","Trustpilot","欧盟（西班牙）","SEUR","包裹丢失（双方确认）+ 无解决方案","假签收/包裹丢失","高","未解决","打印机订购一个月后未到达。Bambu和SEUR均确认包裹丢失，但无退款或替换。","https://au.trustpilot.com/review/bambulab.com?page=3"],
+  [11,"1/6/2026","Bambu Forum","英国","未知","发货二手机 + 支持否认 + 拒绝退货","DOA/产品故障","高","通过chargeback解决","收到已拆封使用的P2S（圣诞礼物）。Bambu否认，拒绝退货直到10天后。最终通过信用卡拒付维权。","https://forum.bambulab.com/t/sharing-my-p2s-customer-service-experience-for-awareness/222621"],
+  [12,"2025-12-22","Reddit","未知","未知","包裹延误 + 要求关闭PayPal争议","退货障碍","高","包裹最终到达","Bambu客服明确发邮件要求先关闭PayPal争议，才能处理退款或替换。","https://www.reddit.com/r/BambuLab/comments/1pt7mgv/my_recent_experience_with_a_lost_package_and_the/"],
+  [13,"3/23/2026","Reddit","英国","DPD","虚假配送 + 退回发件方 + 无主动介入","假签收/包裹丢失","高","待解决（需重新发货）","DPD标记'错过配送'并上传假照片，全天在家的用户未收到任何敲门。包裹直接退回Bambu，客服从未主动通知。","https://www.reddit.com/r/BambuLab/comments/1s1jqab/dpd_failed_to_deliver_now_parcel_returning_to/"],
+  [14,"3/28/2026","Reddit","美国","FedEx","包装穿孔 + LCD碎裂 + DOA退货障碍","DOA/产品故障","高","待解决","H2C箱子被FedEx弄出孔洞，LCD屏幕碎裂。退货后Bambu持有包裹8天无进展，用户拍到FedEx扔退货包裹。","https://www.reddit.com/r/BambuLab/comments/1s5mnxt/h2c_lcd_shattered_on_arrival/"],
+  [15,"3/19/2026","Reddit","美国","N/A","DOA（玻璃碎裂）+ 客服反指控用户","DOA/产品故障","高","待解决","P2S前门玻璃碎裂，内部扎带断裂。客服反指控用户剪断扎带，要求用破损原箱退回，拒绝先发新机。","https://www.reddit.com/r/BambuLab/comments/1rxplh8/bambu_lab_p2s_arrived_completely_destroyed/"],
+  [16,"3/12/2026","Bambu Forum","欧盟（波兰）","DHL","漏发配件 + DHL地址错误","承运商问题","中","已解决（用户自行修改DHL地址）","消防系统套装到货缺少CO₂气瓶。补发时DHL显示地址错误，用户自行解决。全程未收到一句道歉。","https://forum.bambulab.com/t/what-s-going-on-with-the-support/240919"],
+  [17,"2025-11-29","Reddit","美国","YunExpress","假签收（$11.99耗材）+ 繁琐调查流程","假签收/包裹丢失","中","已解决（22天）","$11.99耗材丢失，处理流程：1份在线表单+1份打印签名扫描+14封邮件+22天。流程成本远超商品价值。","https://www.reddit.com/r/BambuLab/comments/1pa0tno/missing_package_customer_service/"],
+  [18,"3/15/2026","Bambu Forum","美国/英国","N/A","支持渠道可及性问题","客服拖延/AI客服","中","部分解决","Chat代理无权处理包裹调查等实质问题，只会说'创建工单'。英国用户需深夜联系。","https://forum.bambulab.com/t/live-chat-with-bbl/241784"],
+  [19,"3/6/2026","Reddit","欧盟（意大利）","N/A","AC板熔化 + 零件补发无ETA","DOA/产品故障","中","约1个月后收到零件","A1 AC板熔化，2月25日开票，至今只收到自动回复。无法获得发货时间估计，要求自购零件被拒绝。","https://www.reddit.com/r/BambuLab/comments/1rmj707/how_long_does_bambu_lab_support_usually_take_to/"],
+  [20,"1/19/2026","Reddit","美国","N/A","AI客服误诊技术问题","客服拖延/AI客服","中","社区帮助诊断","A1完全无法启动，AI支持回复'指示灯故障，需更换'（明显错误诊断）。社区指出AI不理解问题严重性。","https://www.reddit.com/r/BambuLab/comments/1qhimhc/is_bambu_using_ai_for_help_tickets_i_got_a_very/"],
+  [21,"1/22/2026","Bambu Forum","全球","N/A","系统性支持质量问题（社区共识）","系统性问题","高（系统性）","社区讨论","Bambu CS远低于预期，如果不解决将最终摧毁品牌。他们卖出了10倍的打印机，现在需要10倍训练有素的客服。","https://forum.bambulab.com/t/guess-support-is-worthless/225619?page=3"],
+  [22,"2025-12-09","Trustpilot","美国","UPS","积压商品漏发 + 举证责任倒置","承运商问题","中","未解决","圣诞礼物订单积压商品从未发货。支持声称'已随打印机发出'，要求拍照证明缺货（逻辑上无法证明）。","https://www.trustpilot.com/reviews/69adbdc17efdfe511e160b1a"],
+  [23,"3/17/2026","Reddit","美国","N/A","ETD混乱 + 客服与系统信息不一致","发货延迟/ETD","低","已解决","系统显示ETD 3月26日，客服3月17日确认'不可能在此日期前发货'，但包裹实际提前发出。","https://www.reddit.com/r/BambuLab/comments/1ry49nk/bambu_lab_support_confusion_etd_march_26th_vs/"],
+  [24,"1/12/2026","Reddit","英国","未知","港口拥堵延迟 + 被动通知","发货延迟/ETD","低","已解决（延迟约1周）","A1订单因港口拥堵延迟，收到邮件通知。用户表示可以接受，但希望更透明的ETD信息。","https://www.reddit.com/r/BambuLab/comments/1qb458p/anyone_else_had_a_delay/"],
+  [25,"3/20/2026","Reddit","美国","YunExpress等","拆单混乱 + 错误付款邮件","承运商问题","中","待解决","订单被拆成3个，打印机长期显示'在途'无细节，YunExpress查不到。期间收到错误的'请付款'邮件。","https://www.reddit.com/r/BambuLab/comments/1rzchhu/delivery_issue/"],
+  [26,"3/31/2026","Reddit","美国","YunExpress","YunExpress配送失败 + 无法联系","承运商问题","高","未解决","耗材包裹被YunExpress静默卡在仓库，一次不明原因配送失败后无任何通知，YunExpress无电话无邮件。","https://www.reddit.com/r/BambuLab/comments/1s8xjj1/yun_express_significant_waste_of_time/"],
+  [27,"3/30/2026","Reddit","美国","YunExpress","YunExpress追踪黑洞","承运商问题","中","待解决","两个订单被YunExpress卡在距家30英里处超过一周，追踪信息完全不更新。","https://www.reddit.com/r/BambuLab/comments/1s6herc/yun_express_shipping/"],
+  [28,"2/18/2026","Reddit","美国","多承运商","电话错误卡单 + 无主动通知","发货延迟/ETD","中","已解决（用户自行处理）","打印机因'电话号码错误'卡在仓库，Bambu从未主动联系。用户自行询问才得知，且需自行联系承运商修改。","https://www.reddit.com/r/BambuLab/comments/1r83k73/shipping_issues/"],
+  [29,"3/25/2026","Trustpilot","美国","N/A","技术故障 + 客服队列123工作日","客服拖延/AI客服","高","未解决","机器故障，Bambu Studio提示需等待123个工作日才能收到技术支持回复。","https://www.trustpilot.com/review/bambulab.com"],
+  [30,"3/17/2026","Reddit","美国","N/A","耗材长期缺货 + 官网撤除ETA","发货延迟/ETD","中","用户转向竞品","官网撤除了耗材ETA，整个2026年都买不到特定颜色。用户表示将转向竞品耗材。","https://www.reddit.com/r/BambuLab/comments/1s7w7c1/bl_filament_availability_is_only_half_the_problem/"],
+  [31,"2/23/2026","Reddit","加拿大","未知","超过ETD未发货 + 客服给出错误信息","发货延迟/ETD","中","待解决","A1订单超过ETD，客服称当天发货但实际未发，同单耗材已送达。","https://www.reddit.com/r/BambuLab/comments/1rcvhmw/shipping_delays_for_bambu_a1/"],
+  [32,"1/7/2026","Reddit","欧盟（德国）","未知","ETD超期无通知","发货延迟/ETD","低","已解决（延迟发货）","P2S订单ETD已过，仍无发货通知和追踪号。客服无主动联系。","https://www.reddit.com/r/BambuLab/comments/1q20i0j/p2s_ordered_dec_31_etd_february_got_an_email_that/"],
+  [33,"3/13/2026","Reddit","美国","N/A","关税影响 + 客服给出矛盾说法","客服拖延/AI客服","低","待解决","用户询问30%关税对订单的影响，客服给出矛盾说法，无明确答复。","https://www.reddit.com/r/BambuLab/comments/1kkt0tk/asked_support_about_the_new_30_tariff/"],
+  [34,"3/30/2026","Reddit","美国","FedEx","FedEx暴力搬运（视频）+ 包装责任讨论","承运商问题","中","打印机幸存","用户发布FedEx快递员摔落P2S的视频，引发关于物流环境恶劣与包装升级必要性的激烈讨论。","https://www.reddit.com/r/BambuLab/comments/1s7vaj6/how_my_p2s_was_delivered/"],
+  [35,"1/13/2026","Bambu Forum","美国","FedEx","包装填充不足 + 暴力搬运","承运商问题","低","包裹幸存","FedEx包裹被严重压扁，箱内半空填充不足。社区讨论Bambu包装质量不一致问题。","https://forum.bambulab.com/t/shipping-troubles/224500"],
+  [36,"3/21/2026","Trustpilot","未知","未知","谎报发货 + 封禁客服账号","客服拖延/AI客服","高","未解决","指控Bambu谎报发货时间，发出缺陷产品，且在沟通换货时封禁了用户的客服账号。","https://www.trustpilot.com/review/bambulab.com"],
+  [37,"3/10/2026","Trustpilot","美国","N/A","客服拖延战术（3个月无进展）","客服拖延/AI客服","高","未解决","A1打印机3个月后故障，此后3个月客服每次回复间隔2-3天，用户表示'确信这是他们的策略——一直拖延'。","https://www.trustpilot.com/review/bambulab.com?stars=1&stars=2&page=2"],
+  [38,"2/16/2026","Reddit","未知","未知","4个月保修噩梦","退货障碍","高","通过chargeback解决","4个月保修噩梦，最终通过信用卡拒付获得退款。","https://www.reddit.com/r/BambuLab/comments/1r6afg0/4_months_of_bambu_lab_warranty_nightmare_how_i/"],
+  [39,"3/19/2026","Bambu Forum","欧盟","未知","退货后退款拒绝 + 升级机制失效","退货障碍","高","未解决","退回产品有DHL投递确认，Bambu声称未收到并拒绝退款。升级按钮无效，自2025年11月起无解决方案。","https://forum.bambulab.com/t/escalate-your-case-does-not-garner-a-response/242828"],
+  [40,"3/14/2026","Bambu Forum","欧盟（德国）","未知","退款被扣押 + 客服拖延","退款拒绝/扣押","高","用户转购Prusa XL","Bambu以激光模块为由扣押€2800退款。用户提出合理替代方案被拒，最终转购Prusa XL并表示将卖掉所有Bambu打印机。","https://forum.bambulab.com/t/bambu-support-holding-2-800-refund-because-of-a-laser-they-shipped-themselves/241427"]
+];
+
+let sortCol = 0, sortAsc = true;
+let filteredData = [...rawData];
+
+function getCountryClass(country) {
+  if (country.includes("美国")) return "tag-us";
+  if (country.includes("欧盟")) return "tag-eu";
+  if (country.includes("英国")) return "tag-uk";
+  if (country.includes("加拿大")) return "tag-ca";
+  return "tag-other";
+}
+
+function getSeverityClass(s) {
+  if (s.includes("高")) return "severity-high";
+  if (s.includes("中")) return "severity-mid";
+  if (s.includes("低")) return "severity-low";
+  return "severity-sys";
+}
+
+function getStatusClass(s) {
+  if (s.includes("未解决")) return "status-unresolved";
+  if (s.includes("已解决")) return "status-resolved";
+  if (s.includes("chargeback")) return "status-chargeback";
+  return "status-pending";
+}
+
+function renderStats(data) {
+  const total = data.length;
+  const high = data.filter(r => r[7].includes("高")).length;
+  const unresolved = data.filter(r => r[8].includes("未解决")).length;
+  const countries = [...new Set(data.map(r => r[3].replace(/（.*?）/, '')))].filter(c => c !== "全球" && c !== "未知").length;
+
+  document.getElementById("statsBar").innerHTML = `
+    <div class="stat-card"><div class="num">${total}</div><div class="label">总记录数</div></div>
+    <div class="stat-card"><div class="num" style="color:#e74c3c">${high}</div><div class="label">高严重度</div></div>
+    <div class="stat-card"><div class="num" style="color:#c0392b">${unresolved}</div><div class="label">未解决</div></div>
+    <div class="stat-card"><div class="num" style="color:#2980b9">${countries}</div><div class="label">涉及地区</div></div>
+  `;
+}
+
+function renderTable(data) {
+  filteredData = data;
+  const tbody = document.getElementById("tableBody");
+  const noData = document.getElementById("noData");
+  document.getElementById("tableInfo").textContent = `显示 ${data.length} 条 / 共 40 条记录`;
+  renderStats(data);
+
+  if (data.length === 0) {
+    tbody.innerHTML = "";
+    noData.style.display = "block";
+    return;
+  }
+  noData.style.display = "none";
+
+  tbody.innerHTML = data.map(r => `
+    <tr>
+      <td style="text-align:center;font-weight:bold">${r[0]}</td>
+      <td style="white-space:nowrap">${r[1]}</td>
+      <td style="white-space:nowrap">${r[2]}</td>
+      <td><span class="country-tag ${getCountryClass(r[3])}">${r[3]}</span></td>
+      <td style="white-space:nowrap">${r[4]}</td>
+      <td style="max-width:200px">${r[5]}</td>
+      <td><span class="problem-tag">${r[6]}</span></td>
+      <td><span class="${getSeverityClass(r[7])}">${r[7]}</span></td>
+      <td class="${getStatusClass(r[8])}" style="white-space:nowrap">${r[8]}</td>
+      <td class="desc-cell">${r[9]}</td>
+      <td class="link-cell"><a href="${r[10]}" target="_blank">查看原帖</a></td>
+    </tr>
+  `).join("");
+}
+
+function filterTable() {
+  const search = document.getElementById("searchInput").value.toLowerCase();
+  const country = document.getElementById("filterCountry").value;
+  const problem = document.getElementById("filterProblem").value;
+  const severity = document.getElementById("filterSeverity").value;
+
+  const result = rawData.filter(r => {
+    const rowText = r.join(" ").toLowerCase();
+    const matchSearch = !search || rowText.includes(search);
+    const matchCountry = !country || r[3].includes(country);
+    const matchProblem = !problem || r[6].includes(problem);
+    const matchSeverity = !severity || r[7].includes(severity);
+    return matchSearch && matchCountry && matchProblem && matchSeverity;
+  });
+
+  renderTable(result);
+}
+
+function resetFilters() {
+  document.getElementById("searchInput").value = "";
+  document.getElementById("filterCountry").value = "";
+  document.getElementById("filterProblem").value = "";
+  document.getElementById("filterSeverity").value = "";
+  renderTable(rawData);
+}
+
+function sortTable(col) {
+  if (sortCol === col) sortAsc = !sortAsc;
+  else { sortCol = col; sortAsc = true; }
+  const sorted = [...filteredData].sort((a, b) => {
+    const va = String(a[col]), vb = String(b[col]);
+    return sortAsc ? va.localeCompare(vb, 'zh') : vb.localeCompare(va, 'zh');
+  });
+  renderTable(sorted);
+}
+
+function toCSV(data) {
+  const headers = ["序号","日期","平台","国家/地区","承运商","物流问题类型","问题大类","严重度","解决结果","原始描述摘要","链接"];
+  const rows = [headers, ...data.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`))];
+  return "\uFEFF" + rows.map(r => r.join(",")).join("\r\n");
+}
+
+function downloadCSV() {
+  const csv = toCSV(rawData);
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "DTC物流体验痛点_全部数据.csv";
+  a.click();
+}
+
+function downloadFilteredCSV() {
+  const csv = toCSV(filteredData);
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "DTC物流体验痛点_筛选结果.csv";
+  a.click();
+}
+
+renderTable(rawData);
+</script>
+</body>
+</html>
